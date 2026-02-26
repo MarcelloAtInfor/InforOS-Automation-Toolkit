@@ -509,6 +509,13 @@ def cmd_extract_sa(args: argparse.Namespace) -> int:
         print("The workflow must contain at least one ION API activity with a service account attached.")
         return 1
 
+    # Reject placeholder values (e.g. "<YOUR_SERVICE_ACCOUNT>")
+    from src.workflow_builder.ionapi import _is_placeholder_sa
+    if _is_placeholder_sa(sa):
+        print(f"\nFound serviceAccount but it is a placeholder: {sa}")
+        print("This file does not contain a real encrypted service account token.")
+        return 1
+
     print(f"\nFound service account ({len(sa)} chars)")
     print(f"Preview: {sa[:50]}...")
 

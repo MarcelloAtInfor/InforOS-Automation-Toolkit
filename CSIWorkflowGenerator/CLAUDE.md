@@ -130,6 +130,7 @@ ION workflow API activities (ionapi flowparts) require a **service account** —
 **Behavior when no service account is configured:**
 - `wfgen render` omits `serviceAccount` from ionapi flowpart JSON (instead of including an empty/placeholder value)
 - `wfgen create` prints a warning but proceeds with deployment — the workflow can still be created, but ionapi steps won't execute until a service account is attached
+- `wfgen extract-sa` rejects placeholder values (empty or `<...>` prefixed) — prevents accidental overwrites of real tokens in `tenant_config.json`
 
 ## Spec Step Types
 
