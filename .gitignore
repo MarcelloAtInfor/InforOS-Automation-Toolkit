@@ -1,0 +1,41 @@
+# Credentials and Authentication
+*.ionapi
+access_token.txt
+token_data.json
+tenant_config.json
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Test artifacts
+test_logs/
+.test_sequence
+
+# Log files with potential JWT tokens / sensitive data
+**/error logs/
+**/error_logs/
+**/CHAT_DEBUG_LOG/
+**/logs/*.txt
+**/PAST_PROJECTS/
+
+# OS Artifacts
+nul
+.DS_Store
+Thumbs.db
+
+# GSD planning state (workflow artifacts, not project content)
+.planning/
+
+# Claude Code session state
+.claude/
+
+# Generated output (rebuild from source)
+output/
+
+# IDE
+.vscode/
+.idea/
+*.swp

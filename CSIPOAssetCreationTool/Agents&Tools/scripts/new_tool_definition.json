@@ -1,0 +1,22 @@
+{
+  "name": "CustomerSearch_Tool",
+  "description": "Search for customers in CSI/Syteline by customer number or name",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nENDPOINT: /load/SLCustomers\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of customer properties to return. Example: CustNum, Name, CustSeq\n\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: Filter expression for searching customers. Examples:\n- By customer number: CustNum='CUST001'\n- By name (partial match): Name LIKE 'ABC%'\n- Multiple conditions: CustNum='CUST001' AND CustSeq=0\n\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: -1 (system default), 0 = unlimited\n\nExample Requests:\n\nTo search for a specific customer by number:\n/load/SLCustomers?properties=CustNum,Name,CustSeq&filter=CustNum='CUST001'\n\nTo search for customers by name (partial match):\n/load/SLCustomers?properties=CustNum,Name,CustSeq&filter=Name LIKE 'ABC%'&recordCap=10\n\nTo get all customers (limited):\n/load/SLCustomers?properties=CustNum,Name,CustSeq&recordCap=20",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\n\nIf customers are found, the Items array contains one or more objects with the requested properties.\n\nExample response with results:\n{\n  \"Items\": [\n    {\n      \"CustNum\": \"CUST001\",\n      \"Name\": \"ABC Corporation\",\n      \"CustSeq\": 0,\n      \"_ItemId\": \"PBT=[custaddr] custaddr.ID=[guid]\"\n    }\n  ],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nIf no customers match the criteria, the Items array is empty:\n{\n  \"Items\": [],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nHTTP Status Codes:\n- 200 OK: Successful API call (regardless of whether customers were found)\n- 401 Unauthorized: Authentication failed\n- 422 Validation Error: Invalid parameters\n\nKey Response Fields:\n- Items: Array of customer objects\n- MoreRowsExist: Boolean indicating if more records are available\n- Success: Boolean indicating API call success\n- Message: Error message if Success is false",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for customers in CSI/Syteline by customer number or name.\n\nSearch options:\n- Customer Number (CustNum): Exact match (e.g., CustNum='CUST001')\n- Customer Name: Partial match using LIKE (e.g., Name LIKE 'ABC%')\n\nReturns: Customer Number, Name, Sequence, and other requested properties.\n\nUse when user asks to:\n- Find a specific customer\n- Verify customer existence\n- List customers by criteria\n- Get customer information for orders or inquiries\n\nExamples: \"Find customer CUST001\", \"Search for customers starting with ABC\", \"Does customer XYZ exist?\"\n\nReturns customer details if found, or empty result if not found."
+}

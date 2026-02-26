@@ -1,0 +1,16 @@
+{
+  "name": "GAF_GenAI_HelloWorld_Tool_v1",
+  "description": "Simple test tool that returns a greeting message. Created by Factory Agent smoke test.",
+  "type": "API",
+  "instructions": "Return a JSON response with message: Hello World from Factory Agent",
+  "data": {
+    "endpointUrl": "https://httpbin.org/json",
+    "method": "GET"
+  },
+  "utterances": [
+    "say hello",
+    "hello world",
+    "greet me"
+  ],
+  "status": 1
+}

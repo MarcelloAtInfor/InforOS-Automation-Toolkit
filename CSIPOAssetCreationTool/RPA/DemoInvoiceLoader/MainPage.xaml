@@ -1,0 +1,846 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow" this:Workflow.configurationFolder="C:\RPAFiles\OCR_TEST" this:Workflow.inputFolderPath="C:\RPAFiles\OCR_TEST\Input" this:Workflow.tenantURL="https://mingle-ionapi.inforcloudsuite.com/<YOUR_TENANT>/" this:Workflow.warehouse="MAIN" this:Workflow.terms="N30" this:Workflow.site="<YOUR_SITE>" this:Workflow.genAILogicalId="lid://infor.syteline" this:Workflow.pollingIntervalSeconds="10" this:Workflow.maxPollingAttempts="60" this:Workflow.recipientUserId="user@example.com" this:Workflow.enableNotifications="True" this:Workflow.enableDebugMode="True"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:this="clr-namespace:RehostedWorkflowDesigner"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="configurationFolder" Type="InArgument(x:String)" />
+    <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="terms" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="genAILogicalId" Type="InArgument(x:String)" />
+    <x:Property Name="pollingIntervalSeconds" Type="InArgument(x:Int32)" />
+    <x:Property Name="maxPollingAttempts" Type="InArgument(x:Int32)" />
+    <x:Property Name="recipientUserId" Type="InArgument(x:String)" />
+    <x:Property Name="enableNotifications" Type="InArgument(x:Boolean)" />
+    <x:Property Name="enableDebugMode" Type="InArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Infor.Activities.Email</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>System</x:String>
+      <x:String>Infor.RPA.Utilities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Email</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Infor.RPA.Utilities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="DemoInvoiceLoader - Main" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Default="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+&quot;\AppData\Local\InforRPA\DemoInvoiceLoader&quot;]" Name="projectPathCache" />
+      <Variable x:TypeArguments="x:String" Default="&lt;YOUR_PROJECT_PATH&gt;" Name="projectPathSource" />
+      <Variable x:TypeArguments="x:String" Name="projectPath" />
+      <Variable x:TypeArguments="x:String" Default="InProgress|Logs|Success|Failure" Name="directoriesNames" />
+      <Variable x:TypeArguments="x:String" Default="Logs" Name="logFolderName" />
+      <Variable x:TypeArguments="scg:List(x:String)" Name="files" />
+      <Variable x:TypeArguments="x:String" Name="logFile" />
+      <Variable x:TypeArguments="x:String" Name="currentFile" />
+      <Variable x:TypeArguments="x:String" Name="inProgressPath" />
+      <Variable x:TypeArguments="njl:JToken" Name="ocrJsonResponse" />
+      <Variable x:TypeArguments="x:String" Name="ocrStatus" />
+      <Variable x:TypeArguments="x:String" Name="ocrStatusComments" />
+      <Variable x:TypeArguments="x:String" Name="formattedPayload" />
+      <Variable x:TypeArguments="x:String" Name="formatStatus" />
+      <Variable x:TypeArguments="x:String" Name="agentResponse" />
+      <Variable x:TypeArguments="x:String" Name="agentStatus" />
+      <Variable x:TypeArguments="x:String" Name="sessionId" />
+      <Variable x:TypeArguments="x:String" Name="processingStatus" />
+      <Variable x:TypeArguments="x:Int32" Name="successCount" />
+      <Variable x:TypeArguments="x:Int32" Name="failureCount" />
+      <Variable x:TypeArguments="x:String" Name="fileName" />
+      <Variable x:TypeArguments="x:Int32" Name="ocrResponseCode" />
+      <Variable x:TypeArguments="x:String" Name="moveFileOutput" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="ocrOutputDict" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="formatOutputDict" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="agentOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="errorMessage" />
+      <Variable x:TypeArguments="x:String" Name="agentErrorMessage" />
+      <Variable x:TypeArguments="x:String" Name="parsedVendorNumber" />
+      <Variable x:TypeArguments="x:String" Name="parsedVendorName" />
+      <Variable x:TypeArguments="x:String" Name="parsedPONumber" />
+      <Variable x:TypeArguments="x:String" Name="parsedItemsCreated" />
+      <Variable x:TypeArguments="x:String" Name="parsedItemCount" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="notificationOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="notificationStatus" />
+      <Variable x:TypeArguments="x:String" Name="parsedStatus" />
+      <Variable x:TypeArguments="x:String" Name="parsedErrors" />
+      <Variable x:TypeArguments="x:String" Name="parsedNotes" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="rpaErrorNotificationOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="rpaErrorNotificationStatus" />
+      <Variable x:TypeArguments="x:Boolean" Default="[False]" Name="reachedGenAI" />
+      <Variable x:TypeArguments="x:String" Name="formatErrorMessage" />
+      <Variable x:TypeArguments="x:Object" Name="debugProcess" />
+    </Sequence.Variables>
+    <Assign DisplayName="Detect Project Path - Use cache if deployed, source if development" sap2010:WorkflowViewState.IdRef="Assign_DetectProjectPath">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[projectPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(System.IO.File.Exists(projectPathCache+"\ExtractOCRData.xaml"), projectPathCache, projectPathSource)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <iaw:InvokeWorkflow OutputArguments="{x:Null}" ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;configurationFolder&quot;,configurationFolder},{&quot;directoriesNames&quot;,directoriesNames.split(&quot;|&quot;c).ToList},{&quot;logFolderName&quot;,logFolderName}}]" ContinueOnError="True" DisplayName="Create Directories" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_CreateDirs" WorkflowFile="[projectPath+&quot;\CreateDirectories.xaml&quot;]" />
+    <Assign DisplayName="Set Log File Path" sap2010:WorkflowViewState.IdRef="Assign_LogFile">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[logFile]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[configurationFolder+"\Logs\JobsResults"+System.DateTime.Now.ToString("ddMMyyyy")+".txt"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If Condition="[enableDebugMode]" DisplayName="If Debug Mode - Open Log Tail" sap2010:WorkflowViewState.IdRef="If_DebugMode">
+      <If.Then>
+        <Assign DisplayName="Start PowerShell Log Tail" sap2010:WorkflowViewState.IdRef="Assign_StartPS">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Object">[debugProcess]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Object">[System.Diagnostics.Process.Start("powershell.exe", "-NoExit -Command ""while (!(Test-Path '"+logFile+"')) { Start-Sleep -Seconds 1 }; Get-Content '"+logFile+"' -Wait""")]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Then>
+    </If>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Start Time" sap2010:WorkflowViewState.IdRef="Append_Line_Start" Line="[System.Environment.NewLine+&quot;===============================================&quot;+System.Environment.NewLine+&quot;DemoInvoiceLoader - Start Time: &quot;+System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;)+System.Environment.NewLine+&quot;Project Path: &quot;+projectPath+System.Environment.NewLine+&quot;Input Folder: &quot;+inputFolderPath+System.Environment.NewLine+&quot;Tenant: &quot;+tenantURL+System.Environment.NewLine+&quot;===============================================&quot;]" Source="[logFile]" />
+    <Assign DisplayName="Initialize Success Counter" sap2010:WorkflowViewState.IdRef="Assign_SuccessInit">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[successCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">0</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Initialize Failure Counter" sap2010:WorkflowViewState.IdRef="Assign_FailureInit">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">0</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ias:Directory_GetFiles ErrorCode="{x:Null}" ContinueOnError="False" DirPath="[inputFolderPath]" DisplayName="Get PDF Files from Input Folder" FileType="PDF" Files="[files]" sap2010:WorkflowViewState.IdRef="Directory_GetFiles_1" IncludeSubDir="False" />
+    <ForEach x:TypeArguments="x:String" DisplayName="Process Each Invoice" sap2010:WorkflowViewState.IdRef="ForEach_Files" Values="[files]">
+      <ActivityAction x:TypeArguments="x:String">
+        <ActivityAction.Argument>
+          <DelegateInArgument x:TypeArguments="x:String" Name="item" />
+        </ActivityAction.Argument>
+        <TryCatch DisplayName="TryCatch RPA Error Handler" sap2010:WorkflowViewState.IdRef="TryCatch_RPAErrorHandler">
+          <TryCatch.Try>
+            <Sequence DisplayName="Process Single Invoice" sap2010:WorkflowViewState.IdRef="Sequence_ProcessFile">
+              <Assign DisplayName="Extract Filename" sap2010:WorkflowViewState.IdRef="Assign_FileName">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[fileName]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[item.Substring(item.LastIndexOf("\"c)+1)]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Current File" sap2010:WorkflowViewState.IdRef="Assign_CurrentFile">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[currentFile]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[item]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Processing Start" sap2010:WorkflowViewState.IdRef="Append_Line_FileStart" Line="[System.Environment.NewLine+&quot;-----------------------------------------------&quot;+System.Environment.NewLine+&quot;Processing: &quot;+fileName+System.Environment.NewLine+&quot;Time: &quot;+System.DateTime.Now.ToString(&quot;HH:mm:ss&quot;)]" Source="[logFile]" />
+              <Assign DisplayName="Set InProgress Path" sap2010:WorkflowViewState.IdRef="Assign_InProgressPath">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[inProgressPath]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[configurationFolder+"\InProgress\"+fileName]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:File_Move ErrorCode="{x:Null}" ContinueOnError="False" DisplayName="Move to InProgress" sap2010:WorkflowViewState.IdRef="File_Move_ToInProgress" OutputFile="[moveFileOutput]" OverwriteFile="True" Source="[item]" Target="[configurationFolder+&quot;\InProgress&quot;]" targetName="[fileName]" />
+              <Assign DisplayName="Update Current File Path" sap2010:WorkflowViewState.IdRef="Assign_UpdateCurrentFile">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[currentFile]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[inProgressPath]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Init Processing Status" sap2010:WorkflowViewState.IdRef="Assign_InitStatus">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Init Error Message" sap2010:WorkflowViewState.IdRef="Assign_InitErrorMsg">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[""]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;documentPath&quot;,currentFile},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Extract OCR Data" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_OCR" OutputArguments="[ocrOutputDict]" ResponseCode="[ocrResponseCode]" WorkflowFile="[projectPath+&quot;\ExtractOCRData.xaml&quot;]" />
+              <Assign DisplayName="Get OCR Status" sap2010:WorkflowViewState.IdRef="Assign_GetOCRStatus">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatus]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[If(ocrOutputDict IsNot Nothing AndAlso ocrOutputDict.ContainsKey("ocrStatus"), CType(ocrOutputDict("ocrStatus"), String), "FAILED")]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Get OCR JSON Response" sap2010:WorkflowViewState.IdRef="Assign_GetOCRJson">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="njl:JToken">[ocrJsonResponse]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="njl:JToken">[If(ocrOutputDict IsNot Nothing AndAlso ocrOutputDict.ContainsKey("ocrJsonResponse"), CType(ocrOutputDict("ocrJsonResponse"), JToken), Nothing)]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Get OCR Status Comments" sap2010:WorkflowViewState.IdRef="Assign_GetOCRComments">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatusComments]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">[If(ocrOutputDict IsNot Nothing AndAlso ocrOutputDict.ContainsKey("ocrStatusComments"), CType(ocrOutputDict("ocrStatusComments"), String), "")]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log OCR Result" sap2010:WorkflowViewState.IdRef="Append_Line_OCRResult" Line="[&quot;  Step 1 - OCR Extraction: &quot;+ocrStatus+If(ocrJsonResponse IsNot Nothing, &quot; (response received)&quot;, &quot; (no response)&quot;)]" Source="[logFile]" />
+              <If Condition="[ocrStatus = &quot;SUCCESS&quot;]" DisplayName="Check OCR Success" sap2010:WorkflowViewState.IdRef="If_OCRSuccess">
+                <If.Then>
+                  <Sequence DisplayName="Continue Processing" sap2010:WorkflowViewState.IdRef="Sequence_ContinueProcessing">
+                    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;ocrJsonResponse&quot;,ocrJsonResponse},{&quot;defaultWarehouse&quot;,warehouse},{&quot;defaultTerms&quot;,terms},{&quot;site&quot;,site},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Format Data for GenAI" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_Format" OutputArguments="[formatOutputDict]" WorkflowFile="[projectPath+&quot;\FormatDataForGenAI.xaml&quot;]" />
+                    <Assign DisplayName="Get Format Status" sap2010:WorkflowViewState.IdRef="Assign_GetFormatStatus">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(formatOutputDict IsNot Nothing AndAlso formatOutputDict.ContainsKey("formatStatus"), CType(formatOutputDict("formatStatus"), String), "FAILED")]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <Assign DisplayName="Get Formatted Payload" sap2010:WorkflowViewState.IdRef="Assign_GetFormatPayload">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[formattedPayload]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(formatOutputDict IsNot Nothing AndAlso formatOutputDict.ContainsKey("formattedPayload"), CType(formatOutputDict("formattedPayload"), String), "")]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <Assign DisplayName="Get Format Error Message" sap2010:WorkflowViewState.IdRef="Assign_GetFormatError">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(formatOutputDict IsNot Nothing AndAlso formatOutputDict.ContainsKey("formatErrorMessage"), CType(formatOutputDict("formatErrorMessage"), String), "")]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Format Result" sap2010:WorkflowViewState.IdRef="Append_Line_FormatResult" Line="[&quot;  Step 2 - Format Data: &quot;+formatStatus+If(formattedPayload.Length &gt; 0, &quot; (payload length: &quot;+formattedPayload.Length.ToString()+&quot;)&quot;, &quot; (no payload)&quot;)]" Source="[logFile]" />
+                    <If Condition="[formatStatus = &quot;SUCCESS&quot;]" DisplayName="Check Format Success" sap2010:WorkflowViewState.IdRef="If_FormatSuccess">
+                      <If.Then>
+                        <Sequence DisplayName="Send to Agent" sap2010:WorkflowViewState.IdRef="Sequence_SendToAgent">
+                          <Assign DisplayName="Set Reached GenAI Flag" sap2010:WorkflowViewState.IdRef="Assign_SetReachedGenAI">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:Boolean">[reachedGenAI]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;formattedPayload&quot;,formattedPayload},{&quot;genAILogicalId&quot;,genAILogicalId},{&quot;pollingIntervalSeconds&quot;,pollingIntervalSeconds},{&quot;maxPollingAttempts&quot;,maxPollingAttempts},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Send to GenAI Agent" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_GenAI" OutputArguments="[agentOutputDict]" WorkflowFile="[projectPath+&quot;\SendToGenAIAgent.xaml&quot;]" />
+                          <Assign DisplayName="Get Session ID" sap2010:WorkflowViewState.IdRef="Assign_GetSessionId">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[sessionId]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(agentOutputDict IsNot Nothing AndAlso agentOutputDict.ContainsKey("sessionId"), CType(agentOutputDict("sessionId"), String), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Get Agent Status" sap2010:WorkflowViewState.IdRef="Assign_GetAgentStatus">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(agentOutputDict IsNot Nothing AndAlso agentOutputDict.ContainsKey("agentStatus"), CType(agentOutputDict("agentStatus"), String), "FAILED")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Get Agent Error Message" sap2010:WorkflowViewState.IdRef="Assign_GetAgentError">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(agentOutputDict IsNot Nothing AndAlso agentOutputDict.ContainsKey("agentErrorMessage"), CType(agentOutputDict("agentErrorMessage"), String), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Get Agent Response" sap2010:WorkflowViewState.IdRef="Assign_GetAgentResponse">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentResponse]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(agentOutputDict IsNot Nothing AndAlso agentOutputDict.ContainsKey("agentResponse"), CType(agentOutputDict("agentResponse"), String), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <If Condition="[agentStatus = &quot;SUCCESS&quot;]" DisplayName="Check Agent Success" sap2010:WorkflowViewState.IdRef="If_AgentSuccess">
+                            <If.Then>
+                              <Sequence DisplayName="Agent Success" sap2010:WorkflowViewState.IdRef="Sequence_AgentSuccess">
+                                <Sequence.Variables>
+                                  <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="parseOutputDict" />
+                                </Sequence.Variables>
+                                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Agent Success" sap2010:WorkflowViewState.IdRef="Append_Line_AgentSuccess" Line="[&quot;  Step 3 - GenAI Agent: SUCCESS (Session: &quot;+sessionId+&quot;)&quot;]" Source="[logFile]" />
+                                <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;agentResponse&quot;,agentResponse},{&quot;logFile&quot;,logFile}}]" ContinueOnError="True" DisplayName="Parse Agent Response" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_ParseResponse" OutputArguments="[parseOutputDict]" WorkflowFile="[projectPath+&quot;\ParseAgentResponse.xaml&quot;]" />
+                                <Assign DisplayName="Get Parsed Vendor Number" sap2010:WorkflowViewState.IdRef="Assign_GetParsedVendorNumber">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedVendorNumber]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("vendorNumber"), CType(parseOutputDict("vendorNumber"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Vendor Name" sap2010:WorkflowViewState.IdRef="Assign_GetParsedVendorName">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedVendorName]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("vendorName"), CType(parseOutputDict("vendorName"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed PO Number" sap2010:WorkflowViewState.IdRef="Assign_GetParsedPONumber">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedPONumber]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("poNumber"), CType(parseOutputDict("poNumber"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Items Created" sap2010:WorkflowViewState.IdRef="Assign_GetParsedItemsCreated">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedItemsCreated]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("itemsCreated"), CType(parseOutputDict("itemsCreated"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Item Count" sap2010:WorkflowViewState.IdRef="Assign_GetParsedItemCount">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedItemCount]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("itemCount"), CType(parseOutputDict("itemCount"), String), "0")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Status" sap2010:WorkflowViewState.IdRef="Assign_GetParsedStatus">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedStatus]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("agentOverallStatus"), CType(parseOutputDict("agentOverallStatus"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Errors" sap2010:WorkflowViewState.IdRef="Assign_GetParsedErrors">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedErrors]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("agentErrors"), CType(parseOutputDict("agentErrors"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Get Parsed Notes" sap2010:WorkflowViewState.IdRef="Assign_GetParsedNotes">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[parsedNotes]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parseOutputDict IsNot Nothing AndAlso parseOutputDict.ContainsKey("agentNotes"), CType(parseOutputDict("agentNotes"), String), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Set Error Message from Agent Errors" sap2010:WorkflowViewState.IdRef="Assign_SetErrorFromAgent">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(parsedErrors.Length &gt; 0, parsedErrors, errorMessage)]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Parsed Values" sap2010:WorkflowViewState.IdRef="Append_Line_ParsedValues" Line="[&quot;  Parsed Response - Vendor: &quot;+parsedVendorNumber+&quot;, PO: &quot;+parsedPONumber+&quot;, Status: &quot;+parsedStatus+If(parsedErrors.Length &gt; 0, &quot;, Errors: &quot;+parsedErrors, &quot;&quot;)]" Source="[logFile]" />
+                                <If Condition="[parsedStatus.ToLower() = &quot;success&quot;]" DisplayName="Check Agent Reported Success" sap2010:WorkflowViewState.IdRef="If_AgentReportedSuccess">
+                                  <If.Then>
+                                    <Sequence DisplayName="Agent Reported Success" sap2010:WorkflowViewState.IdRef="Sequence_AgentReportedSuccess">
+                                      <Assign DisplayName="Increment Success Count" sap2010:WorkflowViewState.IdRef="Assign_IncrementSuccess">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:Int32">[successCount]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:Int32">[successCount + 1]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                    </Sequence>
+                                  </If.Then>
+                                  <If.Else>
+                                    <Sequence DisplayName="Agent Reported Failure or Partial" sap2010:WorkflowViewState.IdRef="Sequence_AgentReportedFailure">
+                                      <Assign DisplayName="Set Processing Status from Agent" sap2010:WorkflowViewState.IdRef="Assign_SetStatusFromAgent">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:String">["FAILURE"]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                      <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Agent Reported Failure" sap2010:WorkflowViewState.IdRef="Append_Line_AgentReportedFailure" Line="[&quot;  Agent reported status: &quot;+parsedStatus+&quot; - marking as FAILURE&quot;]" Source="[logFile]" />
+                                      <Assign DisplayName="Increment Failure Count for Agent Reported" sap2010:WorkflowViewState.IdRef="Assign_IncrementFailureAgentReported">
+                                        <Assign.To>
+                                          <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+                                        </Assign.To>
+                                        <Assign.Value>
+                                          <InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument>
+                                        </Assign.Value>
+                                      </Assign>
+                                    </Sequence>
+                                  </If.Else>
+                                </If>
+                              </Sequence>
+                            </If.Then>
+                            <If.Else>
+                              <Sequence DisplayName="Agent Failed" sap2010:WorkflowViewState.IdRef="Sequence_AgentFailed">
+                                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Agent Failure" sap2010:WorkflowViewState.IdRef="Append_Line_AgentFailure" Line="[&quot;  Step 3 - GenAI Agent: FAILED - &quot;+agentErrorMessage]" Source="[logFile]" />
+                                <Assign DisplayName="Set Processing Status Failure" sap2010:WorkflowViewState.IdRef="Assign_AgentFailure">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">["FAILURE"]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Set Error Message" sap2010:WorkflowViewState.IdRef="Assign_SetErrorMsg">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[agentErrorMessage]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign DisplayName="Increment Failure Count Agent" sap2010:WorkflowViewState.IdRef="Assign_IncrementFailure3">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                              </Sequence>
+                            </If.Else>
+                          </If>
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence DisplayName="Format Failed" sap2010:WorkflowViewState.IdRef="Sequence_FormatFailed">
+                          <Assign DisplayName="Set Failure Status" sap2010:WorkflowViewState.IdRef="Assign_FormatFailure">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">["FAILURE"]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Set Error Message for Format Failure" sap2010:WorkflowViewState.IdRef="Assign_SetFormatErrorMsg">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">["Data formatting failed: "+If(String.IsNullOrEmpty(formatErrorMessage), "Unknown error", formatErrorMessage)]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Increment Failure Count" sap2010:WorkflowViewState.IdRef="Assign_IncrementFailure1">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <If Condition="[enableNotifications]" DisplayName="Check Notifications Enabled for Format Failure" sap2010:WorkflowViewState.IdRef="If_NotificationsEnabledFormat">
+                            <If.Then>
+                              <Sequence DisplayName="Send Format Error Notification" sap2010:WorkflowViewState.IdRef="Sequence_SendFormatErrorNotification">
+                                <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;fileName&quot;,fileName},{&quot;exceptionMessage&quot;,errorMessage},{&quot;exceptionStackTrace&quot;,&quot;N/A&quot;}}]" ContinueOnError="True" DisplayName="Send RPA Error Notification - Format" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_RPAErrorNotificationFormat" OutputArguments="[rpaErrorNotificationOutputDict]" WorkflowFile="[projectPath+&quot;\SendRPAErrorNotification.xaml&quot;]" />
+                                <Assign DisplayName="Get RPA Error Notification Status Format" sap2010:WorkflowViewState.IdRef="Assign_GetRPAErrorNotificationStatusFormat">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[rpaErrorNotificationStatus]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(rpaErrorNotificationOutputDict IsNot Nothing AndAlso rpaErrorNotificationOutputDict.ContainsKey("notificationStatus"), CType(rpaErrorNotificationOutputDict("notificationStatus"), String), "UNKNOWN")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log RPA Error Notification Status Format" sap2010:WorkflowViewState.IdRef="Append_Line_RPAErrorNotificationStatusFormat" Line="[&quot;  RPA Error Notification (Format): &quot;+rpaErrorNotificationStatus]" Source="[logFile]" />
+                              </Sequence>
+                            </If.Then>
+                          </If>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <Sequence DisplayName="OCR Failed" sap2010:WorkflowViewState.IdRef="Sequence_OCRFailed">
+                    <Assign DisplayName="Set Failure Status" sap2010:WorkflowViewState.IdRef="Assign_OCRFailure">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["FAILURE"]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <Assign DisplayName="Set Error Message for OCR Failure" sap2010:WorkflowViewState.IdRef="Assign_SetOCRErrorMsg">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">["OCR extraction failed: "+If(String.IsNullOrEmpty(ocrStatusComments), "Unknown error", ocrStatusComments)]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <Assign DisplayName="Increment Failure Count" sap2010:WorkflowViewState.IdRef="Assign_IncrementFailure2">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <If Condition="[enableNotifications]" DisplayName="Check Notifications Enabled for OCR Failure" sap2010:WorkflowViewState.IdRef="If_NotificationsEnabledOCR">
+                      <If.Then>
+                        <Sequence DisplayName="Send OCR Error Notification" sap2010:WorkflowViewState.IdRef="Sequence_SendOCRErrorNotification">
+                          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;fileName&quot;,fileName},{&quot;exceptionMessage&quot;,errorMessage},{&quot;exceptionStackTrace&quot;,&quot;N/A&quot;}}]" ContinueOnError="True" DisplayName="Send RPA Error Notification - OCR" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_RPAErrorNotificationOCR" OutputArguments="[rpaErrorNotificationOutputDict]" WorkflowFile="[projectPath+&quot;\SendRPAErrorNotification.xaml&quot;]" />
+                          <Assign DisplayName="Get RPA Error Notification Status OCR" sap2010:WorkflowViewState.IdRef="Assign_GetRPAErrorNotificationStatusOCR">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[rpaErrorNotificationStatus]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(rpaErrorNotificationOutputDict IsNot Nothing AndAlso rpaErrorNotificationOutputDict.ContainsKey("notificationStatus"), CType(rpaErrorNotificationOutputDict("notificationStatus"), String), "UNKNOWN")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log RPA Error Notification Status OCR" sap2010:WorkflowViewState.IdRef="Append_Line_RPAErrorNotificationStatusOCR" Line="[&quot;  RPA Error Notification (OCR): &quot;+rpaErrorNotificationStatus]" Source="[logFile]" />
+                        </Sequence>
+                      </If.Then>
+                    </If>
+                  </Sequence>
+                </If.Else>
+              </If>
+              <iaw:InvokeWorkflow OutputArguments="{x:Null}" ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;documentPath&quot;,currentFile},{&quot;configurationFolder&quot;,configurationFolder},{&quot;status&quot;,processingStatus}}]" ContinueOnError="True" DisplayName="Move File to Success/Failure" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_MoveFile" WorkflowFile="[projectPath+&quot;\MoveFileToSuccessFailure.xaml&quot;]" />
+              <If Condition="[enableNotifications AndAlso reachedGenAI]" DisplayName="Check Notifications Enabled and GenAI Reached" sap2010:WorkflowViewState.IdRef="If_NotificationsEnabled">
+                <If.Then>
+                  <Sequence DisplayName="Send Notification" sap2010:WorkflowViewState.IdRef="Sequence_SendNotification">
+                    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;processingStatus&quot;,processingStatus},{&quot;errorMessage&quot;,errorMessage},{&quot;fileName&quot;,fileName},{&quot;vendorNumber&quot;,parsedVendorNumber},{&quot;vendorName&quot;,parsedVendorName},{&quot;poNumber&quot;,parsedPONumber},{&quot;itemsCreated&quot;,parsedItemsCreated},{&quot;itemCount&quot;,parsedItemCount},{&quot;notes&quot;,parsedNotes}}]" ContinueOnError="True" DisplayName="Send ION Notification" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_Notification" OutputArguments="[notificationOutputDict]" WorkflowFile="[projectPath+&quot;\SendNotificationWorkflow.xaml&quot;]" />
+                    <Assign DisplayName="Get Notification Status" sap2010:WorkflowViewState.IdRef="Assign_GetNotificationStatus">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[notificationStatus]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(notificationOutputDict IsNot Nothing AndAlso notificationOutputDict.ContainsKey("notificationStatus"), CType(notificationOutputDict("notificationStatus"), String), "UNKNOWN")]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Notification Status" sap2010:WorkflowViewState.IdRef="Append_Line_NotificationStatus" Line="[&quot;  Notification: &quot;+notificationStatus]" Source="[logFile]" />
+                  </Sequence>
+                </If.Then>
+              </If>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Processing Result" sap2010:WorkflowViewState.IdRef="Append_Line_FileEnd" Line="[System.Environment.NewLine+&quot;Result: &quot;+processingStatus+&quot; - Session: &quot;+If(String.IsNullOrEmpty(sessionId),&quot;N/A&quot;,sessionId)+If(processingStatus=&quot;FAILURE&quot; AndAlso errorMessage.Length &gt; 0, System.Environment.NewLine+&quot;  Error: &quot;+errorMessage, &quot;&quot;)]" Source="[logFile]" />
+            </Sequence>
+          </TryCatch.Try>
+          <TryCatch.Catches>
+            <Catch x:TypeArguments="s:Exception">
+              <ActivityAction x:TypeArguments="s:Exception">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="s:Exception" Name="rpaException" />
+                </ActivityAction.Argument>
+                <Sequence DisplayName="Handle RPA Exception" sap2010:WorkflowViewState.IdRef="Sequence_HandleRPAException">
+                  <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Critical RPA Error" sap2010:WorkflowViewState.IdRef="Append_Line_CriticalError" Line="[System.Environment.NewLine+&quot;CRITICAL RPA ERROR processing: &quot;+fileName+System.Environment.NewLine+&quot;  Exception: &quot;+rpaException.Message+System.Environment.NewLine+&quot;  StackTrace: &quot;+If(rpaException.StackTrace IsNot Nothing AndAlso rpaException.StackTrace.Length &gt; 300, rpaException.StackTrace.Substring(0, 300)+&quot;...&quot;, If(rpaException.StackTrace IsNot Nothing, rpaException.StackTrace, &quot;N/A&quot;))]" Source="[logFile]" />
+                  <Assign DisplayName="Set Processing Status to Failure" sap2010:WorkflowViewState.IdRef="Assign_SetFailureOnException">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:String">[processingStatus]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:String">["FAILURE"]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                  <Assign DisplayName="Set Error Message from Exception" sap2010:WorkflowViewState.IdRef="Assign_SetErrorFromException">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:String">["RPA Exception: "+rpaException.Message]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                  <iaw:InvokeWorkflow OutputArguments="{x:Null}" ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;documentPath&quot;,currentFile},{&quot;configurationFolder&quot;,configurationFolder},{&quot;status&quot;,&quot;FAILURE&quot;}}]" ContinueOnError="True" DisplayName="Move File to Failure on Exception" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_MoveOnError" WorkflowFile="[projectPath+&quot;\MoveFileToSuccessFailure.xaml&quot;]" />
+                  <If Condition="[enableNotifications]" DisplayName="Check Notifications Enabled for Error" sap2010:WorkflowViewState.IdRef="If_NotificationsEnabledForError">
+                    <If.Then>
+                      <Sequence DisplayName="Send RPA Error Notification" sap2010:WorkflowViewState.IdRef="Sequence_SendRPAErrorNotification">
+                        <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;fileName&quot;,fileName},{&quot;exceptionMessage&quot;,rpaException.Message},{&quot;exceptionStackTrace&quot;,If(rpaException.StackTrace IsNot Nothing, rpaException.StackTrace, &quot;N/A&quot;)}}]" ContinueOnError="True" DisplayName="Send RPA Error Notification" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_RPAErrorNotification" OutputArguments="[rpaErrorNotificationOutputDict]" WorkflowFile="[projectPath+&quot;\SendRPAErrorNotification.xaml&quot;]" />
+                        <Assign DisplayName="Get RPA Error Notification Status" sap2010:WorkflowViewState.IdRef="Assign_GetRPAErrorNotificationStatus">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[rpaErrorNotificationStatus]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">[If(rpaErrorNotificationOutputDict IsNot Nothing AndAlso rpaErrorNotificationOutputDict.ContainsKey("notificationStatus"), CType(rpaErrorNotificationOutputDict("notificationStatus"), String), "UNKNOWN")]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log RPA Error Notification Status" sap2010:WorkflowViewState.IdRef="Append_Line_RPAErrorNotificationStatus" Line="[&quot;  RPA Error Notification: &quot;+rpaErrorNotificationStatus]" Source="[logFile]" />
+                      </Sequence>
+                    </If.Then>
+                  </If>
+                  <Assign DisplayName="Increment Failure Count on Exception" sap2010:WorkflowViewState.IdRef="Assign_IncrementFailureOnException">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                  <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Exception Processing Result" sap2010:WorkflowViewState.IdRef="Append_Line_ExceptionResult" Line="[System.Environment.NewLine+&quot;Result: FAILURE (RPA Exception)&quot;]" Source="[logFile]" />
+                </Sequence>
+              </ActivityAction>
+            </Catch>
+          </TryCatch.Catches>
+        </TryCatch>
+      </ActivityAction>
+    </ForEach>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log End Summary" sap2010:WorkflowViewState.IdRef="Append_Line_End" Line="[System.Environment.NewLine+&quot;===============================================&quot;+System.Environment.NewLine+&quot;DemoInvoiceLoader - End Time: &quot;+System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;)+System.Environment.NewLine+&quot;Summary: &quot;+successCount.ToString()+&quot; Success, &quot;+failureCount.ToString()+&quot; Failures&quot;+System.Environment.NewLine+&quot;===============================================&quot;]" Source="[logFile]" />
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_DetectProjectPath" sap:VirtualizedContainerService.HintSize="1037,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_CreateDirs" sap:VirtualizedContainerService.HintSize="1037,22" />
+      <sap2010:ViewStateData Id="Assign_LogFile" sap:VirtualizedContainerService.HintSize="1037,60" />
+      <sap2010:ViewStateData Id="Assign_StartPS" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="If_DebugMode" sap:VirtualizedContainerService.HintSize="1037,208" />
+      <sap2010:ViewStateData Id="Append_Line_Start" sap:VirtualizedContainerService.HintSize="1037,22" />
+      <sap2010:ViewStateData Id="Assign_SuccessInit" sap:VirtualizedContainerService.HintSize="1037,60" />
+      <sap2010:ViewStateData Id="Assign_FailureInit" sap:VirtualizedContainerService.HintSize="1037,60" />
+      <sap2010:ViewStateData Id="Directory_GetFiles_1" sap:VirtualizedContainerService.HintSize="1037,22" />
+      <sap2010:ViewStateData Id="Assign_FileName" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Assign_CurrentFile" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Append_Line_FileStart" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="Assign_InProgressPath" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="File_Move_ToInProgress" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="Assign_UpdateCurrentFile" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Assign_InitStatus" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Assign_InitErrorMsg" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_OCR" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="Assign_GetOCRStatus" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Assign_GetOCRJson" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Assign_GetOCRComments" sap:VirtualizedContainerService.HintSize="967,60" />
+      <sap2010:ViewStateData Id="Append_Line_OCRResult" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_Format" sap:VirtualizedContainerService.HintSize="553,22" />
+      <sap2010:ViewStateData Id="Assign_GetFormatStatus" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_GetFormatPayload" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_GetFormatError" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Append_Line_FormatResult" sap:VirtualizedContainerService.HintSize="553,22" />
+      <sap2010:ViewStateData Id="Assign_SetReachedGenAI" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_GenAI" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_GetSessionId" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_GetAgentStatus" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_GetAgentError" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_GetAgentResponse" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Append_Line_AgentSuccess" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_ParseResponse" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Assign_GetParsedVendorNumber" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedVendorName" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedPONumber" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedItemsCreated" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedItemCount" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedStatus" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedErrors" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_GetParsedNotes" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_SetErrorFromAgent" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Append_Line_ParsedValues" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Assign_IncrementSuccess" sap:VirtualizedContainerService.HintSize="158,60" />
+      <sap2010:ViewStateData Id="Sequence_AgentReportedSuccess" sap:VirtualizedContainerService.HintSize="180,150">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_SetStatusFromAgent" sap:VirtualizedContainerService.HintSize="158,60" />
+      <sap2010:ViewStateData Id="Append_Line_AgentReportedFailure" sap:VirtualizedContainerService.HintSize="158,22" />
+      <sap2010:ViewStateData Id="Assign_IncrementFailureAgentReported" sap:VirtualizedContainerService.HintSize="158,60" />
+      <sap2010:ViewStateData Id="Sequence_AgentReportedFailure" sap:VirtualizedContainerService.HintSize="180,250">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_AgentReportedSuccess" sap:VirtualizedContainerService.HintSize="200,400" />
+      <sap2010:ViewStateData Id="Sequence_AgentSuccess" sap:VirtualizedContainerService.HintSize="222,700">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_AgentFailure" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Assign_AgentFailure" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_SetErrorMsg" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_IncrementFailure3" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Sequence_AgentFailed" sap:VirtualizedContainerService.HintSize="222,350">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_AgentSuccess" sap:VirtualizedContainerService.HintSize="242,1100" />
+      <sap2010:ViewStateData Id="Sequence_SendToAgent" sap:VirtualizedContainerService.HintSize="264,1786">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_FormatFailure" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_SetFormatErrorMsg" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_IncrementFailure1" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_RPAErrorNotificationFormat" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Assign_GetRPAErrorNotificationStatusFormat" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Append_Line_RPAErrorNotificationStatusFormat" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_SendFormatErrorNotification" sap:VirtualizedContainerService.HintSize="222,200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_NotificationsEnabledFormat" sap:VirtualizedContainerService.HintSize="242,400" />
+      <sap2010:ViewStateData Id="Sequence_FormatFailed" sap:VirtualizedContainerService.HintSize="264,700">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_FormatSuccess" sap:VirtualizedContainerService.HintSize="553,1934" />
+      <sap2010:ViewStateData Id="Sequence_ContinueProcessing" sap:VirtualizedContainerService.HintSize="575,2482">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_OCRFailure" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_SetOCRErrorMsg" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_IncrementFailure2" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_RPAErrorNotificationOCR" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Assign_GetRPAErrorNotificationStatusOCR" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Append_Line_RPAErrorNotificationStatusOCR" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_SendOCRErrorNotification" sap:VirtualizedContainerService.HintSize="222,200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_NotificationsEnabledOCR" sap:VirtualizedContainerService.HintSize="242,400" />
+      <sap2010:ViewStateData Id="Sequence_OCRFailed" sap:VirtualizedContainerService.HintSize="264,824">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_OCRSuccess" sap:VirtualizedContainerService.HintSize="967,2630" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_MoveFile" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_Notification" sap:VirtualizedContainerService.HintSize="820,22" />
+      <sap2010:ViewStateData Id="Assign_GetNotificationStatus" sap:VirtualizedContainerService.HintSize="820,60" />
+      <sap2010:ViewStateData Id="Append_Line_NotificationStatus" sap:VirtualizedContainerService.HintSize="820,22" />
+      <sap2010:ViewStateData Id="Sequence_SendNotification" sap:VirtualizedContainerService.HintSize="842,200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_NotificationsEnabled" sap:VirtualizedContainerService.HintSize="967,348" />
+      <sap2010:ViewStateData Id="Append_Line_FileEnd" sap:VirtualizedContainerService.HintSize="967,22" />
+      <sap2010:ViewStateData Id="Sequence_ProcessFile" sap:VirtualizedContainerService.HintSize="989,4414">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_CriticalError" sap:VirtualizedContainerService.HintSize="864,22" />
+      <sap2010:ViewStateData Id="Assign_SetFailureOnException" sap:VirtualizedContainerService.HintSize="864,60" />
+      <sap2010:ViewStateData Id="Assign_SetErrorFromException" sap:VirtualizedContainerService.HintSize="864,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_MoveOnError" sap:VirtualizedContainerService.HintSize="864,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_RPAErrorNotification" sap:VirtualizedContainerService.HintSize="820,22" />
+      <sap2010:ViewStateData Id="Assign_GetRPAErrorNotificationStatus" sap:VirtualizedContainerService.HintSize="820,60" />
+      <sap2010:ViewStateData Id="Append_Line_RPAErrorNotificationStatus" sap:VirtualizedContainerService.HintSize="820,22" />
+      <sap2010:ViewStateData Id="Sequence_SendRPAErrorNotification" sap:VirtualizedContainerService.HintSize="842,200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_NotificationsEnabledForError" sap:VirtualizedContainerService.HintSize="864,400" />
+      <sap2010:ViewStateData Id="Assign_IncrementFailureOnException" sap:VirtualizedContainerService.HintSize="864,60" />
+      <sap2010:ViewStateData Id="Append_Line_ExceptionResult" sap:VirtualizedContainerService.HintSize="864,22" />
+      <sap2010:ViewStateData Id="Sequence_HandleRPAException" sap:VirtualizedContainerService.HintSize="886,800">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_RPAErrorHandler" sap:VirtualizedContainerService.HintSize="1007,4640" />
+      <sap2010:ViewStateData Id="ForEach_Files" sap:VirtualizedContainerService.HintSize="1037,4788" />
+      <sap2010:ViewStateData Id="Append_Line_End" sap:VirtualizedContainerService.HintSize="916,22" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="1059,5808">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="1099,5888" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

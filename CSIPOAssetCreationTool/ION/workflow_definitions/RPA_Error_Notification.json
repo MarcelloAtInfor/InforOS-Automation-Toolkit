@@ -1,0 +1,174 @@
+{
+  "name": "RPA_Error_Notification",
+  "description": "RPA Critical Error Notification - Sends notification when RPA workflow encounters an unhandled exception.",
+  "variables": [
+    {
+      "name": "RecipientUserId",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "ProcessingStatus",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "FileName",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "ExceptionMessage",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "StackTrace",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Timestamp",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [],
+  "trees": [
+    {
+      "_type": "tree",
+      "name": "ErrorDetails",
+      "label": "Error Details",
+      "sequence": 0,
+      "treeLabels": [],
+      "treeElementChildren": [
+        {
+          "_type": "node",
+          "name": "ExceptionInfo",
+          "label": "Exception",
+          "sequence": 0,
+          "treeLabels": [],
+          "treeElementChildren": [
+            {
+              "_type": "field",
+              "name": "ExceptionMessage",
+              "label": "Message",
+              "sequence": 0,
+              "treeLabels": [],
+              "dataType": "STRING"
+            },
+            {
+              "_type": "field",
+              "name": "StackTrace",
+              "label": "Stack Trace",
+              "sequence": 1,
+              "treeLabels": [],
+              "dataType": "STRING"
+            }
+          ]
+        },
+        {
+          "_type": "node",
+          "name": "ContextInfo",
+          "label": "Context",
+          "sequence": 1,
+          "treeLabels": [],
+          "treeElementChildren": [
+            {
+              "_type": "field",
+              "name": "FileName",
+              "label": "File Being Processed",
+              "sequence": 0,
+              "treeLabels": [],
+              "dataType": "STRING"
+            },
+            {
+              "_type": "field",
+              "name": "Timestamp",
+              "label": "Error Time",
+              "sequence": 1,
+              "treeLabels": [],
+              "dataType": "STRING"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "usertask",
+        "sequenceNumber": 1,
+        "name": "SendErrorNotification",
+        "parallel": false,
+        "priority": "High",
+        "taskMessage": "RPA CRITICAL ERROR: [FileName]",
+        "taskActionType": "StandardAction",
+        "userTaskType": "NOTIFICATION",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "parameters": [
+          {
+            "variable": "ProcessingStatus",
+            "label": "Status",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "FileName",
+            "label": "File Being Processed",
+            "readOnly": true,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "ExceptionMessage",
+            "label": "Exception",
+            "readOnly": true,
+            "sequenceNumber": 2,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "tree": "ErrorDetails",
+            "label": "Error Details",
+            "readOnly": true,
+            "sequenceNumber": 3,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "RPA Error Notification Recipient",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": []
+      }
+    ]
+  }
+}

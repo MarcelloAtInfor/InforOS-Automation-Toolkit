@@ -1,0 +1,185 @@
+{
+  "name": "CS_Engineering_Change_Approval",
+  "description": "Engineering change approval requiring both Engineering and Quality sign-off (ALL_IN parallel)",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLItems",
+    "monitored_field": "Revision",
+    "workflow_inputs": {
+      "Item": "Item",
+      "Description": "Description",
+      "NewRevision": "Revision",
+      "OldRevision": "E(OldRevision)",
+      "MGConfig": "CONFIGNAME()",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.Items",
+    "access_as": "ue_",
+    "handler_sequence": 220,
+    "handler_description": "ue_EngChangeApproval"
+  },
+  "variables": [
+    {"name": "Item", "input": true},
+    {"name": "Description", "input": true},
+    {"name": "NewRevision", "input": true},
+    {"name": "OldRevision", "input": true},
+    {"name": "MGConfig", "input": true},
+    {"name": "RowPointer", "input": true}
+  ],
+  "views": [
+    {
+      "name": "ItemDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "ItemView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$Item"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "parallel",
+      "join_type": "ALL_IN",
+      "branches": [
+        [
+          {
+            "type": "approval_task",
+            "name": "Engineering Review",
+            "message": "Item [Item] ([Description]) revision changed from [OldRevision] to [NewRevision]. Engineering approval required.",
+            "distribution": ["user1", "user2"],
+            "priority": "High",
+            "buttons": [
+              {"label": "Approve", "value": "Approved"},
+              {"label": "Reject", "value": "Rejected"}
+            ],
+            "button_variable": "EngineeringResult",
+            "params": [
+              {"label": "Item", "variable": "Item"},
+              {"label": "Description", "variable": "Description"},
+              {"label": "New Revision", "variable": "NewRevision"},
+              {"label": "Old Revision", "variable": "OldRevision"},
+              {"label": "Item Details", "view": "ItemDrillBack"}
+            ],
+            "due_date": {"value": 24, "unit": "HOURS"}
+          }
+        ],
+        [
+          {
+            "type": "approval_task",
+            "name": "Quality Review",
+            "message": "Item [Item] ([Description]) revision changed from [OldRevision] to [NewRevision]. Quality approval required.",
+            "distribution": ["user3"],
+            "priority": "High",
+            "buttons": [
+              {"label": "Approve", "value": "Approved"},
+              {"label": "Reject", "value": "Rejected"}
+            ],
+            "button_variable": "QualityResult",
+            "params": [
+              {"label": "Item", "variable": "Item"},
+              {"label": "Description", "variable": "Description"},
+              {"label": "New Revision", "variable": "NewRevision"},
+              {"label": "Old Revision", "variable": "OldRevision"},
+              {"label": "Item Details", "view": "ItemDrillBack"}
+            ],
+            "due_date": {"value": 24, "unit": "HOURS"}
+          }
+        ]
+      ]
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "BothApprovedCheck",
+        "logic": "AND",
+        "conditions": [
+          {
+            "name": "EngineeringApproved",
+            "variable": "EngineeringResult",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          {
+            "name": "QualityApproved",
+            "variable": "QualityResult",
+            "operator": "Equal",
+            "value": "Approved"
+          }
+        ]
+      },
+      "true_steps": [
+        {
+          "type": "assignment",
+          "name": "BothApproved",
+          "assignments": [
+            {"variable": "ApproveReject", "expression": "Approved"},
+            {"variable": "UpdateRevisionValue", "expression": "[NewRevision]", "assignment_type": "EXPRESSION_ASSIGNMENT"}
+          ]
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "assignment",
+          "name": "Rejected",
+          "assignments": [
+            {"variable": "ApproveReject", "expression": "Rejected"},
+            {"variable": "UpdateRevisionValue", "expression": "[OldRevision]", "assignment_type": "EXPRESSION_ASSIGNMENT"}
+          ]
+        }
+      ]
+    },
+    {
+      "type": "subworkflow",
+      "name": "Write Back Item",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_load",
+          "name": "Get Item Record",
+          "ido": "SLItems",
+          "properties": "Item,Description,Revision,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update Item Record",
+          "ido": "SLItems",
+          "changes": [
+            {"property": "Revision", "value_var": "UpdateRevisionValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "Engineering Change Result",
+      "message": "Item [Item] ([Description]) revision change to [NewRevision] has been [ApproveReject].",
+      "distribution": ["user1", "user2", "user3"],
+      "propagate_notes": true,
+      "params": [
+        {"label": "Item", "variable": "Item"},
+        {"label": "Description", "variable": "Description"},
+        {"label": "New Revision", "variable": "NewRevision"},
+        {"label": "Status", "variable": "ApproveReject"},
+        {"label": "Item Details", "view": "ItemDrillBack"}
+      ]
+    }
+  ]
+}

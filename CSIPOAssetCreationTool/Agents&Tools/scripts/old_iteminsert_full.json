@@ -1,0 +1,29 @@
+{
+  "guid": "96bb5e28-0963-472e-82b1-423e49f16333",
+  "name": "ItemInsert_Tool",
+  "description": "",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameter:\n\nrefresh: true\nBody:\nThe body of the request contains the item details in the Changes array. Below is the structure of the body:\n\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Item\",\n          \"Value\": \"{item}\" // Dynamic value that should be replaced by the agent based on the item being checked.\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"MatlType\",\n          \"Value\": \"M\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PMTCode\",\n          \"Value\": \"M\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"ProductCode\",\n          \"Value\": \"FG-100\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"AbcCode\",\n          \"Value\": \"B\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CostType\",\n          \"Value\": \"A\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CostMethod\",\n          \"Value\": \"S\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Stat\",\n          \"Value\": \"A\"\n        }\n      ]\n    }\n  ]\n}\nNOTE: The \"Value\" for \"Item\" is dynamic and should be replaced by the agent with the actual item being processed. For this tool, the agent dynamically assigns the value based on the list of items it is checking, and {item} is a variable placeholder.",
+    "headers": {},
+    "responseInstructions": "Success Response: If the item is successfully created, the API returns the following response. The RefreshItems array contains details about the newly created item, including its unique ItemId and the properties associated with the item.\nExample Success Response:\n\n{\n  \"Message\": null,\n  \"Success\": true,\n  \"RefreshItems\": [\n    {\n      \"Action\": 1,\n      \"ItemId\": \"PBT=[item] itm.ID=[c085e8eb-9b69-4163-bf44-28b755e90e4c] itm.DT=[2025-11-13 09:29:04.130]\",\n      \"Properties\": [\n        {\n          \"Name\": \"Item\",\n          \"Value\": \"{item}\" // Dynamic value that should be replaced by the agent based on the item sent.\n        },\n        {\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"Name\": \"MatlType\",\n          \"Value\": \"M\"\n        },\n        {\n          \"Name\": \"PMTCode\",\n          \"Value\": \"M\"\n        },\n        {\n          \"Name\": \"ProductCode\",\n          \"Value\": \"FG-100\"\n        },\n        {\n          \"Name\": \"AbcCode\",\n          \"Value\": \"B\"\n        },\n        {\n          \"Name\": \"CostType\",\n          \"Value\": \"A\"\n        },\n        {\n          \"Name\": \"CostMethod\",\n          \"Value\": \"S\"\n        },\n        {\n          \"Name\": \"Stat\",\n          \"Value\": \"A\"\n        },\n        {\n          \"Name\": \"Area\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"Density\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"HeightLinearDimension\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        },\n        {\n          \"Name\": \"LengthLinearDimension\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"WidthLinearDimension\",\n          \"Value\": \"0.00000000\"\n        }\n      ]\n    }\n  ]\n}\nError Response: If the item creation fails, the API returns specific error messages. Below are two examples of potential errors:\nExample 1 - Duplicate Item:\n\n{\n  \"Message\": \"The Item entered already exists.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nExample 2 - Null Item:\n\n{\n  \"Message\": \"The item entered cannot be null in item_mst.  INSERT rolled back.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nNOTE: Error responses may vary depending on the validation rules or constraints violated during the item creation process. The Message field will contain details about the specific issue.",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "The Item Creation Tool is used to create a new item in CSI/Syteline after confirming that the item does not already exist (e.g., using the Item Search Tool). This tool sends a request to create the item with the required properties and configurations.\n\nThe tool utilizes the /update/SLItems API endpoint to insert the new item into the ERP system with the specified details.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2025-11-13T14:32:56.352041Z",
+  "updatedBy": null,
+  "updatedOn": null,
+  "gp_config": null,
+  "security": null
+}

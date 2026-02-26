@@ -1,0 +1,174 @@
+{
+  "name": "CS_MultiLevel_PO_Approval",
+  "description": "Multi-level purchase order approval: Supervisor then Manager sign-off for PO amount changes",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLPos",
+    "monitored_field": "OrderTotal",
+    "workflow_inputs": {
+      "PoNum": "PoNum",
+      "VendNum": "VendNum",
+      "NewAmount": "OrderTotal",
+      "OldAmount": "ROUND(E(OldOrderTotal), 2)",
+      "MGConfig": "CONFIGNAME()",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.PurchaseOrders",
+    "access_as": "ue_",
+    "handler_sequence": 210,
+    "handler_description": "ue_POMultiLevelApproval"
+  },
+  "variables": [
+    {"name": "PoNum", "input": true},
+    {"name": "VendNum", "input": true},
+    {"name": "NewAmount", "type": "DECIMAL", "input": true},
+    {"name": "OldAmount", "type": "DECIMAL", "input": true},
+    {"name": "MGConfig", "input": true},
+    {"name": "RowPointer", "input": true}
+  ],
+  "views": [
+    {
+      "name": "PODrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "PurchaseOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$PoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "approval_task",
+      "name": "Supervisor Review",
+      "message": "Purchase Order [PoNum] for Vendor [VendNum] has a new amount of [NewAmount] (was [OldAmount]). Supervisor approval required.",
+      "distribution": ["user1", "user2"],
+      "priority": "High",
+      "buttons": [
+        {"label": "Approve", "value": "Approved"},
+        {"label": "Reject", "value": "Rejected"}
+      ],
+      "button_variable": "ApproveReject",
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Vendor", "variable": "VendNum"},
+        {"label": "New Amount", "variable": "NewAmount"},
+        {"label": "Old Amount", "variable": "OldAmount"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ],
+      "due_date": {"value": 4, "unit": "HOURS"}
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "Level1Approved",
+        "variable": "ApproveReject",
+        "operator": "Equal",
+        "value": "Approved"
+      },
+      "true_steps": [
+        {
+          "type": "approval_task",
+          "name": "Manager Review",
+          "message": "Purchase Order [PoNum] for Vendor [VendNum] — amount [NewAmount] (was [OldAmount]) — approved by supervisor. Manager approval required.",
+          "distribution": ["user3"],
+          "priority": "High",
+          "buttons": [
+            {"label": "Approve", "value": "Approved"},
+            {"label": "Reject", "value": "Rejected"}
+          ],
+          "button_variable": "ApproveReject",
+          "propagate_notes": true,
+          "params": [
+            {"label": "PO Number", "variable": "PoNum"},
+            {"label": "Vendor", "variable": "VendNum"},
+            {"label": "New Amount", "variable": "NewAmount"},
+            {"label": "Old Amount", "variable": "OldAmount"},
+            {"label": "PO Details", "view": "PODrillBack"}
+          ],
+          "due_date": {"value": 8, "unit": "HOURS"}
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "assignment",
+          "name": "MarkRejectedLevel1",
+          "assignments": [
+            {"variable": "RejectionLevel", "expression": "Supervisor"}
+          ]
+        }
+      ]
+    },
+    {
+      "type": "subworkflow",
+      "name": "Write Back PO",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "IsApproved",
+            "variable": "ApproveReject",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          "true_assignment": {
+            "name": "SetAmountNew",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "NewAmount"
+          },
+          "false_assignment": {
+            "name": "SetAmountOld",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldAmount"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Get PO Record",
+          "ido": "SLPos",
+          "properties": "PoNum,VendNum,OrderTotal,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update PO Record",
+          "ido": "SLPos",
+          "changes": [
+            {"property": "OrderTotal", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "PO Approval Result",
+      "message": "Purchase Order [PoNum] for Vendor [VendNum] with amount [NewAmount] has been [ApproveReject].",
+      "distribution": ["user1", "user2", "user3"],
+      "propagate_notes": true,
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Vendor", "variable": "VendNum"},
+        {"label": "New Amount", "variable": "NewAmount"},
+        {"label": "Status", "variable": "ApproveReject"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ]
+    }
+  ]
+}

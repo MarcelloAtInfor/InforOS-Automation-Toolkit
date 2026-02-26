@@ -1,0 +1,23 @@
+{
+  "guid": "2db9d036-7e62-497d-af8f-162f5026c48d",
+  "name": "GAF_SyteLine_JobNumberLookup_Tool_v1",
+  "description": "Look up the next available BOM job number from SLHighKeys in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLHighKeys\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: MUST be exactly: HighKey\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: MUST be exactly: Prefix='BOM'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Set to 1 (only one record expected for the BOM prefix).\nResponse Fields:\n- Items: Array of matching records (0 or 1 entries)\n- HighKey: Last-used BOM job number (e.g., BOM0000005). Always 10 chars: 3-char prefix + 7 numeric digits.\nParsing:\n- If Items array has 1+ records: extract HighKey value (e.g., BOM0000005). Next available = numeric portion + 1, zero-padded to 7 digits with BOM prefix. Example: BOM0000005 -> next is BOM0000006.\n- If Items array is empty: no BOM jobs exist yet. Start at BOM0000001.\nJob number format: BOM0000001 through BOM9999999 (already 10 chars, no left-padding needed).\nExample Request:\nGET /load/SLHighKeys?properties=HighKey&filter=Prefix='BOM'&recordCap=1",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\nIf Items array has 1+ records:\n  Extract HighKey (e.g., 'BOM0000005').\n  Strip the 'BOM' prefix to get the numeric portion (e.g., '0000005' = 5).\n  Next available job number = 5 + 1 = 6 -> 'BOM0000006'.\n  Report: 'Last used: BOM0000005. Next available: BOM0000006.'\nIf Items array is empty:\n  No BOM prefix jobs exist. Start at BOM0000001.\n  Report: 'No existing BOM jobs. Next available: BOM0000001.'\nThe agent should assign job numbers sequentially from the next available number.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Look up the next available BOM job number from SLHighKeys.\nReturns the last-used HighKey for the BOM prefix. Parse to compute next available.\nEmpty result = no BOM jobs yet, start at BOM0000001.\nUsed by agent in Step 3 if prompt does not specify job numbers,\nor to recover if prompt-specified numbers are stale.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

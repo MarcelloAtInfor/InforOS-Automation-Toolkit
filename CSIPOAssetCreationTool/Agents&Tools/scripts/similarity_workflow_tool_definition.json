@@ -1,0 +1,29 @@
+{
+  "name": "StartSimilarityWorkflow_Tool",
+  "description": "Start ION workflows to re-train AI similarity models for vendor and item name matching",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "IONSERVICES/process/application",
+    "api_docs": "Method: POST\nEndpoint: /v1/workflow/start\n\nHeaders:\nContent-Type: application/json\n\nQuery Parameters:\n\nParameter: logicalId\nFormat: STRING\nRequired: True\nDescription: Always use 'lid://infor.rpa.claudecode'\n\nBody:\n{\n  \"workflowName\": \"<workflow_name>\",\n  \"instanceName\": \"<unique_instance_name>\"\n}\n\nSupported Workflow Names:\n- CSI_Item_similarity: Re-train item name matching model (use when new items are created)\n- CSI_VendorName_similarity: Re-train vendor name matching model (use when new vendors are created)\n\nInstance name should be unique - recommend using workflow name + timestamp (e.g., \"VendorRetrain_20260131_143022\")\n\nExample request body:\n{\n  \"workflowName\": \"CSI_VendorName_similarity\",\n  \"instanceName\": \"VendorRetrain_20260131_143022\"\n}",
+    "headers": {},
+    "responseInstructions": "The API responds with HTTP status indicating success or failure.\n\nSuccess Response (HTTP 200):\n- Empty body or JSON confirmation\n- The workflow starts asynchronously in the background\n- Do not wait for workflow completion - it runs independently\n\nError Responses:\n- HTTP 400: Invalid request (check workflowName or instanceName)\n- HTTP 404: Workflow not found (verify workflowName is exact)\n- HTTP 401/403: Authentication issue\n\nKey Points:\n- Workflows run asynchronously - they will complete in the background\n- No need to poll for status - just confirm the workflow was triggered\n- Both workflows can be triggered in the same session if both vendor AND items were created",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [
+    "Retrain similarity models",
+    "Start model retraining workflow",
+    "Update AI models",
+    "Trigger vendor similarity training",
+    "Trigger item similarity training"
+  ],
+  "stubResponse": "",
+  "instructions": "Use this tool to trigger ION workflows that re-train AI similarity models.\n\nWHEN TO USE:\n- After creating a NEW vendor with VendorInsert_Tool_v2, trigger CSI_VendorName_similarity\n- After creating NEW items with ItemInsert_Tool_v2, trigger CSI_Item_similarity\n- Both workflows can be triggered in the same session if both types were created\n\nPARAMETERS:\n- workflowName: Exact workflow name (CSI_Item_similarity or CSI_VendorName_similarity)\n- instanceName: Unique name using workflow + timestamp (e.g., \"ItemRetrain_20260131_143022\")\n- logicalId: Always use \"lid://infor.rpa.claudecode\"\n\nIMPORTANT:\n- Only trigger if NEW entities were created (not if existing ones were found)\n- Workflows run asynchronously - don't wait for completion\n- Generate unique instanceName using current timestamp\n- Report success/failure in the response but don't block on it",
+  "guid": "568de792-589f-4eec-9269-2854d1014af0"
+}

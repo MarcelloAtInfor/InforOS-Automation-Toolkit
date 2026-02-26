@@ -1,0 +1,249 @@
+[
+  {
+    "documetFlowID": 0,
+    "documentFlowName": "CSI_APInvoice_Extract",
+    "documentFlowDescription": "Extracts vendor, PO header, and line item data from AP invoices for automated processing by InvoiceAutomation_Agent_v2",
+    "activities": [
+      {
+        "activityId": 0,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "",
+        "documentTypeId": 0,
+        "documentName": "AP_Invoice_Extraction",
+        "documentFields": [
+          {
+            "fieldName": "Vendor Name",
+            "description": "The name of the vendor/supplier company that issued this invoice.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Address Line 1",
+            "description": "The primary street address of the vendor/supplier.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor City",
+            "description": "The city where the vendor/supplier is located.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor State",
+            "description": "The state or province code (2 characters) where the vendor is located.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Zip",
+            "description": "The postal/ZIP code of the vendors address.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Phone",
+            "description": "The vendors business phone number.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Email",
+            "description": "The vendors business email address.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Number",
+            "description": "The unique invoice number or ID.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Date",
+            "description": "The date the invoice was issued in YYYY-MM-DD format.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Payment Terms",
+            "description": "The payment terms code such as N30, N45, N60, COD.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Currency Code",
+            "description": "The 3-letter ISO currency code such as USD, EUR, GBP.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Reference",
+            "description": "If this invoice references a customer PO number.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Notes",
+            "description": "Any special instructions, notes, or comments on the invoice.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Line Items",
+            "tableFields": [
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Line Number",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The line number or sequence number."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The product code, SKU, part number, or item identifier."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Description",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The item description or product name."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Quantity",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The quantity ordered as a decimal number."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Unit of Measure",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The unit of measure such as EA, LB, KG, BOX."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The price per unit."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Due Date",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The required delivery date in YYYY-MM-DD format."
+              }
+            ],
+            "isRequired": true,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": "Table containing line item details from the invoice"
+          }
+        ],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "",
+        "description": "Accounts Payable Invoice document for extraction.",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": null,
+      "dcPrompt": null,
+      "ecPrompt": [
+        {
+          "AP_Invoice_Extraction": "$Entity Classification Prompt Start$User: You are an expert Document-Based Question-Answering tool assigned to extract specified entities from AP invoice documents. Analyze the provided invoice document carefully. The document includes layout details, and the OCR text is provided page by page within <Page {Page Number}> tags. Entities to be detected are marked within <entities></entities> tags.\n\n<entities>\nVendor Name,Vendor Address Line 1,Vendor City,Vendor State,Vendor Zip,Vendor Phone,Vendor Email,Invoice Number,Invoice Date,Payment Terms,Currency Code,PO Reference,Notes\n</entities>\n\nClues:\nVendor Name - The name of the vendor/supplier company that issued this invoice.\nVendor Address Line 1 - The primary street address of the vendor/supplier.\nVendor City - The city where the vendor/supplier is located.\nVendor State - The state or province code (2 characters).\nVendor Zip - The postal/ZIP code of the vendors address.\nVendor Phone - The vendors business phone number.\nVendor Email - The vendors business email address.\nInvoice Number - The unique invoice number or ID.\nInvoice Date - The date the invoice was issued in YYYY-MM-DD format.\nPayment Terms - The payment terms code (N30, N45, N60, COD).\nCurrency Code - The 3-letter ISO currency code (USD, EUR, GBP).\nPO Reference - If this invoice references a customer PO number.\nNotes - Any special instructions or comments.\n\n<instructions>\n1. Extract all 13 entities in <entities></entities> tag.\n2. Format output as JSON: {entity, value, confidence, PageNo}\n3. Wrap response in <result></result> tags.\n</instructions>\n\nReturn the result as JSON:\n<result>\n{\n    \"entities\":\n    [\n        {\"entity\":\"Vendor Name\",\"value\":\"Value\", \"confidence\": 96, \"PageNo\":\"1\"}\n    ]\n}\n</result>\n\nExpert:$Entity Classification Prompt End$\n\n$Table Detection Prompt Start$\nUser:\nYou are an expert document-based table extractor. Extract the Line Items Table from all pages.\n\nTables to Extract: [Line Items]\n\nColumns List:\nLine Items - [Line Number, Item Code, Description, Quantity, Unit of Measure, Unit Price, Due Date]\n\nOutput Format:\n<result>\n{\"Table Name\": {\"rows\": [[\"Col1\", \"Col2\", \"PageNo\"],[\"val\", \"val\", \"1\"]],\"Table_Confidence\": \"90\"}}\n</result>\n$Table Detection Prompt End$"
+        }
+      ]
+    },
+    "createtime": null,
+    "updatedtime": null,
+    "errormsg": "",
+    "dpfVersionId": 0,
+    "versionID": "1",
+    "versionName": "v1",
+    "versionStatus": "Active",
+    "promptStructure": null,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  }
+]

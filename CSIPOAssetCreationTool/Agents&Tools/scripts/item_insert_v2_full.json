@@ -1,0 +1,29 @@
+{
+  "guid": "2762bfa4-f36b-4bb9-9228-310030487cee",
+  "name": "ItemInsert_Tool_v2",
+  "description": "Create a new item in SyteLine with item code and description",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nENDPOINT: /update/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nContent-Type: application/json\n\nRequest Body Format (JSON):\n\nCRITICAL: This endpoint uses the IDOName/Changes structure, NOT simplified format.\n\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"WIDGET-A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Description\", \"Value\": \"Premium Widget Type A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"MatlType\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PMTCode\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ProductCode\", \"Value\": \"FG-100\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AbcCode\", \"Value\": \"B\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostType\", \"Value\": \"A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostMethod\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"A\"}\n      ]\n    }\n  ]\n}\n\nField Definitions:\n\nAction: Integer, 1 = insert\nItem: STRING, item code (unique identifier, use ItemSearch_Tool_v2 first!)\nDescription: STRING, item description (CRITICAL for demo visibility!)\nUM: STRING, unit of measure (e.g., \"EA\", \"LB\", \"BOX\")\nMatlType: STRING, material type (default: \"M\")\nPMTCode: STRING, PMT code (default: \"M\")\nProductCode: STRING, product code (e.g., \"FG-100\")\nAbcCode: STRING, ABC classification (default: \"B\")\nCostType: STRING, cost type (default: \"A\")\nCostMethod: STRING, cost method (default: \"S\")\nStat: STRING, status (default: \"A\" for active)\n\nIMPORTANT:\n- Item must be unique - always use ItemSearch_Tool_v2 first\n- Description is CRITICAL for identifying items in demos\n- All Properties listed above must be included\n- Do not add properties not listed above",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate Item):\n{\n  \"Success\": false,\n  \"Message\": \"Item code already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created item record (includes _ItemId)\n- _ItemId: Unique identifier for the created item",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create a new item in SyteLine.\n\nIMPORTANT: Always use ItemSearch_Tool_v2 first to ensure the item doesn't already exist!\n\nRequired fields:\n- Item: Item code (unique)\n- Description: Item description (CRITICAL - was missing in v1!)\n- UM: Unit of measure (EA, LB, BOX, etc.)\n- MatlType: Default \"M\"\n- PMTCode: Default \"M\"\n- ProductCode: Product code\n- AbcCode: Default \"B\"\n- CostType: Default \"A\"\n- CostMethod: Default \"S\"\n- Stat: Default \"A\" (active)\n\nReturns the created item with Item code and _ItemId.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:38.785809Z",
+  "updatedBy": null,
+  "updatedOn": null,
+  "gp_config": null,
+  "security": null
+}

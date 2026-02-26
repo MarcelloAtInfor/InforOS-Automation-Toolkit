@@ -1,0 +1,402 @@
+'ProcedureDefinition' : [/* $Header: /ApplicationDB/Stored Procedures/PoReceivePopulateTtRcvSp.sp 22    3/21/17 4:10a Lqian2 $ */
+/*
+***************************************************************
+*                                                             *
+*                           NOTICE                            *
+*                                                             *
+*   THIS SOFTWARE IS THE PROPERTY OF AND CONTAINS             *
+*   CONFIDENTIAL INFORMATION OF INFOR AND/OR ITS AFFILIATES   *
+*   OR SUBSIDIARIES AND SHALL NOT BE DISCLOSED WITHOUT PRIOR  *
+*   WRITTEN PERMISSION. LICENSED CUSTOMERS MAY COPY AND       *
+*   ADAPT THIS SOFTWARE FOR THEIR OWN USE IN ACCORDANCE WITH  *
+*   THE TERMS OF THEIR SOFTWARE LICENSE AGREEMENT.            *
+*   ALL OTHER RIGHTS RESERVED.                                *
+*                                                             *
+*   (c) COPYRIGHT 2010 INFOR.  ALL RIGHTS RESERVED.           *
+*   THE WORD AND DESIGN MARKS SET FORTH HEREIN ARE            *
+*   TRADEMARKS AND/OR REGISTERED TRADEMARKS OF INFOR          *
+*   AND/OR ITS AFFILIATES AND SUBSIDIARIES. ALL RIGHTS        *
+*   RESERVED.  ALL OTHER TRADEMARKS LISTED HEREIN ARE         *
+*   THE PROPERTY OF THEIR RESPECTIVE OWNERS.                  *
+*                                                             *
+***************************************************************
+*/
+/* $Archive: /ApplicationDB/Stored Procedures/PoReceivePopulateTtRcvSp.sp $
+ *
+ * SL9.01 22 215046 Lqian2 Tue Mar 21 04:10:12 2017
+ * Issue 215046, update ETP block.
+ *
+ * SL9.01 21 RS6298 Lqian2 Wed Dec 23 04:47:10 2015
+ * RS6298
+ *
+ * SL8.04 20 RS5855 Bbai Tue Jan 15 02:48:03 2013
+ * RS5855:
+ * Add input parameter for Vend Invoice Num and insert it into tt_rcv.
+ *
+ * SL8.03 19 140974 Ddeng Mon Aug 01 21:15:59 2011
+ * New params are added to PoReceivePopulateTtRcvSp, but related caller's params are not changed.
+ * Issue 140974
+ * Set default value null to electronic signiture parameters since it does not use in consignment purchase.
+ *
+ * SL8.03 18 RS5070 sruffing Mon Jul 18 12:58:48 2011
+ * RS5070
+ * Add parameters to capture Esig property values: @EsigRowPointer, @EsigUsername, @EsigEncryptedPassword and @EsigReasonCode.
+ *
+ * SL8.03 17 rs4892 Jpan2 Wed May 25 22:36:05 2011
+ * RS4892 Add Container Number as a part of parameters.
+ *
+ * SL8.03 16 RS4581 Ezi Wed May 11 07:30:03 2011
+ * RS4581
+ *
+ * SL8.03 15 RS4581 Ezi Wed May 11 02:10:35 2011
+ * RS4581 - Add Mfg Part Number (AML - AVL)
+ *
+ * SL8.02 14 rs4588 Dahn Thu Mar 04 15:20:46 2010
+ * rs4588 copyright header changes
+ *
+ * SL8.02 13 127186 pgross Mon Feb 08 10:04:11 2010
+ * Unit cost wrong in PO receiving when UM conversion exists and cost includes tax
+ * added assignment of U/M
+ *
+ * SL8.01 12 rs3953 Vlitmano Tue Aug 26 17:09:44 2008
+ * RS3953 - Changed a Copyright header?
+ *
+ * SL8.01 11 rs3953 Vlitmano Mon Aug 18 15:31:35 2008
+ * Changed a Copyright header information(RS3959)
+ *
+ * SL8.00 10 RS2968 nkaleel Fri Feb 23 04:23:10 2007
+ * changing copyright information(RS2968)
+ *
+ * SL8.00 9 RS2968 prahaladarao.hs Tue Jul 11 10:37:44 2006
+ * RS 2968, Name change CopyRight Update.
+ *
+ * SL7.05 8 91818 NThurn Fri Jan 06 16:28:15 2006
+ * Inserted standard External Touch Point call.  (RS3177)
+ *
+ * $NoKeywords: $
+ */
+CREATE PROCEDURE dbo.PoReceivePopulateTtRcvSp(
+  @PoNum           PoNumType
+, @PoLine          PoLineType
+, @PoRelease       PoReleaseType
+, @GrnNum          GrnNumType
+, @GrnLine         GrnLineType = '0'
+, @Whse            WhseType
+, @UbTransDate     DateType
+, @Item            ItemType
+, @DerItemExists   ListYesNoType
+, @UM UMType
+, @UbQtyReceived        QtyUnitType
+, @UbQtyRejected        QtyUnitType
+, @UbQtyReceivedConv    QtyUnitType
+, @UbQtyRejectedConv    QtyUnitType
+, @UbPackNum       GrnPackNumType
+, @UbDRRt          ListYesNoType
+, @UbLot           LotType
+, @UbLoc           LocType
+, @UbReasonCode    ReasonCodeType
+, @UnitMatCost              CostPrcType
+, @UnitDutyCost             CostPrcType
+, @UnitBrokerageCost        CostPrcType
+, @UnitFreightCost          CostPrcType
+, @UnitMatCostConv          CostPrcType
+, @UnitDutyCostConv         CostPrcType
+, @UnitBrokerageCostConv    CostPrcType
+, @UnitFreightCostConv      CostPrcType
+
+, @UnitInsuranceCost        CostPrcType
+, @UnitLocFrtCost           CostPrcType
+, @UnitInsuranceCostConv    CostPrcType
+, @UnitLocFrtCostConv       CostPrcType
+, @FreightExchRate	    ExchRateType
+, @DutyExchRate	    	    ExchRateType
+, @BrokerageExchRate	    ExchRateType
+, @InsuranceExchRate	    ExchRateType
+, @LocFrtExchRate	        ExchRateType
+, @UbByCons                 ListYesNoType
+, @UbWorkKey                RefStrType
+, @UbSequence               INT
+, @RowPointer               RowPointerType
+, @UbGrnExists              ListYesNoType
+, @ImportDocId              ImportDocIdType
+, @EcCode                   EcCodeType
+, @ManufacturerId           ManufacturerIdType             = NULL
+, @ManufacturerItem         ManufacturerItemType           = NULL
+, @ContainerNum             ContainerNumType               = NULL
+, @EsigRowPointer           RowPointerType                 = NULL
+, @EsigUsername             UserNameType                   = NULL
+, @EsigEncryptedPassword    EncryptedClientPasswordType    = NULL
+, @EsigReasonCode           ReasonCodeType                 = NULL
+, @VendInvNum               TH_VendInvNumType              = NULL
+) AS
+
+-- Begin of CallALTETPs.exe generated code.
+-- Check for existence of alternate definitions (this section was generated and inserted by CallALTETPs.exe):
+IF EXISTS (SELECT 1 FROM [optional_module] [om] WHERE ISNULL([om].[is_enabled],0) = 1
+AND OBJECT_ID(QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])) IS NOT NULL)
+BEGIN
+   DECLARE @ALTGEN TABLE ([SpName] SYSNAME)
+   DECLARE @ALTGEN_SpName SYSNAME
+   DECLARE @ALTGEN_Severity int
+
+   INSERT INTO @ALTGEN ([SpName])
+   SELECT QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])
+   FROM [optional_module] [om]
+   WHERE ISNULL([om].[is_enabled], 0) = 1 AND
+   OBJECT_ID(QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])) IS NOT NULL
+
+   WHILE EXISTS (SELECT 1 FROM @ALTGEN)
+   BEGIN
+      SELECT TOP 1 @ALTGEN_SpName = [SpName]
+      FROM @ALTGEN
+
+      -- Invoke the ALT routine, passing in (and out) this routine's parameters:
+      EXEC @ALTGEN_Severity = @ALTGEN_SpName
+           @PoNum
+         , @PoLine
+         , @PoRelease
+         , @GrnNum
+         , @GrnLine
+         , @Whse
+         , @UbTransDate
+         , @Item
+         , @DerItemExists
+         , @UM
+         , @UbQtyReceived
+         , @UbQtyRejected
+         , @UbQtyReceivedConv
+         , @UbQtyRejectedConv
+         , @UbPackNum
+         , @UbDRRt
+         , @UbLot
+         , @UbLoc
+         , @UbReasonCode
+         , @UnitMatCost
+         , @UnitDutyCost
+         , @UnitBrokerageCost
+         , @UnitFreightCost
+         , @UnitMatCostConv
+         , @UnitDutyCostConv
+         , @UnitBrokerageCostConv
+         , @UnitFreightCostConv
+         , @UnitInsuranceCost
+         , @UnitLocFrtCost
+         , @UnitInsuranceCostConv
+         , @UnitLocFrtCostConv
+         , @FreightExchRate
+         , @DutyExchRate
+         , @BrokerageExchRate
+         , @InsuranceExchRate
+         , @LocFrtExchRate
+         , @UbByCons
+         , @UbWorkKey
+         , @UbSequence
+         , @RowPointer
+         , @UbGrnExists
+         , @ImportDocId
+         , @EcCode
+         , @ManufacturerId
+         , @ManufacturerItem
+         , @ContainerNum
+         , @EsigRowPointer
+         , @EsigUsername
+         , @EsigEncryptedPassword
+         , @EsigReasonCode
+         , @VendInvNum
+
+      -- ALTGEN routine can RETURN 1 to signal that the remainder of this standard routine should now proceed:
+      IF @ALTGEN_Severity <> 1
+         RETURN @ALTGEN_Severity
+
+      DELETE @ALTGEN WHERE [SpName] = @ALTGEN_SpName
+   END
+END
+-- End of alternate definitions code.
+
+-- Check for existence of Generic External Touch Point routine (this section was generated and inserted by CallALTETPs.exe):
+IF OBJECT_ID(N'dbo.EXTGEN_PoReceivePopulateTtRcvSp') IS NOT NULL
+BEGIN
+      DECLARE @EXTGEN_SpName sysname
+      SET @EXTGEN_SpName = N'dbo.EXTGEN_PoReceivePopulateTtRcvSp'
+      -- Invoke the ETP routine, passing in (and out) this routine's parameters:
+      DECLARE @EXTGEN_Severity int
+      EXEC @EXTGEN_Severity = @EXTGEN_SpName
+           @PoNum
+         , @PoLine
+         , @PoRelease
+         , @GrnNum
+         , @GrnLine
+         , @Whse
+         , @UbTransDate
+         , @Item
+         , @DerItemExists
+         , @UM
+         , @UbQtyReceived
+         , @UbQtyRejected
+         , @UbQtyReceivedConv
+         , @UbQtyRejectedConv
+         , @UbPackNum
+         , @UbDRRt
+         , @UbLot
+         , @UbLoc
+         , @UbReasonCode
+         , @UnitMatCost
+         , @UnitDutyCost
+         , @UnitBrokerageCost
+         , @UnitFreightCost
+         , @UnitMatCostConv
+         , @UnitDutyCostConv
+         , @UnitBrokerageCostConv
+         , @UnitFreightCostConv
+         , @UnitInsuranceCost
+         , @UnitLocFrtCost
+         , @UnitInsuranceCostConv
+         , @UnitLocFrtCostConv
+         , @FreightExchRate
+         , @DutyExchRate
+         , @BrokerageExchRate
+         , @InsuranceExchRate
+         , @LocFrtExchRate
+         , @UbByCons
+         , @UbWorkKey
+         , @UbSequence
+         , @RowPointer
+         , @UbGrnExists
+         , @ImportDocId
+         , @EcCode
+         , @ManufacturerId
+         , @ManufacturerItem
+         , @ContainerNum
+         , @EsigRowPointer
+         , @EsigUsername
+         , @EsigEncryptedPassword
+         , @EsigReasonCode
+         , @VendInvNum
+
+      -- ETP routine can RETURN 1 to signal that the remainder of this standard routine should now proceed:
+      IF @EXTGEN_Severity <> 1
+         RETURN @EXTGEN_Severity
+END
+-- End of Generic External Touch Point code.
+-- End of CallALTETPs.exe generated code.
+
+DECLARE
+ @Severity INT
+, @SessionID uniqueidentifier
+
+set @SessionID = dbo.SessionIDSp()
+
+IF EXISTS (SELECT 1 FROM invparms WHERE lot_gen_exp = 1 AND parm_key = 0)
+BEGIN
+   Set @UbLot =dbo.ExpandKyByType('LotType', @UbLot)
+END
+
+insert into tt_rcv(
+po_num
+, po_line
+, po_release
+, grn_num
+, grn_line
+, whse
+, item
+, HaveItemBit
+, u_m
+, TransDate
+, tc_qtu_to_receive
+, tc_qtu_to_reject
+, tc_qtu_to_receive_conv
+, tc_qtu_to_reject_conv
+, PackNum
+, dr_return
+, lot
+, loc
+, reason_code
+, tc_cpr_unit_mat_cost
+, tc_cpr_unit_duty_cost
+, tc_cpr_unit_brok_cost
+, tc_cpr_unit_freight_cost
+, tc_cpr_unit_mat_cost_conv
+, tc_cpr_unit_duty_cost_conv
+, tc_cpr_unit_brok_cost_conv
+, tc_cpr_unit_freight_cost_conv
+, tc_cpr_unit_loc_frt_cost
+, tc_cpr_unit_insurance_cost
+, tc_cpr_unit_loc_frt_cost_conv
+, tc_cpr_unit_insurance_cost_conv
+, freight_exch_rate
+, Duty_exch_rate
+, Brokerage_exch_rate
+, Insurance_exch_rate
+, local_freight_exch_rate
+, consign
+, SessionID
+, WorkKey
+, sequence
+, RowPointer
+, GrnExists
+, import_doc_id
+, ec_code
+, manufacturer_id
+, manufacturer_item
+, container_num
+, esig_RowPointer
+, Username
+, esig_encrypted_password
+, esig_reason_code
+, TH_vend_inv_num
+)
+VALUES (
+  @PoNum
+, @PoLine
+, @PoRelease
+, @GrnNum
+, @GrnLine
+, @whse
+, @item
+, @DerItemExists
+, @UM
+, @UbTransDate
+, @UbQtyReceived
+, @UbQtyRejected
+, @UbQtyReceivedConv
+, @UbQtyRejectedConv
+, @UbPackNum
+, @UbDRRt
+, @UbLot
+, @UbLoc
+, @UbReasonCode
+, @UnitMatCost
+, @UnitDutyCost
+, @UnitBrokerageCost
+, @UnitFreightCost
+, @UnitMatCostConv
+, @UnitDutyCostConv
+, @UnitBrokerageCostConv
+, @UnitFreightCostConv
+, @UnitLocFrtCost
+, @UnitInsuranceCost
+, @UnitLocFrtCostConv
+, @UnitInsuranceCostConv
+, @FreightExchRate
+, @DutyExchRate
+, @BrokerageExchRate
+, @InsuranceExchRate
+, @LocFrtExchRate
+, @UbByCons
+, @SessionID
+, @UbWorkKey
+, @UbSequence
+, @RowPointer
+, @UbGrnExists
+, @ImportDocId
+, @EcCode
+, @ManufacturerId
+, @ManufacturerItem
+, @ContainerNum
+, @EsigRowPointer
+, @EsigUsername
+, @EsigEncryptedPassword
+, @EsigReasonCode
+, @VendInvNum
+)
+,]

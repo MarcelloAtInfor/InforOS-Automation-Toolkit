@@ -1,0 +1,5607 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This interface can be used to access ION Process monitors and workflows for modeling.",
+    "version": "2026.01.9.17d4ce0",
+    "title": "ION Process Model Rest API"
+  },
+  "basePath": "/<YOUR_TENANT>/IONSERVICES/process/model",
+  "tags": [
+    {
+      "name": "Activation Policy API"
+    },
+    {
+      "name": "Alarm Template API"
+    },
+    {
+      "name": "Business Rules API"
+    },
+    {
+      "name": "Monitor API"
+    },
+    {
+      "name": "Workflow API"
+    }
+  ],
+  "paths": {
+    "/v1/activationpolicies": {
+      "get": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "get all the activation policies, it is possible to filter on name and updatedafter (format: yyyy-MM-dd'T'HH:mm:ss'Z', so for instance 2020-09-29T18:46:19Z)",
+        "description": "",
+        "operationId": "getActivationPolicies",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "updatedafter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ActivationPolicyHeader"
+              }
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "create a activation policy",
+        "description": "",
+        "operationId": "createActivationPolicy",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The ActivationPolicy to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input activation policy, activation policy already exists or activation policy name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/activationpolicies/{name}": {
+      "get": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "get the activation policy with the specified name",
+        "description": "",
+        "operationId": "getActivationPolicy",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Activation Policy does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "update the activation policy",
+        "description": "",
+        "operationId": "updateActivationPolicy",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The updated activation policy",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input activation policy or activation policy name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Activation Policy does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "delete the activation policy",
+        "description": "",
+        "operationId": "deleteActivationPolicy",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "409": {
+            "description": "Cannot delete Activation Policy"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/activationpolicies/{name}/activate": {
+      "put": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "activate the activation policy",
+        "description": "",
+        "operationId": "activateActivationPolicy",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Errors exist in activate Activation Policy"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Activation Policy does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/activationpolicies/{name}/deactivate": {
+      "put": {
+        "tags": [
+          "Activation Policy API"
+        ],
+        "summary": "deactivate the activation policy",
+        "description": "",
+        "operationId": "deactivateActivationPolicy",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Activation Policy does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/alarmtemplates": {
+      "get": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "get all the alarm templates, it is possible to filter on name and updatedafter (format: yyyy-MM-dd'T'HH:mm:ss'Z', so for instance 2020-09-29T18:46:19Z)",
+        "description": "",
+        "operationId": "getAalarmTemplates",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "updatedafter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AlarmTemplateHeader"
+              }
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "create a alarm template",
+        "description": "",
+        "operationId": "createAlarmTemplate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The AlarmTemplate to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input alarm template, alarm template already exists or alarm template name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/alarmtemplates/{name}": {
+      "get": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "get the alarm templates with the specified name",
+        "description": "",
+        "operationId": "getAlarmTemplate",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Alarm Template does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "update the alarm template",
+        "description": "",
+        "operationId": "updateAlarmTemplate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The updated alarm template",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input alarm template or alarm template name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Alarm Template does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "delete the alarm template",
+        "description": "",
+        "operationId": "deleteAlarmTemplate",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "409": {
+            "description": "Cannot delete Alarm Template"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/alarmtemplates/{name}/activate": {
+      "put": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "activate the alarm template",
+        "description": "",
+        "operationId": "activateAlarmTemplate",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Errors exist in activate AlaramTemplate"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Alarm Tmplate does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/alarmtemplates/{name}/deactivate": {
+      "put": {
+        "tags": [
+          "Alarm Template API"
+        ],
+        "summary": "deactivate the alarm template",
+        "description": "",
+        "operationId": "deactivateAlarmTemplate",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Alarm Template does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules": {
+      "get": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Gets the editable matrices header information ,it is possible to filter on name , matrix type, matrix status and updatedafter (format: yyyy-MM-dd'T'HH:mm:ss'Z', so for instance 2020-09-29T18:46:19Z)",
+        "description": "Retrieves the latest versions of all editable matrix headers.",
+        "operationId": "getAllEditableHeaders",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "matrixName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "matrixType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "matrixStatus",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "updatedafter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Matrix"
+              }
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Create a matrix",
+        "description": "Creates a new approval or decision matrix",
+        "operationId": "createMatrix",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The matrix to be created.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid input matrix or matrix already exists"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}": {
+      "get": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Gets the matrix information.",
+        "description": "Retrieves the latest version matrix for given matrixName.",
+        "operationId": "getMatrix",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Edit the existing matrix",
+        "description": "Updates the existed approval or decision matrix",
+        "operationId": "editMatrix",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The matrix to be edited.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid input matrix or matrix name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Deletes the matrix with status active or non-active.",
+        "description": "Removes the specified matrix from Business Rules.",
+        "operationId": "deleteMatrix",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "409": {
+            "description": "Cannot delete Matrix"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}/approve": {
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Approves and activates the specified matrix which has been submitted.",
+        "description": "Allows the pending matrix for approval.",
+        "operationId": "approvePendingApprovalMatrix",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid matrix name"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}/reject": {
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Reject the matrix that has been submitted for approval.",
+        "description": "Disallow the pending matrix for approval.",
+        "operationId": "rejectPendingApprovalMatrix",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The reject Comment to reject the matrix.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RejectComment"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid input or Invalid matrix name"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}/revert": {
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Reverts to the last approved version.",
+        "description": "Retrieves the last active matrix.",
+        "operationId": "getEditableMatrixFromLastActive",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid matrix name"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}/submit": {
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Submits the editable matrix for approval.",
+        "description": "Changes the matrix status from editable.",
+        "operationId": "submitEditableMatrixForApproval",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid matrix name"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/businessrules/{name}/unsubmit": {
+      "put": {
+        "tags": [
+          "Business Rules API"
+        ],
+        "summary": "Undo Submit the matrix for approval which has been submitted.",
+        "description": "Changes the matrix status to editable.",
+        "operationId": "undoSubmitEditableMatrixForApproval",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Matrix"
+            }
+          },
+          "400": {
+            "description": "Invalid matrix name"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Matrix not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/monitors": {
+      "get": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "get all the monitors, it is possible to filter on name and updatedafter (format: yyyy-MM-dd'T'HH:mm:ss'Z', so for instance 2020-09-29T18:46:19Z)",
+        "description": "",
+        "operationId": "getMonitors",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "updatedafter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AlertMonitorHeader"
+              }
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "create a monitor",
+        "description": "",
+        "operationId": "createMonitor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The monitor to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input monitor, monitor already exists or monitor name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/monitors/{name}": {
+      "get": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "get the monitor with the specified name",
+        "description": "",
+        "operationId": "getMonitor",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Monitor does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "update the monitor",
+        "description": "",
+        "operationId": "updateMonitor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The updated monitor",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "400": {
+            "description": "Invalid input monitor or monitor name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Monitor does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "delete the monitor",
+        "description": "",
+        "operationId": "deleteMonitor",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "409": {
+            "description": "Cannot delete Monitor"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/monitors/{name}/activate": {
+      "put": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "activate the monitor",
+        "description": "",
+        "operationId": "activateMonitor",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Errors exist in activate monitor"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Monitor does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/monitors/{name}/deactivate": {
+      "put": {
+        "tags": [
+          "Monitor API"
+        ],
+        "summary": "deactivate the monitor",
+        "description": "",
+        "operationId": "deactivateMonitor",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Monitor"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Monitor does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/workflows": {
+      "get": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "get all the workflows, it is possible to filter on name and updatedafter (format: yyyy-MM-dd'T'HH:mm:ss'Z', so for instance 2020-09-29T18:46:19Z)",
+        "description": "",
+        "operationId": "getWorkflows",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "updatedafter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WorkflowDefinitionHeader"
+              }
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "create a workflow",
+        "description": "",
+        "operationId": "createWorkflow",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The workflow to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkflowDefinition"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created OK",
+            "schema": {
+              "$ref": "#/definitions/WorkflowDefinition"
+            }
+          },
+          "400": {
+            "description": "Invalid input workflow, workflow already exists or workflow name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/workflows/{name}": {
+      "get": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "get the workflow with the specified name",
+        "description": "",
+        "operationId": "getWorkflow",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/WorkflowDefinition"
+            }
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Workflow does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "update the workflow",
+        "description": "",
+        "operationId": "updateWorkflow",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The updated workflow",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkflowDefinition"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/WorkflowDefinition"
+            }
+          },
+          "400": {
+            "description": "Invalid input workflow or workflow name missing"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Workflow does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "delete the workflow",
+        "description": "",
+        "operationId": "deleteWorkflow",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Workflow does not exist"
+          },
+          "409": {
+            "description": "Cannot delete Workflow"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/workflows/{name}/activate": {
+      "put": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "activate the workflow",
+        "description": "",
+        "operationId": "activateWorkflow",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Workflow does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/v1/workflows/{name}/deactivate": {
+      "put": {
+        "tags": [
+          "Workflow API"
+        ],
+        "summary": "deactivate the workflow",
+        "description": "",
+        "operationId": "deactivateWorkflow",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "No active workflow"
+          },
+          "403": {
+            "description": "No authorization"
+          },
+          "404": {
+            "description": "Workflow does not exist"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AbstractTreeElement": {
+      "type": "object",
+      "discriminator": "_type",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "treeLabels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/TreeLabel"
+          }
+        }
+      }
+    },
+    "AbstractTreeElementHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Action": {
+      "type": "object",
+      "discriminator": "type"
+    },
+    "ActionButton": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "actionButtonLabels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ActionButtonLabel"
+          }
+        }
+      }
+    },
+    "ActionButtonLabel": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "ActionHeader": {
+      "type": "object",
+      "required": [
+        "actionType"
+      ],
+      "discriminator": "type",
+      "properties": {
+        "actionType": {
+          "type": "string",
+          "description": "Action type decides which action need to be performed Approval/Decision.",
+          "enum": [
+            "DISTRIBUTION",
+            "VARIABLE"
+          ]
+        }
+      }
+    },
+    "ActivationPolicyHeader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "workflowName": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowMajorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "changedSinceLastActivation": {
+          "type": "boolean"
+        },
+        "policyType": {
+          "type": "string",
+          "enum": [
+            "START_WORKFLOW",
+            "CANCEL_WORKFLOW",
+            "ALERT",
+            "FLOW_TRIGGER"
+          ]
+        }
+      }
+    },
+    "Activity": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/FlowPart"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "AdvancedApprovalMatrix": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mappedVariableDefinitions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/MappedVariableDefinition"
+          }
+        }
+      }
+    },
+    "AdvancedDecisionMatrix": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mappedInputVariableDefinitions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/MappedVariableDefinition"
+          }
+        },
+        "mappedOutputVariableDefinitions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/MappedVariableDefinition"
+          }
+        }
+      }
+    },
+    "AlarmTemplateHeader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "workflowName": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowMajorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "changedSinceLastActivation": {
+          "type": "boolean"
+        },
+        "alarmDescription": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertMessage": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertMonitorHeader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "workflowName": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowMajorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "changedSinceLastActivation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Annotation": {
+      "type": "object"
+    },
+    "AnnotationIntrospector": {
+      "type": "object"
+    },
+    "ApprovalChainActivity": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "parameterId": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "approveValue": {
+              "type": "string"
+            },
+            "rejectValue": {
+              "type": "string"
+            },
+            "taskMessage": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            "selectedParameterRef": {
+              "type": "string"
+            },
+            "approveLabel": {
+              "type": "string"
+            },
+            "rejectLabel": {
+              "type": "string"
+            },
+            "maxEscalationLevel": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "dueDateJson": {
+              "type": "string"
+            },
+            "dueDateActionsJson": {
+              "type": "string"
+            },
+            "customForm": {
+              "$ref": "#/definitions/View"
+            },
+            "parameters": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/Parameter"
+              }
+            },
+            "advancedApprovalMatrix": {
+              "$ref": "#/definitions/AdvancedApprovalMatrix"
+            },
+            "translatableLabelsForRejectLabel": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/TranslatableLabel"
+              }
+            },
+            "translatableLabelsForTaskMessage": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/TranslatableLabel"
+              }
+            },
+            "translatableLabelsForApproveLabel": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/TranslatableLabel"
+              }
+            },
+            "userTaskEscalations": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/UserTaskEscalation"
+              }
+            },
+            "approvalChainTables": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/ApprovalChainTable"
+              }
+            },
+            "isAdvancedAprovalMatrixSelected": {
+              "type": "boolean"
+            },
+            "dueDate": {
+              "$ref": "#/definitions/DueDate"
+            },
+            "dueDateActions": {
+              "$ref": "#/definitions/DueDateActions"
+            }
+          }
+        }
+      ]
+    },
+    "ApprovalChainColumn": {
+      "type": "object",
+      "properties": {
+        "variable": {
+          "$ref": "#/definitions/Variable"
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "approvalChainColumnType": {
+          "type": "string",
+          "enum": [
+            "CONDITION",
+            "DISTRIBUTION"
+          ]
+        },
+        "refName": {
+          "type": "string"
+        }
+      }
+    },
+    "ApprovalChainCondition": {
+      "type": "object",
+      "properties": {
+        "approvalChainColumn": {
+          "$ref": "#/definitions/ApprovalChainColumn"
+        },
+        "conditionAsString": {
+          "type": "string"
+        }
+      }
+    },
+    "ApprovalChainDistribution": {
+      "type": "object",
+      "properties": {
+        "approvalChainColumn": {
+          "$ref": "#/definitions/ApprovalChainColumn"
+        },
+        "workflowDistributionItems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/WorkflowDistributionItem"
+          }
+        }
+      }
+    },
+    "ApprovalChainRow": {
+      "type": "object",
+      "properties": {
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "approvalChainConditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ApprovalChainCondition"
+          }
+        },
+        "approvalChainDistributions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ApprovalChainDistribution"
+          }
+        }
+      }
+    },
+    "ApprovalChainTable": {
+      "type": "object",
+      "properties": {
+        "approvalChainColumns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ApprovalChainColumn"
+          }
+        },
+        "approvalChainRows": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ApprovalChainRow"
+          }
+        }
+      }
+    },
+    "ArrayBuilders": {
+      "type": "object",
+      "properties": {
+        "booleanBuilder": {
+          "$ref": "#/definitions/BooleanBuilder"
+        },
+        "byteBuilder": {
+          "$ref": "#/definitions/ByteBuilder"
+        },
+        "shortBuilder": {
+          "$ref": "#/definitions/ShortBuilder"
+        },
+        "intBuilder": {
+          "$ref": "#/definitions/IntBuilder"
+        },
+        "longBuilder": {
+          "$ref": "#/definitions/LongBuilder"
+        },
+        "floatBuilder": {
+          "$ref": "#/definitions/FloatBuilder"
+        },
+        "doubleBuilder": {
+          "$ref": "#/definitions/DoubleBuilder"
+        }
+      }
+    },
+    "Assignment": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Action"
+        },
+        {
+          "type": "object",
+          "required": [
+            "assignmentType"
+          ],
+          "properties": {
+            "assignmentType": {
+              "type": "string",
+              "description": "The assignment type",
+              "enum": [
+                "KEEP_VALUE",
+                "SET_VALUE"
+              ]
+            },
+            "variable": {
+              "type": "string",
+              "description": "The Variable name for action.",
+              "readOnly": true
+            },
+            "data": {
+              "type": "string",
+              "description": "The data for 'setvalue'."
+            }
+          }
+        }
+      ]
+    },
+    "Authorization": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "Base64Variant": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "maxLineLength": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "paddingByte": {
+          "type": "string",
+          "format": "byte"
+        },
+        "paddingChar": {
+          "type": "string"
+        }
+      }
+    },
+    "BetweenValuesCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "and",
+            "between"
+          ],
+          "properties": {
+            "between": {
+              "type": "string",
+              "description": "The first value."
+            },
+            "and": {
+              "type": "string",
+              "description": "The second value."
+            }
+          }
+        }
+      ]
+    },
+    "BooleanBuilder": {
+      "type": "object"
+    },
+    "BooleanCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "bool"
+          ],
+          "properties": {
+            "bool": {
+              "type": "boolean",
+              "description": "Boolean value"
+            }
+          }
+        }
+      ]
+    },
+    "ByteBuilder": {
+      "type": "object"
+    },
+    "CharacterEscapes": {
+      "type": "object",
+      "properties": {
+        "escapeCodesForAscii": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "ClassIntrospector": {
+      "type": "object"
+    },
+    "ClassLoader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "registeredAsParallelCapable": {
+          "type": "boolean"
+        },
+        "parent": {
+          "$ref": "#/definitions/ClassLoader"
+        },
+        "unnamedModule": {
+          "$ref": "#/definitions/Module"
+        },
+        "definedPackages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Package"
+          }
+        }
+      }
+    },
+    "ColemanCommand": {
+      "type": "object",
+      "properties": {
+        "commandType": {
+          "type": "string",
+          "enum": [
+            "RELOAD_DATA",
+            "TRAIN_QUEST",
+            "UPDATE_QUEST",
+            "REDEPLOY_ENDPOINT"
+          ]
+        },
+        "encryptedSerializedServiceAccount": {
+          "type": "string"
+        },
+        "colemanQuestName": {
+          "type": "string"
+        },
+        "questNameVariable": {
+          "type": "string"
+        },
+        "ignoreErrors": {
+          "type": "boolean"
+        },
+        "errorCodeVariableName": {
+          "type": "string"
+        },
+        "errorMessageVariableName": {
+          "type": "string"
+        },
+        "intialCallMaxRetryTimeSeconds": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ColemanTask": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "serializedConfiguration": {
+              "type": "string"
+            },
+            "colemanCommandConfiguration": {
+              "$ref": "#/definitions/ColemanCommand"
+            }
+          }
+        }
+      ]
+    },
+    "Condition": {
+      "type": "object",
+      "discriminator": "type",
+      "properties": {
+        "variable": {
+          "type": "string",
+          "description": "The Variable name for condition.",
+          "readOnly": true
+        }
+      }
+    },
+    "ContextAttributes": {
+      "type": "object"
+    },
+    "Currency": {
+      "type": "object",
+      "properties": {
+        "currencyCode": {
+          "type": "string"
+        },
+        "defaultFractionDigits": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "numericCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "numericCodeAsString": {
+          "type": "string"
+        }
+      }
+    },
+    "DateFormat": {
+      "type": "object",
+      "properties": {
+        "calendar": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "numberFormat": {
+          "$ref": "#/definitions/NumberFormat"
+        },
+        "timeZone": {
+          "$ref": "#/definitions/TimeZone"
+        },
+        "lenient": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Decision": {
+      "type": "object",
+      "properties": {
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "decisionActions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DecisionAction"
+          }
+        },
+        "decisionChecks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DecisionCheck"
+          }
+        }
+      }
+    },
+    "DecisionAction": {
+      "type": "object",
+      "properties": {
+        "decisionColumn": {
+          "$ref": "#/definitions/DecisionColumn"
+        },
+        "value": {
+          "type": "string"
+        },
+        "workflowDistributionItems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/WorkflowDistributionItem"
+          }
+        }
+      }
+    },
+    "DecisionCheck": {
+      "type": "object",
+      "properties": {
+        "decisionColumn": {
+          "$ref": "#/definitions/DecisionColumn"
+        },
+        "conditionAsString": {
+          "type": "string"
+        }
+      }
+    },
+    "DecisionColumn": {
+      "type": "object",
+      "properties": {
+        "variable": {
+          "$ref": "#/definitions/Variable"
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "decisionColumnType": {
+          "type": "string",
+          "enum": [
+            "CHECK",
+            "ACTION"
+          ]
+        },
+        "refName": {
+          "type": "string"
+        }
+      }
+    },
+    "DecisionCondition": {
+      "type": "object",
+      "properties": {
+        "condition": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "decisionColumn": {
+          "$ref": "#/definitions/MonitorDecisionColumn"
+        }
+      }
+    },
+    "DecisionDistribution": {
+      "type": "object",
+      "properties": {
+        "distributionItems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DistributionItem"
+          }
+        }
+      }
+    },
+    "DecisionRow": {
+      "type": "object",
+      "properties": {
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "decisionConditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DecisionCondition"
+          }
+        },
+        "decisionDistributions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DecisionDistribution"
+          }
+        }
+      }
+    },
+    "DecisionTable": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "isAdvancedDecisionMatrixSelected": {
+              "type": "boolean"
+            },
+            "advancedDecisionMatrix": {
+              "$ref": "#/definitions/AdvancedDecisionMatrix"
+            },
+            "workflowDecisionTables": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/WorkflowDecisionTable"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DeserializationConfig": {
+      "type": "object",
+      "properties": {
+        "annotationIntrospector": {
+          "$ref": "#/definitions/AnnotationIntrospector"
+        },
+        "defaultPropertyInclusion": {
+          "$ref": "#/definitions/Value"
+        },
+        "problemHandlers": {
+          "$ref": "#/definitions/LinkedNodeDeserializationProblemHandler"
+        },
+        "nodeFactory": {
+          "$ref": "#/definitions/JsonNodeFactory"
+        },
+        "deserializationFeatures": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "$ref": "#/definitions/ContextAttributes"
+        },
+        "defaultVisibilityChecker": {
+          "$ref": "#/definitions/VisibilityCheckerObject"
+        },
+        "rootName": {
+          "type": "string"
+        },
+        "fullRootName": {
+          "$ref": "#/definitions/PropertyName"
+        },
+        "subtypeResolver": {
+          "$ref": "#/definitions/SubtypeResolver"
+        },
+        "timeZone": {
+          "$ref": "#/definitions/TimeZone"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "handlerInstantiator": {
+          "$ref": "#/definitions/HandlerInstantiator"
+        },
+        "base64Variant": {
+          "$ref": "#/definitions/Base64Variant"
+        },
+        "propertyNamingStrategy": {
+          "$ref": "#/definitions/PropertyNamingStrategy"
+        },
+        "typeFactory": {
+          "$ref": "#/definitions/TypeFactory"
+        },
+        "dateFormat": {
+          "$ref": "#/definitions/DateFormat"
+        },
+        "classIntrospector": {
+          "$ref": "#/definitions/ClassIntrospector"
+        },
+        "annotationProcessingEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DeserializationContext": {
+      "type": "object",
+      "properties": {
+        "factory": {
+          "$ref": "#/definitions/DeserializerFactory"
+        },
+        "timeZone": {
+          "$ref": "#/definitions/TimeZone"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "annotationIntrospector": {
+          "$ref": "#/definitions/AnnotationIntrospector"
+        },
+        "config": {
+          "$ref": "#/definitions/DeserializationConfig"
+        },
+        "parser": {
+          "$ref": "#/definitions/JsonParser"
+        },
+        "base64Variant": {
+          "$ref": "#/definitions/Base64Variant"
+        },
+        "contextualType": {
+          "$ref": "#/definitions/JavaType"
+        },
+        "arrayBuilders": {
+          "$ref": "#/definitions/ArrayBuilders"
+        },
+        "typeFactory": {
+          "$ref": "#/definitions/TypeFactory"
+        },
+        "nodeFactory": {
+          "$ref": "#/definitions/JsonNodeFactory"
+        },
+        "deserializationFeatures": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DeserializerFactory": {
+      "type": "object"
+    },
+    "Distribution": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Action"
+        },
+        {
+          "type": "object",
+          "required": [
+            "distributionType",
+            "identifier"
+          ],
+          "properties": {
+            "distributionType": {
+              "type": "string",
+              "description": "The Distribution type.",
+              "enum": [
+                "USER",
+                "GROUP",
+                "USER_FROM_PARAMETER",
+                "GROUP_FROM_PARAMETER"
+              ]
+            },
+            "identifier": {
+              "type": "string",
+              "description": "The identifier of a user or group. A user is identified by the IFS Identity2. A group is identified by an IFS Distribution Group name."
+            },
+            "displayName": {
+              "type": "string",
+              "description": "The full name of the distribution.",
+              "readOnly": true
+            },
+            "managerOf": {
+              "type": "boolean",
+              "description": "Indicator if an email notification should be sent to this Distribution of the manager."
+            },
+            "sendEmail": {
+              "type": "boolean",
+              "description": "Indicator if an email notification should be sent to this Distribution."
+            }
+          }
+        }
+      ]
+    },
+    "DistributionAction": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ActionHeader"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "DistributionItem": {
+      "type": "object",
+      "properties": {
+        "details": {
+          "type": "string"
+        },
+        "distributionType": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "USER",
+            "GROUP",
+            "CONTACT",
+            "CONTACT_GROUP"
+          ]
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "sendEmail": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DistributionItemDef": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "sendEmail": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "USER",
+            "GROUP",
+            "CONTACT",
+            "CONTACT_GROUP",
+            "CURRENT"
+          ]
+        }
+      }
+    },
+    "DoubleBuilder": {
+      "type": "object"
+    },
+    "DueDate": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SINCE_CREATION_VALUE",
+            "SINCE_CREATION_VARIABLE",
+            "DATETIME_VARIABLE"
+          ]
+        },
+        "variableName": {
+          "type": "string"
+        },
+        "sinceValue": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sinceTimeUnit": {
+          "type": "string",
+          "enum": [
+            "MINUTES",
+            "HOURS",
+            "DAYS"
+          ]
+        }
+      }
+    },
+    "DueDateActions": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Action"
+          }
+        }
+      }
+    },
+    "Escalation": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "type": "string"
+        },
+        "escalationType": {
+          "type": "string",
+          "enum": [
+            "NOT_USED",
+            "NOT_ASSIGNED_IN_TIME",
+            "NOT_FINISHED_IN_TIME"
+          ]
+        }
+      }
+    },
+    "ExternalLogic": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "command": {
+              "type": "string"
+            },
+            "timeOut": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "retryTime": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "ignoreErrors": {
+              "type": "boolean"
+            },
+            "includeNotes": {
+              "type": "boolean"
+            },
+            "authenticationType": {
+              "type": "string",
+              "enum": [
+                "None",
+                "Basic"
+              ]
+            },
+            "authenticationUserName": {
+              "type": "string"
+            },
+            "authenticationPassword": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "FilterAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "FilterProvider": {
+      "type": "object"
+    },
+    "FloatBuilder": {
+      "type": "object"
+    },
+    "FlowPart": {
+      "type": "object",
+      "discriminator": "_type",
+      "properties": {
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "FormatSchema": {
+      "type": "object",
+      "properties": {
+        "schemaType": {
+          "type": "string"
+        }
+      }
+    },
+    "HandlerInstantiator": {
+      "type": "object"
+    },
+    "IfThenElseFlow": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/FlowPart"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "trueBranch": {
+              "$ref": "#/definitions/SequentialFlow"
+            },
+            "falseBranch": {
+              "$ref": "#/definitions/SequentialFlow"
+            },
+            "conditionAsString": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "InEnumerationCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/InSetValuesCondition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "enumerationName"
+          ],
+          "properties": {
+            "enumerationName": {
+              "type": "string",
+              "description": "code names from the existed codes."
+            }
+          }
+        }
+      ]
+    },
+    "InSetValuesCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "values"
+          ],
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "The values to be set.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "InjectableValues": {
+      "type": "object"
+    },
+    "InputBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "availableInputContentTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "JSON",
+              "XML",
+              "TEXT",
+              "TEXT_XML",
+              "X_WWW_FORM_URLENCODED"
+            ]
+          }
+        },
+        "inputContentType": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "JSON",
+            "XML",
+            "TEXT",
+            "TEXT_XML",
+            "X_WWW_FORM_URLENCODED"
+          ]
+        },
+        "body": {
+          "type": "string"
+        },
+        "ignore": {
+          "type": "boolean"
+        },
+        "variableNamesFromBody": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "structureNamesFromBody": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "InputDecorator": {
+      "type": "object"
+    },
+    "InputMapping": {
+      "type": "object",
+      "properties": {
+        "variableName": {
+          "type": "string"
+        },
+        "nounAttribute": {
+          "$ref": "#/definitions/NounAttribute"
+        }
+      }
+    },
+    "InputParameter": {
+      "type": "object",
+      "properties": {
+        "wfVariableName": {
+          "type": "string"
+        },
+        "literalValue": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "swaggerDatatype": {
+          "type": "string"
+        },
+        "swaggerFormat": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "PATH",
+            "QUERY",
+            "HEADER",
+            "FORMDATA"
+          ]
+        }
+      }
+    },
+    "InputVariable": {
+      "type": "object",
+      "properties": {
+        "wfVariableName": {
+          "type": "string"
+        },
+        "scriptVariableName": {
+          "type": "string"
+        },
+        "scriptDataType": {
+          "type": "string",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "NUMBER",
+            "BOOLEAN"
+          ]
+        },
+        "literalValue": {
+          "type": "string"
+        },
+        "treeName": {
+          "type": "string"
+        }
+      }
+    },
+    "IntBuilder": {
+      "type": "object"
+    },
+    "IonApiExitPoint": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "timeOut": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "retryTime": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "ignoreErrors": {
+              "type": "boolean"
+            },
+            "method": {
+              "type": "string"
+            },
+            "serviceAccount": {
+              "type": "string"
+            },
+            "errorResponseStatusCodeVariable": {
+              "$ref": "#/definitions/Variable"
+            },
+            "isCustom": {
+              "type": "boolean"
+            },
+            "ionApiMethod": {
+              "$ref": "#/definitions/IonApiMethod"
+            }
+          }
+        }
+      ]
+    },
+    "IonApiMethod": {
+      "type": "object",
+      "properties": {
+        "productLogicalId": {
+          "type": "string"
+        },
+        "operationProxyPath": {
+          "type": "string"
+        },
+        "operationRestPath": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "operationPath": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "HEAD",
+            "OPTIONS",
+            "TRACE",
+            "PATCH"
+          ]
+        },
+        "availableOutputContentTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "JSON",
+              "XML",
+              "TEXT",
+              "TEXT_XML",
+              "X_WWW_FORM_URLENCODED"
+            ]
+          }
+        },
+        "outputContentType": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "JSON",
+            "XML",
+            "TEXT",
+            "TEXT_XML",
+            "X_WWW_FORM_URLENCODED"
+          ]
+        },
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InputParameter"
+          }
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OutputParameter"
+          }
+        },
+        "inputBody": {
+          "$ref": "#/definitions/InputBody"
+        }
+      }
+    },
+    "JavaType": {
+      "type": "object",
+      "properties": {
+        "interface": {
+          "type": "boolean"
+        },
+        "primitive": {
+          "type": "boolean"
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JavaType"
+          }
+        },
+        "genericSignature": {
+          "type": "string"
+        },
+        "final": {
+          "type": "boolean"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "contentType": {
+          "$ref": "#/definitions/JavaType"
+        },
+        "bindings": {
+          "$ref": "#/definitions/TypeBindings"
+        },
+        "concrete": {
+          "type": "boolean"
+        },
+        "containerType": {
+          "type": "boolean"
+        },
+        "enumType": {
+          "type": "boolean"
+        },
+        "throwable": {
+          "type": "boolean"
+        },
+        "mapLikeType": {
+          "type": "boolean"
+        },
+        "keyType": {
+          "$ref": "#/definitions/JavaType"
+        },
+        "valueHandler": {
+          "type": "object"
+        },
+        "typeHandler": {
+          "type": "object"
+        },
+        "javaLangObject": {
+          "type": "boolean"
+        },
+        "arrayType": {
+          "type": "boolean"
+        },
+        "referencedType": {
+          "$ref": "#/definitions/JavaType"
+        },
+        "collectionLikeType": {
+          "type": "boolean"
+        },
+        "contentTypeHandler": {
+          "type": "object"
+        },
+        "contentValueHandler": {
+          "type": "object"
+        },
+        "superClass": {
+          "$ref": "#/definitions/JavaType"
+        },
+        "erasedSignature": {
+          "type": "string"
+        },
+        "typeName": {
+          "type": "string"
+        },
+        "referenceType": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JsonFactory": {
+      "type": "object",
+      "properties": {
+        "rootValueSeparator": {
+          "type": "string"
+        },
+        "characterEscapes": {
+          "$ref": "#/definitions/CharacterEscapes"
+        },
+        "codec": {
+          "$ref": "#/definitions/ObjectCodec"
+        },
+        "formatName": {
+          "type": "string"
+        },
+        "inputDecorator": {
+          "$ref": "#/definitions/InputDecorator"
+        },
+        "outputDecorator": {
+          "$ref": "#/definitions/OutputDecorator"
+        }
+      }
+    },
+    "JsonGenerator": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "#/definitions/FormatSchema"
+        },
+        "closed": {
+          "type": "boolean"
+        },
+        "characterEscapes": {
+          "$ref": "#/definitions/CharacterEscapes"
+        },
+        "outputTarget": {
+          "type": "object"
+        },
+        "outputContext": {
+          "$ref": "#/definitions/JsonStreamContext"
+        },
+        "featureMask": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currentValue": {
+          "type": "object"
+        },
+        "formatFeatures": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "outputBuffered": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "codec": {
+          "$ref": "#/definitions/ObjectCodec"
+        },
+        "prettyPrinter": {
+          "$ref": "#/definitions/PrettyPrinter"
+        },
+        "highestEscapedChar": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "JsonLocation": {
+      "type": "object",
+      "properties": {
+        "byteOffset": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "lineNr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "columnNr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sourceRef": {
+          "type": "object"
+        },
+        "charOffset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "JsonNodeFactory": {
+      "type": "object"
+    },
+    "JsonParser": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "textLength": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "schema": {
+          "$ref": "#/definitions/FormatSchema"
+        },
+        "closed": {
+          "type": "boolean"
+        },
+        "textCharacters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "longValue": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "byteValue": {
+          "type": "string",
+          "format": "byte"
+        },
+        "doubleValue": {
+          "type": "number",
+          "format": "double"
+        },
+        "floatValue": {
+          "type": "number",
+          "format": "float"
+        },
+        "booleanValue": {
+          "type": "boolean"
+        },
+        "shortValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "objectId": {
+          "type": "object"
+        },
+        "featureMask": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currentValue": {
+          "type": "object"
+        },
+        "formatFeatures": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "decimalValue": {
+          "type": "number"
+        },
+        "bigIntegerValue": {
+          "type": "integer"
+        },
+        "embeddedObject": {
+          "type": "object"
+        },
+        "currentName": {
+          "type": "string"
+        },
+        "intValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "numberType": {
+          "type": "string",
+          "enum": [
+            "INT",
+            "LONG",
+            "BIG_INTEGER",
+            "FLOAT",
+            "DOUBLE",
+            "BIG_DECIMAL"
+          ]
+        },
+        "textOffset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "parsingContext": {
+          "$ref": "#/definitions/JsonStreamContext"
+        },
+        "tokenLocation": {
+          "$ref": "#/definitions/JsonLocation"
+        },
+        "codec": {
+          "$ref": "#/definitions/ObjectCodec"
+        },
+        "typeId": {
+          "type": "object"
+        },
+        "lastClearedToken": {
+          "type": "string",
+          "enum": [
+            "NOT_AVAILABLE",
+            "START_OBJECT",
+            "END_OBJECT",
+            "START_ARRAY",
+            "END_ARRAY",
+            "FIELD_NAME",
+            "VALUE_EMBEDDED_OBJECT",
+            "VALUE_STRING",
+            "VALUE_NUMBER_INT",
+            "VALUE_NUMBER_FLOAT",
+            "VALUE_TRUE",
+            "VALUE_FALSE",
+            "VALUE_NULL"
+          ]
+        },
+        "expectedStartArrayToken": {
+          "type": "boolean"
+        },
+        "expectedStartObjectToken": {
+          "type": "boolean"
+        },
+        "currentToken": {
+          "type": "string",
+          "enum": [
+            "NOT_AVAILABLE",
+            "START_OBJECT",
+            "END_OBJECT",
+            "START_ARRAY",
+            "END_ARRAY",
+            "FIELD_NAME",
+            "VALUE_EMBEDDED_OBJECT",
+            "VALUE_STRING",
+            "VALUE_NUMBER_INT",
+            "VALUE_NUMBER_FLOAT",
+            "VALUE_TRUE",
+            "VALUE_FALSE",
+            "VALUE_NULL"
+          ]
+        },
+        "currentTokenId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "inputSource": {
+          "type": "object"
+        },
+        "currentLocation": {
+          "$ref": "#/definitions/JsonLocation"
+        },
+        "numberValue": {
+          "$ref": "#/definitions/Number"
+        },
+        "valueAsDouble": {
+          "type": "number",
+          "format": "double"
+        },
+        "valueAsString": {
+          "type": "string"
+        },
+        "valueAsInt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "valueAsBoolean": {
+          "type": "boolean"
+        },
+        "binaryValue": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "valueAsLong": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "JsonSerializer": {
+      "type": "object",
+      "properties": {
+        "unwrappingSerializer": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JsonSerializerObject": {
+      "type": "object",
+      "properties": {
+        "delegatee": {
+          "$ref": "#/definitions/JsonSerializerObject"
+        },
+        "unwrappingSerializer": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JsonStreamContext": {
+      "type": "object",
+      "properties": {
+        "parent": {
+          "$ref": "#/definitions/JsonStreamContext"
+        },
+        "currentValue": {
+          "type": "object"
+        },
+        "currentName": {
+          "type": "string"
+        },
+        "typeDesc": {
+          "type": "string"
+        },
+        "currentIndex": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entryCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Label": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "LabelTranslation": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "LinkedNode": {
+      "type": "object"
+    },
+    "LinkedNodeDeserializationProblemHandler": {
+      "type": "object"
+    },
+    "Locale": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string"
+        },
+        "script": {
+          "type": "string"
+        },
+        "unicodeLocaleAttributes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "unicodeLocaleKeys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "displayLanguage": {
+          "type": "string"
+        },
+        "displayScript": {
+          "type": "string"
+        },
+        "displayCountry": {
+          "type": "string"
+        },
+        "displayVariant": {
+          "type": "string"
+        },
+        "extensionKeys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "iso3Language": {
+          "type": "string"
+        },
+        "iso3Country": {
+          "type": "string"
+        }
+      }
+    },
+    "LongBuilder": {
+      "type": "object"
+    },
+    "LoopBackFlow": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/FlowPart"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mainBranch": {
+              "$ref": "#/definitions/SequentialFlow"
+            },
+            "backBranch": {
+              "$ref": "#/definitions/SequentialFlow"
+            },
+            "maxLoops": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "conditionAsString": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "MappedVariableDefinition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mappedWorkflowParameter": {
+          "type": "string"
+        },
+        "datatype": {
+          "type": "string",
+          "enum": [
+            "UNDIFINED",
+            "STRING",
+            "BOOLEAN",
+            "INTEGER",
+            "DECIMAL",
+            "ENUMERATION",
+            "HYPERLINK",
+            "DURATION",
+            "DATE_AND_TIME",
+            "DATE",
+            "DOCUMENT_REFERENCE",
+            "TIME",
+            "USER",
+            "GROUP"
+          ]
+        }
+      }
+    },
+    "Matrix": {
+      "type": "object",
+      "required": [
+        "header",
+        "matrixType",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the matrix."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the matrix."
+        },
+        "matrixType": {
+          "type": "string",
+          "description": "Type of the matrix.",
+          "enum": [
+            "APPROVAL",
+            "DECISION"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the matrix.",
+          "readOnly": true,
+          "enum": [
+            "DRAFT",
+            "APPROVED",
+            "REJECTED",
+            "PENDING_APPROVAL"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Version of the matrix.",
+          "readOnly": true
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Matrix was updated by.",
+          "readOnly": true
+        },
+        "updatedByIdentifier": {
+          "type": "string",
+          "description": "Matrix was updated by identifier.",
+          "readOnly": true
+        },
+        "lastUpdatedOn": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Matrix was last updated on.",
+          "readOnly": true
+        },
+        "rejectComment": {
+          "type": "string",
+          "description": "Reject comment can be used to reject the matrix.",
+          "readOnly": true
+        },
+        "parameters": {
+          "type": "array",
+          "description": "The matrix parameters.",
+          "items": {
+            "$ref": "#/definitions/Parameters"
+          }
+        },
+        "header": {
+          "description": "The header information for specifying the parameters.",
+          "$ref": "#/definitions/MatrixHeader"
+        },
+        "rows": {
+          "type": "array",
+          "description": "The matrix Rows.",
+          "items": {
+            "$ref": "#/definitions/MatrixRow"
+          }
+        }
+      }
+    },
+    "MatrixHeader": {
+      "type": "object",
+      "required": [
+        "actionHeaders"
+      ],
+      "properties": {
+        "actionHeaders": {
+          "type": "array",
+          "description": "Action headers for both approval and decision matrix.",
+          "items": {
+            "$ref": "#/definitions/ActionHeader"
+          }
+        },
+        "variableHeaders": {
+          "type": "array",
+          "description": "Variable headers to set the conditions for matrix",
+          "items": {
+            "$ref": "#/definitions/VariableHeader"
+          }
+        }
+      }
+    },
+    "MatrixRow": {
+      "type": "object",
+      "required": [
+        "conditions"
+      ],
+      "properties": {
+        "note": {
+          "type": "string",
+          "description": "Note for the matrix row."
+        },
+        "conditions": {
+          "type": "array",
+          "description": "Condition for the matrix row.",
+          "items": {
+            "$ref": "#/definitions/Condition"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "description": "Actions for the matrix row.",
+          "items": {
+            "$ref": "#/definitions/Action"
+          }
+        }
+      }
+    },
+    "Module": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "classLoader": {
+          "$ref": "#/definitions/ClassLoader"
+        },
+        "descriptor": {
+          "$ref": "#/definitions/ModuleDescriptor"
+        },
+        "named": {
+          "type": "boolean"
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          }
+        },
+        "declaredAnnotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          }
+        },
+        "packages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "layer": {
+          "$ref": "#/definitions/ModuleLayer"
+        }
+      }
+    },
+    "ModuleDescriptor": {
+      "type": "object",
+      "properties": {
+        "open": {
+          "type": "boolean"
+        },
+        "automatic": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ModuleLayer": {
+      "type": "object"
+    },
+    "Monitor": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "alarmDescription": {
+          "type": "string"
+        },
+        "alertMessage": {
+          "type": "string"
+        },
+        "dueDateActionsJson": {
+          "type": "string"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "author": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "conditionalNounRelations": {
+          "type": "boolean"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "distributionComplexity": {
+          "type": "string",
+          "enum": [
+            "Simple",
+            "Distribute"
+          ]
+        },
+        "monitorType": {
+          "type": "string",
+          "enum": [
+            "EVENTMONITOR",
+            "ACTIVATIONPOLICY",
+            "MONITORTEMPLATE"
+          ]
+        },
+        "policyType": {
+          "type": "string",
+          "enum": [
+            "START_WORKFLOW",
+            "CANCEL_WORKFLOW",
+            "ALERT",
+            "FLOW_TRIGGER"
+          ]
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tryCancel": {
+          "type": "boolean"
+        },
+        "majorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxEscalationLevel": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]{0,255}$"
+        },
+        "rule": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "workflowMajorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "workflowName": {
+          "type": "string"
+        },
+        "authorizationsJson": {
+          "type": "string"
+        },
+        "alertMessages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/AlertMessage"
+          }
+        },
+        "nouns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Noun"
+          }
+        },
+        "nounAttributes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/NounAttribute"
+          }
+        },
+        "nounRelations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/NounRelation"
+          }
+        },
+        "decisionTable": {
+          "$ref": "#/definitions/DecisionTable"
+        },
+        "distributionItems": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DistributionItem"
+          }
+        },
+        "escalations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Escalation"
+          }
+        },
+        "inputMappings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/InputMapping"
+          }
+        },
+        "trees": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Tree"
+          }
+        },
+        "replacedBy": {
+          "$ref": "#/definitions/Monitor"
+        },
+        "outputMappings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/OutputMapping"
+          }
+        },
+        "views": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "dueDate": {
+          "$ref": "#/definitions/DueDate"
+        },
+        "dueDateActions": {
+          "$ref": "#/definitions/DueDateActions"
+        },
+        "authorizations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Authorization"
+          }
+        }
+      }
+    },
+    "MonitorDecisionColumn": {
+      "type": "object",
+      "properties": {
+        "decisionColumnType": {
+          "type": "string",
+          "enum": [
+            "NOT_USED",
+            "CHECK",
+            "ACTION"
+          ]
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nounAttribute": {
+          "$ref": "#/definitions/NounAttribute"
+        },
+        "refName": {
+          "type": "string"
+        }
+      }
+    },
+    "NotInEnumerationCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/InEnumerationCondition"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "NotInSetValuesCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/InSetValuesCondition"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "Noun": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "NounAttribute": {
+      "type": "object",
+      "properties": {
+        "creationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dataTypeDetails": {
+          "type": "string"
+        },
+        "dataType": {
+          "type": "string",
+          "enum": [
+            "NOT_USED",
+            "STRING",
+            "BOOLEAN",
+            "INTEGER",
+            "DECIMAL",
+            "ENUMERATION",
+            "HYPERLINK",
+            "DURATION",
+            "DATE_AND_TIME",
+            "DATE",
+            "DOCUMENT_REFERENCE",
+            "TIME"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "parentPathForFiltering": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "excluded": {
+          "type": "boolean"
+        },
+        "filterAttributes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/FilterAttribute"
+          }
+        },
+        "noun": {
+          "$ref": "#/definitions/Noun"
+        },
+        "monitorTreeElement": {
+          "$ref": "#/definitions/AbstractTreeElement"
+        },
+        "refName": {
+          "type": "string"
+        }
+      }
+    },
+    "NounRelation": {
+      "type": "object",
+      "properties": {
+        "fromNoun": {
+          "$ref": "#/definitions/Noun"
+        },
+        "fromPath": {
+          "type": "string"
+        },
+        "toNoun": {
+          "$ref": "#/definitions/Noun"
+        }
+      }
+    },
+    "Number": {
+      "type": "object"
+    },
+    "NumberFormat": {
+      "type": "object",
+      "properties": {
+        "groupingUsed": {
+          "type": "boolean"
+        },
+        "parseIntegerOnly": {
+          "type": "boolean"
+        },
+        "maximumIntegerDigits": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minimumIntegerDigits": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maximumFractionDigits": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minimumFractionDigits": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "roundingMode": {
+          "type": "string",
+          "enum": [
+            "UP",
+            "DOWN",
+            "CEILING",
+            "FLOOR",
+            "HALF_UP",
+            "HALF_DOWN",
+            "HALF_EVEN",
+            "UNNECESSARY"
+          ]
+        },
+        "currency": {
+          "$ref": "#/definitions/Currency"
+        }
+      }
+    },
+    "ObjectCodec": {
+      "type": "object",
+      "properties": {
+        "factory": {
+          "$ref": "#/definitions/JsonFactory"
+        },
+        "jsonFactory": {
+          "$ref": "#/definitions/JsonFactory"
+        }
+      }
+    },
+    "ObjectMapper": {
+      "type": "object",
+      "properties": {
+        "factory": {
+          "$ref": "#/definitions/JsonFactory"
+        },
+        "injectableValues": {
+          "$ref": "#/definitions/InjectableValues"
+        },
+        "deserializationConfig": {
+          "$ref": "#/definitions/DeserializationConfig"
+        },
+        "serializationConfig": {
+          "$ref": "#/definitions/SerializationConfig"
+        },
+        "serializerFactory": {
+          "$ref": "#/definitions/SerializerFactory"
+        },
+        "serializerProvider": {
+          "$ref": "#/definitions/SerializerProvider"
+        },
+        "serializerProviderInstance": {
+          "$ref": "#/definitions/SerializerProvider"
+        },
+        "visibilityChecker": {
+          "$ref": "#/definitions/VisibilityCheckerObject"
+        },
+        "deserializationContext": {
+          "$ref": "#/definitions/DeserializationContext"
+        },
+        "propertyNamingStrategy": {
+          "$ref": "#/definitions/PropertyNamingStrategy"
+        },
+        "dateFormat": {
+          "$ref": "#/definitions/DateFormat"
+        },
+        "subtypeResolver": {
+          "$ref": "#/definitions/SubtypeResolver"
+        },
+        "typeFactory": {
+          "$ref": "#/definitions/TypeFactory"
+        },
+        "nodeFactory": {
+          "$ref": "#/definitions/JsonNodeFactory"
+        },
+        "jsonFactory": {
+          "$ref": "#/definitions/JsonFactory"
+        }
+      }
+    },
+    "OutputDecorator": {
+      "type": "object"
+    },
+    "OutputMapping": {
+      "type": "object",
+      "properties": {
+        "variableName": {
+          "type": "string"
+        },
+        "nounAttribute": {
+          "$ref": "#/definitions/NounAttribute"
+        }
+      }
+    },
+    "OutputParameter": {
+      "type": "object",
+      "properties": {
+        "wfVariableName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "BODY",
+            "RESULTCODE",
+            "HEADER"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "optional": {
+          "type": "boolean"
+        }
+      }
+    },
+    "OutputVariable": {
+      "type": "object",
+      "properties": {
+        "wfVariableName": {
+          "type": "string"
+        },
+        "scriptVariableName": {
+          "type": "string"
+        },
+        "scriptDataType": {
+          "type": "string",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "NUMBER",
+            "BOOLEAN"
+          ]
+        }
+      }
+    },
+    "Package": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          }
+        },
+        "declaredAnnotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          }
+        },
+        "sealed": {
+          "type": "boolean"
+        },
+        "specificationTitle": {
+          "type": "string"
+        },
+        "specificationVersion": {
+          "type": "string"
+        },
+        "specificationVendor": {
+          "type": "string"
+        },
+        "implementationTitle": {
+          "type": "string"
+        },
+        "implementationVersion": {
+          "type": "string"
+        },
+        "implementationVendor": {
+          "type": "string"
+        }
+      }
+    },
+    "ParallelFlow": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/FlowPart"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "joinType": {
+              "type": "string",
+              "enum": [
+                "ALL_IN",
+                "ONE_IN"
+              ]
+            },
+            "sequentialFlows": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/SequentialFlow"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Parameter": {
+      "type": "object",
+      "properties": {
+        "tree": {
+          "$ref": "#/definitions/Tree"
+        },
+        "view": {
+          "$ref": "#/definitions/View"
+        },
+        "variable": {
+          "$ref": "#/definitions/Variable"
+        },
+        "label": {
+          "type": "string"
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "completionProperty": {
+          "type": "string",
+          "enum": [
+            "NOT_APPLICABLE",
+            "FINISH_USER",
+            "FINISH_TIMESTAMP",
+            "TASK_ID",
+            "TASK_STATUS"
+          ]
+        },
+        "labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Label"
+          }
+        }
+      }
+    },
+    "Parameters": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the parameter."
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the parameter."
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The data type of the parameter.",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        },
+        "usageType": {
+          "type": "string",
+          "description": "The usage type of variable.",
+          "readOnly": true,
+          "enum": [
+            "INPUT",
+            "OUTPUT",
+            "IN_OUTPUT"
+          ]
+        },
+        "restriction": {
+          "description": "Can be used to set the restriction for string data type with restriction type (HYPERLINK,USER,GROUP,CODE )only.",
+          "$ref": "#/definitions/Restriction"
+        }
+      }
+    },
+    "PrettyPrinter": {
+      "type": "object"
+    },
+    "PropertyName": {
+      "type": "object",
+      "properties": {
+        "empty": {
+          "type": "boolean"
+        },
+        "simpleName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      }
+    },
+    "PropertyNamingStrategy": {
+      "type": "object"
+    },
+    "RejectComment": {
+      "type": "object",
+      "properties": {
+        "rejectComment": {
+          "type": "string",
+          "description": "Reject Comment to reject the matrix."
+        }
+      }
+    },
+    "Restriction": {
+      "type": "object",
+      "required": [
+        "restrictionType"
+      ],
+      "properties": {
+        "restrictionType": {
+          "type": "string",
+          "description": "Restriction type for string data type.",
+          "enum": [
+            "HYPERLINK",
+            "USER",
+            "GROUP",
+            "CODE"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Restriction value only for the restriction type CODE and USER"
+        }
+      }
+    },
+    "ScriptExecution": {
+      "type": "object",
+      "properties": {
+        "scriptName": {
+          "type": "string"
+        },
+        "ignoreErrors": {
+          "type": "boolean"
+        },
+        "errorCodeVariableName": {
+          "type": "string"
+        },
+        "errorMessageVariableName": {
+          "type": "string"
+        },
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InputVariable"
+          }
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OutputVariable"
+          }
+        }
+      }
+    },
+    "Scripting": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "serializedConfiguration": {
+              "type": "string"
+            },
+            "scriptExecutionConfiguration": {
+              "$ref": "#/definitions/ScriptExecution"
+            }
+          }
+        }
+      ]
+    },
+    "SequentialFlow": {
+      "type": "object",
+      "properties": {
+        "sequenceNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "flowParts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/FlowPart"
+          }
+        }
+      }
+    },
+    "SerializationConfig": {
+      "type": "object",
+      "properties": {
+        "annotationIntrospector": {
+          "$ref": "#/definitions/AnnotationIntrospector"
+        },
+        "defaultPropertyInclusion": {
+          "$ref": "#/definitions/Value"
+        },
+        "defaultPrettyPrinter": {
+          "$ref": "#/definitions/PrettyPrinter"
+        },
+        "filterProvider": {
+          "$ref": "#/definitions/FilterProvider"
+        },
+        "serializationInclusion": {
+          "type": "string",
+          "enum": [
+            "ALWAYS",
+            "NON_NULL",
+            "NON_ABSENT",
+            "NON_EMPTY",
+            "NON_DEFAULT",
+            "USE_DEFAULTS"
+          ]
+        },
+        "serializationFeatures": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "$ref": "#/definitions/ContextAttributes"
+        },
+        "defaultVisibilityChecker": {
+          "$ref": "#/definitions/VisibilityCheckerObject"
+        },
+        "rootName": {
+          "type": "string"
+        },
+        "fullRootName": {
+          "$ref": "#/definitions/PropertyName"
+        },
+        "subtypeResolver": {
+          "$ref": "#/definitions/SubtypeResolver"
+        },
+        "timeZone": {
+          "$ref": "#/definitions/TimeZone"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "handlerInstantiator": {
+          "$ref": "#/definitions/HandlerInstantiator"
+        },
+        "base64Variant": {
+          "$ref": "#/definitions/Base64Variant"
+        },
+        "propertyNamingStrategy": {
+          "$ref": "#/definitions/PropertyNamingStrategy"
+        },
+        "typeFactory": {
+          "$ref": "#/definitions/TypeFactory"
+        },
+        "dateFormat": {
+          "$ref": "#/definitions/DateFormat"
+        },
+        "classIntrospector": {
+          "$ref": "#/definitions/ClassIntrospector"
+        },
+        "annotationProcessingEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "SerializerFactory": {
+      "type": "object"
+    },
+    "SerializerProvider": {
+      "type": "object",
+      "properties": {
+        "timeZone": {
+          "$ref": "#/definitions/TimeZone"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "generator": {
+          "$ref": "#/definitions/JsonGenerator"
+        },
+        "defaultNullKeySerializer": {
+          "$ref": "#/definitions/JsonSerializerObject"
+        },
+        "annotationIntrospector": {
+          "$ref": "#/definitions/AnnotationIntrospector"
+        },
+        "defaultNullValueSerializer": {
+          "$ref": "#/definitions/JsonSerializerObject"
+        },
+        "config": {
+          "$ref": "#/definitions/SerializationConfig"
+        },
+        "filterProvider": {
+          "$ref": "#/definitions/FilterProvider"
+        },
+        "typeFactory": {
+          "$ref": "#/definitions/TypeFactory"
+        }
+      }
+    },
+    "ShortBuilder": {
+      "type": "object"
+    },
+    "StartWorkflow": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "workflowName": {
+              "type": "string"
+            },
+            "serializedConfiguration": {
+              "type": "string"
+            },
+            "startWorkflowConfiguration": {
+              "$ref": "#/definitions/StartWorkflowConfiguration"
+            }
+          }
+        }
+      ]
+    },
+    "StartWorkflowConfiguration": {
+      "type": "object",
+      "properties": {
+        "synchronous": {
+          "type": "boolean"
+        },
+        "inputVariableMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "outputVariableMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "variableForResultStatus": {
+          "type": "string"
+        },
+        "variableForWorkflowId": {
+          "type": "string"
+        }
+      }
+    },
+    "SubWorkflowContainer": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/FlowPart"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subFlow": {
+              "$ref": "#/definitions/SequentialFlow"
+            },
+            "state": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "SubtypeResolver": {
+      "type": "object"
+    },
+    "TaskMessage": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "TimeZone": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "dstsavings": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "rawOffset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TranslatableLabel": {
+      "type": "object",
+      "properties": {
+        "labelTranslations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/LabelTranslation"
+          }
+        }
+      }
+    },
+    "Tree": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "treeLabels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/TreeLabel"
+          }
+        },
+        "treeElementChildren": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/AbstractTreeElement"
+          }
+        }
+      }
+    },
+    "TreeField": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractTreeElement"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "dataType": {
+              "type": "string",
+              "enum": [
+                "UNDIFINED",
+                "STRING",
+                "BOOLEAN",
+                "INTEGER",
+                "DECIMAL",
+                "ENUMERATION",
+                "HYPERLINK",
+                "DURATION",
+                "DATE_AND_TIME",
+                "DATE",
+                "DOCUMENT_REFERENCE",
+                "TIME",
+                "USER",
+                "GROUP"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "TreeHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "treeElementChildren": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/AbstractTreeElementHeader"
+          }
+        }
+      }
+    },
+    "TreeLabel": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "TreeLevel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractTreeElement"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "treeElementChildren": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/AbstractTreeElement"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TypeBindings": {
+      "type": "object",
+      "properties": {
+        "empty": {
+          "type": "boolean"
+        },
+        "typeParameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JavaType"
+          }
+        }
+      }
+    },
+    "TypeFactory": {
+      "type": "object",
+      "properties": {
+        "classLoader": {
+          "$ref": "#/definitions/ClassLoader"
+        }
+      }
+    },
+    "UserTask": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "actionButtonVariable": {
+              "$ref": "#/definitions/Variable"
+            },
+            "parallel": {
+              "type": "boolean"
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "High",
+                "Medium",
+                "Low"
+              ]
+            },
+            "taskMessage": {
+              "type": "string"
+            },
+            "taskActionType": {
+              "type": "string",
+              "enum": [
+                "StandardAction",
+                "CustomActions"
+              ]
+            },
+            "userTaskType": {
+              "type": "string",
+              "enum": [
+                "USER_TASK",
+                "NOTIFICATION"
+              ]
+            },
+            "maxEscalationLevel": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "distributionComplexity": {
+              "type": "string",
+              "enum": [
+                "Simple",
+                "Distribute"
+              ]
+            },
+            "propagateNotes": {
+              "type": "boolean"
+            },
+            "lifetimeDuration": {
+              "type": "string"
+            },
+            "dueDateJson": {
+              "type": "string"
+            },
+            "dueDateActionsJson": {
+              "type": "string"
+            },
+            "customForm": {
+              "$ref": "#/definitions/View"
+            },
+            "parameters": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/Parameter"
+              }
+            },
+            "workflowDistributionItems": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/WorkflowDistributionItem"
+              }
+            },
+            "taskMessages": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/TaskMessage"
+              }
+            },
+            "actionButtons": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/ActionButton"
+              }
+            },
+            "workflowDecisionTables": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/WorkflowDecisionTable"
+              }
+            },
+            "userTaskEscalations": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/UserTaskEscalation"
+              }
+            },
+            "dueDate": {
+              "$ref": "#/definitions/DueDate"
+            },
+            "dueDateActions": {
+              "$ref": "#/definitions/DueDateActions"
+            }
+          }
+        }
+      ]
+    },
+    "UserTaskEscalation": {
+      "type": "object",
+      "properties": {
+        "escalationType": {
+          "type": "string",
+          "enum": [
+            "NOT_ASSIGNED_IN_TIME",
+            "NOT_FINISHED_IN_TIME"
+          ]
+        },
+        "duration": {
+          "type": "string"
+        }
+      }
+    },
+    "Value": {
+      "type": "object",
+      "properties": {
+        "valueInclusion": {
+          "type": "string",
+          "enum": [
+            "ALWAYS",
+            "NON_NULL",
+            "NON_ABSENT",
+            "NON_EMPTY",
+            "NON_DEFAULT",
+            "USE_DEFAULTS"
+          ]
+        },
+        "contentInclusion": {
+          "type": "string",
+          "enum": [
+            "ALWAYS",
+            "NON_NULL",
+            "NON_ABSENT",
+            "NON_EMPTY",
+            "NON_DEFAULT",
+            "USE_DEFAULTS"
+          ]
+        }
+      }
+    },
+    "ValueComparisonCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "operator"
+          ],
+          "properties": {
+            "operator": {
+              "type": "string",
+              "description": "The operator to be set.",
+              "enum": [
+                "EQUALS",
+                "SMALLER",
+                "LARGER",
+                "SMALLEREQUALS",
+                "LARGEREQUALS",
+                "NOTEQUALS",
+                "CONTAINS",
+                "STARTSWITH",
+                "ENDSWITH",
+                "NOT_CONTAINS",
+                "NOT_STARTSWITH",
+                "NOT_ENDSWITH"
+              ]
+            },
+            "data": {
+              "type": "string",
+              "description": "The value to be set for comparison."
+            }
+          }
+        }
+      ]
+    },
+    "Variable": {
+      "type": "object",
+      "properties": {
+        "dataType": {
+          "type": "string",
+          "enum": [
+            "UNDIFINED",
+            "STRING",
+            "BOOLEAN",
+            "INTEGER",
+            "DECIMAL",
+            "ENUMERATION",
+            "HYPERLINK",
+            "DURATION",
+            "DATE_AND_TIME",
+            "DATE",
+            "DOCUMENT_REFERENCE",
+            "TIME",
+            "USER",
+            "GROUP"
+          ]
+        },
+        "initialValue": {
+          "type": "string"
+        },
+        "workflowInput": {
+          "type": "boolean"
+        },
+        "workflowOutput": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "dataTypeDetails": {
+          "type": "string"
+        },
+        "initialValueDetails": {
+          "type": "string"
+        },
+        "useValue": {
+          "type": "boolean"
+        }
+      }
+    },
+    "VariableAction": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ActionHeader"
+        },
+        {
+          "type": "object",
+          "required": [
+            "variableName"
+          ],
+          "properties": {
+            "variableName": {
+              "type": "string",
+              "description": "Action name to set 'keepvalue' or 'setvalue'."
+            }
+          }
+        }
+      ]
+    },
+    "VariableComparisonCondition": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "operator",
+            "secondVariableName"
+          ],
+          "properties": {
+            "operator": {
+              "type": "string",
+              "description": "The operator.",
+              "enum": [
+                "EQUALS",
+                "SMALLER",
+                "LARGER",
+                "SMALLEREQUALS",
+                "LARGEREQUALS",
+                "NOTEQUALS",
+                "CONTAINS",
+                "STARTSWITH",
+                "ENDSWITH",
+                "NOT_CONTAINS",
+                "NOT_STARTSWITH",
+                "NOT_ENDSWITH"
+              ]
+            },
+            "secondVariableName": {
+              "type": "string",
+              "description": "The second variable name for comparison."
+            }
+          }
+        }
+      ]
+    },
+    "VariableHeader": {
+      "type": "object",
+      "required": [
+        "variableName"
+      ],
+      "properties": {
+        "variableName": {
+          "type": "string",
+          "description": "Name of the variable to add condition"
+        }
+      }
+    },
+    "View": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "viewSetName": {
+          "type": "string"
+        },
+        "viewName": {
+          "type": "string"
+        },
+        "viewParameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ViewParameter"
+          }
+        }
+      }
+    },
+    "ViewLabel": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "ViewParameter": {
+      "type": "object",
+      "properties": {
+        "variable": {
+          "$ref": "#/definitions/Variable"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "VisibilityChecker": {
+      "type": "object"
+    },
+    "VisibilityCheckerObject": {
+      "type": "object"
+    },
+    "Wait": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Activity"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "duration": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "variable": {
+              "$ref": "#/definitions/Variable"
+            },
+            "waitUnit": {
+              "type": "string",
+              "enum": [
+                "NANOSECONDS",
+                "MICROSECONDS",
+                "MILLISECONDS",
+                "SECONDS",
+                "MINUTES",
+                "HOURS",
+                "DAYS"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "WorkflowDecisionTable": {
+      "type": "object",
+      "properties": {
+        "decisionColumns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/DecisionColumn"
+          }
+        },
+        "decisions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Decision"
+          }
+        },
+        "workflowDistributionItem": {
+          "$ref": "#/definitions/WorkflowDistributionItem"
+        }
+      }
+    },
+    "WorkflowDefinition": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "variables": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Variable"
+          }
+        },
+        "views": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "trees": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/Tree"
+          }
+        },
+        "replacedBy": {
+          "$ref": "#/definitions/WorkflowDefinition"
+        },
+        "sequentialFlow": {
+          "$ref": "#/definitions/SequentialFlow"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]{0,255}$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "lastUpdatedBy": {
+          "type": "string"
+        },
+        "lastUpdatedOn": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "minorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "majorVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "serviceAccount": {
+          "type": "string"
+        },
+        "sendToDataLake": {
+          "type": "boolean"
+        },
+        "purgeAfterDays": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WorkflowDefinitionHeader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "lastUpdatedBy": {
+          "type": "string"
+        },
+        "lastUpdatedOn": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tenant": {
+          "type": "string"
+        },
+        "activationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deactivationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "UNDEFINED",
+            "INACTIVE",
+            "ACTIVE"
+          ]
+        },
+        "changedSinceLastActivation": {
+          "type": "boolean"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/VariableHeader"
+          }
+        },
+        "trees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TreeHeader"
+          }
+        },
+        "sendToDataLake": {
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkflowDistributionItem": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "distributionType": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "USER",
+            "GROUP",
+            "CONTACT",
+            "CONTACT_GROUP"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "sendEmail": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

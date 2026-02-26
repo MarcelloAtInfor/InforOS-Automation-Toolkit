@@ -1,0 +1,186 @@
+{
+  "name": "CS_POCost_MultiLevel_Approval",
+  "description": "PO cost approval combining parallel ALL_IN (Purchasing + Finance) with multi-level Director escalation and write-back.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLPos",
+    "monitored_field": "PoCost",
+    "workflow_inputs": {
+      "PoNum": "PoNum",
+      "VendNum": "VendNum",
+      "NewCost": "PoCost",
+      "OldCost": "ROUND(E(OldPoCost), 2)",
+      "MGConfig": "CONFIGNAME()",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.PurchaseOrders",
+    "access_as": "ue_",
+    "handler_sequence": 232,
+    "handler_description": "ue_POCostMultiLevelApproval"
+  },
+  "variables": [
+    {"name": "PoNum", "input": true},
+    {"name": "VendNum", "input": true},
+    {"name": "NewCost", "type": "DECIMAL", "input": true},
+    {"name": "OldCost", "type": "DECIMAL", "input": true},
+    {"name": "MGConfig", "input": true},
+    {"name": "RowPointer", "input": true}
+  ],
+  "views": [
+    {
+      "name": "PODrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "PurchaseOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$PoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "parallel",
+      "join_type": "ALL_IN",
+      "branches": [
+        [
+          {
+            "type": "approval_task",
+            "name": "Purchasing Review",
+            "message": "PO [PoNum] for Vendor [VendNum] cost changed from [OldCost] to [NewCost]. Purchasing approval required.",
+            "distribution": "user1",
+            "priority": "High",
+            "buttons": [
+              {"label": "Approve", "value": "Approved"},
+              {"label": "Reject", "value": "Rejected"}
+            ],
+            "button_variable": "PurchasingResult",
+            "params": [
+              {"label": "PO Number", "variable": "PoNum"},
+              {"label": "Vendor", "variable": "VendNum"},
+              {"label": "New Cost", "variable": "NewCost"},
+              {"label": "Old Cost", "variable": "OldCost"},
+              {"label": "PO Details", "view": "PODrillBack"}
+            ],
+            "due_date": {"value": 8, "unit": "HOURS"}
+          }
+        ],
+        [
+          {
+            "type": "approval_task",
+            "name": "Finance Review",
+            "message": "PO [PoNum] for Vendor [VendNum] cost changed from [OldCost] to [NewCost]. Finance approval required.",
+            "distribution": "user1",
+            "priority": "High",
+            "buttons": [
+              {"label": "Approve", "value": "Approved"},
+              {"label": "Reject", "value": "Rejected"}
+            ],
+            "button_variable": "FinanceResult",
+            "params": [
+              {"label": "PO Number", "variable": "PoNum"},
+              {"label": "Vendor", "variable": "VendNum"},
+              {"label": "New Cost", "variable": "NewCost"},
+              {"label": "Old Cost", "variable": "OldCost"},
+              {"label": "PO Details", "view": "PODrillBack"}
+            ],
+            "due_date": {"value": 8, "unit": "HOURS"}
+          }
+        ]
+      ]
+    },
+    {
+      "type": "approval_task",
+      "name": "Director Review",
+      "message": "PO [PoNum] for Vendor [VendNum] — cost [NewCost] (was [OldCost]). Purchasing: [PurchasingResult], Finance: [FinanceResult]. Director approval required.",
+      "distribution": "user1",
+      "priority": "High",
+      "buttons": [
+        {"label": "Approve", "value": "Approved"},
+        {"label": "Reject", "value": "Rejected"}
+      ],
+      "button_variable": "FinalResult",
+      "propagate_notes": true,
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Vendor", "variable": "VendNum"},
+        {"label": "New Cost", "variable": "NewCost"},
+        {"label": "Old Cost", "variable": "OldCost"},
+        {"label": "Purchasing", "variable": "PurchasingResult"},
+        {"label": "Finance", "variable": "FinanceResult"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ],
+      "due_date": {"value": 24, "unit": "HOURS"}
+    },
+    {
+      "type": "subworkflow",
+      "name": "Write Back PO",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "IsFinalApproved",
+            "variable": "FinalResult",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          "true_assignment": {
+            "name": "SetCostNew",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "NewCost"
+          },
+          "false_assignment": {
+            "name": "SetCostOld",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldCost"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Get PO Record",
+          "ido": "SLPos",
+          "properties": "PoNum,VendNum,PoCost,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update PO Record",
+          "ido": "SLPos",
+          "changes": [
+            {"property": "PoCost", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "PO Cost Result",
+      "message": "PO [PoNum] for Vendor [VendNum] — cost change to [NewCost] has been [FinalResult].",
+      "distribution": "user1",
+      "propagate_notes": true,
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Vendor", "variable": "VendNum"},
+        {"label": "New Cost", "variable": "NewCost"},
+        {"label": "Status", "variable": "FinalResult"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ]
+    }
+  ]
+}

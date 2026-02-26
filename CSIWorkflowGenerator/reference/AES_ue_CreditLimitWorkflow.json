@@ -1,0 +1,51 @@
+{
+  "eventName": "IdoOnItemUpdate",
+  "sequence": 32,
+  "description": "ue_CreditLimitWorkflow",
+  "idoCollections": "SLCustomers",
+  "synchronous": true,
+  "suspend": false,
+  "active": false,
+  "transactional": false,
+  "ignoreFailure": false,
+  "overridable": true,
+  "rowPointer": "2c3052eb-e303-4572-9103-3413bd65d932",
+  "actions": [
+    {
+      "sequence": 10,
+      "actionType": "10",
+      "parameters": "CONDITION(NOT PROPERTYMODIFIED(\"CreditLimit\"))RESULT(\"Credit Limit is not modified\")",
+      "description": "Finish - Credit Limit is not modifired.",
+      "rowPointer": "1a5f7ce0-1bc2-44a8-939b-6ac2e3b4a761",
+      "eventHandlerRowPointer": "2c3052eb-e303-4572-9103-3413bd65d932",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 20,
+      "actionType": "14",
+      "parameters": "IDO(\"SLCustomers\")PROPERTIES(\"CreditLimit, CustNum, CustSeq\")FILTER(SUBSTITUTE(\"CustNum = '{0}' AND CustSeq = '0'\", P(\"CustNum\")))ORDERBY(\"CustNum, CustSeq\")SET(RE(OldCreditLimit) = \"CreditLimit\")",
+      "description": "Get old credit limit",
+      "rowPointer": "1e076802-ffd5-40e3-addc-9b05cfb938aa",
+      "eventHandlerRowPointer": "2c3052eb-e303-4572-9103-3413bd65d932",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 30,
+      "actionType": "29",
+      "parameters": "BODNOUN(\"Workflow\")BODVERB(\"Process\")BODXML('<ProcessWorkflow><ApplicationArea><Sender><LogicalID>FROMLOGICALID()</LogicalID><ConfirmationCode>OnError</ConfirmationCode></Sender><CreationDateTime>BODCURDATETIME()</CreationDateTime><BODID /></ApplicationArea><DataArea><Process><TenantID>TENANTID()</TenantID><ActionCriteria><ActionExpression actionCode=\"Add\" /></ActionCriteria></Process><Workflow><DocumentID><ID lid=\"infor.syteline.dals\" xmlns=\"\">1</ID><RevisionID xmlns=\"\">1</RevisionID></DocumentID><DisplayID>48</DisplayID><LastModificationDateTime>BODCURDATETIME()</LastModificationDateTime><LastModificationPerson><IDs><ID lid=\"infor.syteline.dals\"></ID></IDs></LastModificationPerson><DocumentReference type=\"CS_Credit_Approval\"><ID lid=\"FROMLOGICALID()\">48</ID></DocumentReference><Status><Code listID=\"Workflow Status\">Initial</Code></Status><WorkflowDefinitionCode listID=\"CustNum\">CS_Credit_Approval</WorkflowDefinitionCode><Property sequence=\"1\"><NameValue name=\"CustNum\" type=\"StringType\"></NameValue></Property><Property sequence=\"2\"><NameValue name=\"CustSeq\" type=\"StringType\"></NameValue></Property><Property sequence=\"3\"><NameValue name=\"OldCreditLimit\" type=\"NumericType\"></NameValue></Property><Property sequence=\"4\"><NameValue name=\"NewCreditLimit\" type=\"NumericType\"></NameValue></Property><Property sequence=\"5\"><NameValue name=\"CustName\" type=\"StringType\"></NameValue></Property></Workflow></DataArea></ProcessWorkflow>')BODXMLNAME(\"Template:processWorkflow.xml\")BODATTRS(\"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/Property[5]/NameValue[1]\" = P(\"Name\"), \"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/Property[3]/NameValue[1]\" = E(OldCreditLimit), \"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/Property[4]/NameValue[1]\" = P(\"CreditLimit\"), \"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/Property[2]/NameValue[1]\" = P(\"CustSeq\"), \"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/Property[1]/NameValue[1]\" = P(\"CustNum\"), \"//ProcessWorkflow[1]/DataArea[1]/Workflow[1]/LastModificationPerson[1]/IDs[1]/ID[1]\" = ORIGINATOR())",
+      "description": "Send BOD to ION",
+      "rowPointer": "74a9381d-2148-4974-887b-8a2a0551c0be",
+      "eventHandlerRowPointer": "2c3052eb-e303-4572-9103-3413bd65d932",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 40,
+      "actionType": "12",
+      "parameters": "SETPROPVALUES(\"InWorkflow\" = \"1\", \"CreditLimit\" = E(OldCreditLimit))",
+      "description": "Lock Record & set credit limit back",
+      "rowPointer": "d55c5d9a-81af-4392-ac63-66d5553935fd",
+      "eventHandlerRowPointer": "2c3052eb-e303-4572-9103-3413bd65d932",
+      "eventName": "IdoOnItemUpdate"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "guid": "b43415b8-21f7-49fc-a0e3-5140a3bc48fe",
+  "name": "GAF_SyteLine_MaterialSearch_Tool_v1",
+  "description": "Search for existing BOM materials (components) on a standard job in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLJobmatls\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Use: Job,Suffix,OperNum,Sequence,Item,Description,MatlQtyConv,UM,MatlType,Units,RefType,AltGroup,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. Example: Job = '         2' AND Suffix = 0\nParameter: orderby\nFormat: STRING\nRequired: False\nDescription: Sort order. Use: OperNum ASC, Sequence ASC\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records to return. Default: 50\nExample Request:\nSearch materials for job 2:\nGET /load/SLJobmatls?properties=Job,Suffix,OperNum,Sequence,Item,Description,MatlQtyConv,UM,MatlType,Units,RefType,AltGroup,_ItemId&filter=Job = '         2' AND Suffix = 0&orderby=OperNum ASC, Sequence ASC",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with material records.\nKey Response Fields:\n- Items: Array of material objects (empty if none found)\n- Job: Job number\n- OperNum: Operation number this material belongs to\n- Sequence: Sequence within the operation\n- Item: Component/child item code\n- Description: Material description\n- MatlQtyConv: Quantity per parent unit\n- UM: Unit of measure\n- MatlType: 'M'=Material, 'T'=Tool, 'O'=Other\n- RefType: 'I'=Inventory, 'J'=Job (sub-assembly), 'P'=Phantom\n- AltGroup: Alternate group number\n- _ItemId: Record identifier\n- Success: Boolean indicating API success\nNOTE: Job numbers are left-padded with spaces to 10 chars.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing BOM materials (components) on a standard job.\nMaterials are the child items/components that make up a parent item's BOM.\nFilter by Job number and Suffix=0 for standard jobs.\nNOTE: Job numbers are left-padded with spaces to 10 characters.\nRefType values: 'I'=Inventory item, 'J'=Sub-assembly (has its own BOM), 'P'=Phantom\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

@@ -1,0 +1,882 @@
+[
+  {
+    "documetFlowID": 496,
+    "documentFlowName": "CSI_COCreation_Extract",
+    "documentFlowDescription": "",
+    "activities": [
+      {
+        "activityId": 397,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "d39bf9bf-5243-4f15-897e-338f09821b45",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "b748089d-b811-4b29-bf96-9220696e2b3a",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "79119c84-bc73-4d7a-af0a-adc16a0affe7",
+        "documentTypeId": 364,
+        "documentName": "PO_Values_Reading Prompt",
+        "documentFields": [
+          {
+            "fieldName": "Customer Address",
+            "description": "\"Customer address\" refers to the designated location or address of the company who created the purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Mail",
+            "description": "\"Customer email\" \"Customer Mail\" refers to the designated Email of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Name",
+            "description": "Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Phone",
+            "description": "Customer phone refers to company phone number or telephone number,  it is not delivery phone number. Usually found in company details.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "File Type ",
+            "description": "File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number'. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num ",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Order Type ",
+            "description": "Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item , classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Pick Note",
+            "description": "Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Date",
+            "description": "PO date is date filed to indicate the purchase order creation date. Provide this date in YYYY-MM-DD format",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Number",
+            "description": "Purchase number is a unique identifier used to identify the Purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Self Pick",
+            "description": "Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To address",
+            "description": "\"Ship To\" refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Mail",
+            "description": "\"Ship To\" \"Ship To Mail\" refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the \"Ship To\" field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Name",
+            "description": "In \"Ship To\" \"Ship To Name\" refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Phone",
+            "description": "\"Ship To\" \"Ship To phone \" refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO. If no phone number is found, return 'null'",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor",
+            "description": "Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Item Details",
+            "tableFields": [
+              {
+                "fieldId": 100,
+                "documentClassId": 0,
+                "fieldName": "Line",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Line - indicates the sequence number of the items. Provide the sequence number based on this order. If the line number is missing or not provided in the input source, assign a sequential number to each table row based on its order of appearance. This number should represent the row's position in the table."
+              },
+              {
+                "fieldId": 101,
+                "documentClassId": 0,
+                "fieldName": "Product and Description",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Item or Product Description refers to a detailed explanation of the specific product or service being bought"
+              },
+              {
+                "fieldId": 102,
+                "documentClassId": 0,
+                "fieldName": "Quantity",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier"
+              },
+              {
+                "fieldId": 103,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item"
+              },
+              {
+                "fieldId": 104,
+                "documentClassId": 0,
+                "fieldName": "Currency Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "In a Purchase Order (PO) document, the \"currency\" listed in the item details refers to the specific monetary unit used to price that particular item"
+              },
+              {
+                "fieldId": 105,
+                "documentClassId": 0,
+                "fieldName": "Currency Name",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., \"U$123\") and provide their corresponding ISO currency codes and names."
+              },
+              {
+                "fieldId": 106,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order"
+              },
+              {
+                "fieldId": 107,
+                "documentClassId": 0,
+                "fieldName": "Required Date",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor"
+              },
+              {
+                "fieldId": 108,
+                "documentClassId": 0,
+                "fieldName": "U/M",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order"
+              }
+            ],
+            "isRequired": false,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": ""
+          }
+        ],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "",
+        "description": "",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": null,
+      "dcPrompt": null,
+      "ecPrompt": [
+        {
+          "PO_Values_Reading Prompt": "$Entity Classification Prompt Start$User: You are an expert Document-Based Question-Answering tool assigned to extract specified entities from a provided document. Your task is to carefully analyze the input image. Although POs are received by Kattsafe, the manufacturer, the IDP must explicitly ignore all Kattsafe-related information during entity extraction. Do not extract or consider any details (such as name, address, contact, or identifiers) associated with Kattsafe. Focus only on extracting entity details related to other parties present in the document. POs are received by Kattsafe, the manufacturer. However, Kattsafe company details should be excluded from entity extraction. The IDP must not consider any information related to Kattsafe vendor when identifying or extracting entities from the document. The OCR text extracted form the image is in <document></document> xml tag and detect entities present in <entities></entities> tag. Think step by step and use the Clues to consider what information is potentially relevant for an entity. If you do not find any entity value, give value as NA.\n\n<document>\n%(ocr)s\n</document>\n\n<entities>\n Customer Name,File Type,Order Type,PO Date,PO Number,Ship To address,Ship To Mail,Ship To Name,Ship To Phone,Vendor, Customer Phone,  Customer Address, Self Pick, Pick Note,Customer Mail\n</entities>\n\t\nClues:\nCustomer Name - Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.\n File Type - File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number'. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num.\nOrder Type- Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item, classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.\nPO Date - PO date is date filed to indicate the purchase order creation date. Provide this date in YYYY-MM-DD format\nPO Number - Purchase number is a unique identifier used to identify the Purchase order.\nShip To address - \"Ship To\" refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Mail - \"Ship To\" \"Ship To Mail\" refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the \"Ship To\" field on the PO.\nShip To Name - In \"Ship To\" \"Ship To Name\" refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Phone - \"Ship To\" \"Ship To phone \" refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO. If no phone number is found, return 'null'\nVendor - Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO\nCustomer Phone - Customer phone refers to company phone or telephone number, it is not individual or deliver number.\nCustomer Address- Customer address\" refers to the designated location or address of the company where the purchse order is coming from\nSelf Pick - Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.\nPick Note - Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.'.\nCustomer Mail - Customer email refers to the designated Email  of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com\n\n<instructions>\n1. There are 11 entities in <entities></entities> tag, be diligent in ensuring to capture all entities value completely upfront without missing any.\n2. Go through the clues one by one and understand the meaning of each entity type and extract correct values with less false positive.\n3. Avoid calculating any entity value and do not include any other entity outside <entities></entities> tag.\n4. If there are multiple instances of one entity type present in the document, extract all the distinct values with page numbers for that entity type and give them as an array of values. Example: there are multiple \"Invoice Number\" values, include all of them in the output like this: {\"entity\": \"Invoice Number\", \"value\": [\"26\", \"123\", \"456\"], \"confidence\": 100, \"PageNo\":[\"1,2\",\"3,4\",\"5,6\"]}.\n5. Format your output as a JSON object for each type-value pair you extract, in this format: <format> {\"entity\": <entity selected from <entities> list>, \"value\": <value text from input document>, \"confidence\": <confidence in entity match>, \"PageNo\": <Comma separated all page numbers where the entity is present>}</format>\n6. Your response should include text from only document and wrapped in <result></result> tags. Do not include any other explanatory text\n7. If an entity appears on multiple pages, regardless of whether the value is the same or different, list all the corresponding page numbers in the \"PageNo\" field. If the value is the same across pages, the page numbers should be provided as a comma-separated string, e.g., \"1,2,4.\" If the values differ, group the page numbers into lists, e.g., [\"1,2\", \"3,4\", \"2,5\"], corresponding to their respective values, e.g., [\"value1\", \"value2\", \"value3\"].\n</instructions>\n\nReturn the result as JSON:\n<result>\n{\n    \"entities\":\n    [\n        {\"entity\":\"Customer Name\",\"value\":\"Customer Name Value\", \"confidence\": 96, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"PO Date\",\"value\":\"PO Date Value\", \"confidence\": 85, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"PO Number\",\"value\":\"PO Number Value\", \"confidence\": 81, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Ship To address\",\"value\":\"\", \"confidence\": 99, \"PageNo\":\"1,2,3\"}\n    ]\n}\n</result>\n\n\nBefore giving the response, please make sure you return all entities present in <entities></entities> tag. Provide your final response within <result></result> tags.\n\nExpert:$Entity Classification Prompt End$\n\n$Table Detection Prompt Start$\nUser:\nYou are an expert document-based table extractor assigned to extract tables from provided documents. From the provided ocr and the image for refering layout, your task is to extract the Item Details Table -  from the provided document refering the Columns List and Clues. You can refer to the provided image only for understanding the layout of the tables.\n\nTables to Extract: [Item Details]\n\nTask:\n1. Analyze the table information thoroughly from the provided OCR text.\n2. Refer to the provided image to understand the layout structure of the tables.\n3. Extract only the tables mentioned in the Tables to Extract section. Organize the extracted tables into a tabular format using only the OCR text provided, while following the layout structure from the image.\n4. Ensure that all columns from the Column List are included and provide appropriate and correct values for those that exist in the document. Exclude any columns listed in the Column List that are not present in the document. If there are any additional columns present inside the table in the original document that have not been accounted for as part of the columns in Columns List, provide these extra columns separately under \"Other\" with their actual column names from the OCR. Provide these only if they are not already accounted for in a column in Columns List. For example if Balance Due is already brought under column Quantity BackOrder, it should not be brought again as \"Other (Balance Due)\". Similary if Extended Price is brought under Subtotal column, \"Other (Extended Price)\" should not be brought again.\n5. Provide the column headers in the output as \"Columnname from Columns List\". For the extra columns, provide each as a separate \"Other\" entry with the format \"Other (Actual column header name as per OCR)\": \"Value\". For example, if the column name from the Columns List is \"Item Number\", then provide the column header as Item Number. If extra columns/additional information is present in the table, for example Batch Number, Delivery Date, they should be provided as separate columns - \"Other (Batch Number)\": \"Value\", \"Other (Delivery Date)\": \"Value\". Do not group these under a single \"Other\" object.\n6. After extracting each table, provide Table Confidence in the format:\n\"{Table_Confidence}\": \"{Table extraction Confidence percentage in the range 0 to 100}\n7. Double check that all the column headers are provided as \"Columnname from Columns List\" and all the extra columns are extracted separately as \"Other\"(Actual column header names as per OCR)\n\nColumns List:\nItem Details - [Currency Code, Currency Name, Item Code, Line, Product and Description, Quantity, Required Date, U/M, Unit Price]\n\nClues:\nItem Details Table:\nLine - Line - indicates the sequence number of the items. Provide the sequence number based on this order\nProduct and Description - Item or Product Description refers to a detailed explanation of the specific product or service being bought\nQuantity - Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier\nUnit Price - Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item\nCurrency Code - In a Purchase Order (PO) document, the \"currency\" listed in the item details refers to the specific monetary unit used to price that particular item\nCurrency Name - Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., \"U$123\") and provide their corresponding ISO currency codes and names.\nItem Code - An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order\nRequired Date - Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor\nU/M - U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order\n\nGuidelines:\n1. Ensure that the table has a proper table name matching with the table in Tables to Extract Section, table column headers, and respective column values under column headers.\n2. For extra columns, provide them separately under \"Other\" with their actual column names from the OCR.\n3. Make sure to omit the columns that are nowhere present in the document ocr.\n4. Do not compute values on your own. Provide only if they are present in the document. For example Totals, Subtotals, Line Numbers.\n\n\n\nOutput Format:\nProvide the table information in below format. There may be occurances of empty column values. Parse the column values accurately and map to correct columns.\n\n<result>\n{\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"},\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"}}\n</result>\n\nGuidelines:\nResponse should not contain any comments and new lines.\nThe table structure should be in above format, with proper table names, column names and column values with Page number under column \"PageNo\".\nStrictly provide the response containing only valid XML in the above provided structure enclosed in <result></result> and do not use code block formatting or any other text formatting. The json inside result tags should be valid and without any error.\nIf no table is present in the document or if the document contains an empty table, the output format should be <result></result>.\n Remove any 'Shipping', 'Freight', 'Handling', 'Transportation Charges', or 'Local Freight' items from Lines.\n$Table Detection Prompt End$ "
+        }
+      ]
+    },
+    "createtime": "2025-03-09T13:33:52",
+    "updatedtime": "2026-01-29T17:07:29.0714886+00:00",
+    "errormsg": "",
+    "dpfVersionId": 397,
+    "versionID": "1",
+    "versionName": "v1",
+    "versionStatus": "InActive",
+    "promptStructure": null,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  },
+  {
+    "documetFlowID": 496,
+    "documentFlowName": "CSI_COCreation_Extract",
+    "documentFlowDescription": "",
+    "activities": [
+      {
+        "activityId": 464,
+        "activityTypeId": 1,
+        "activityName": "Document Classification",
+        "activityDescription": "Document Classification",
+        "activityProviders": [
+          {
+            "providerId": 9,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 9,
+        "status": 0,
+        "activityGuild": "95b7359f-ff69-4e46-b1ff-6471e272336b",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      },
+      {
+        "activityId": 465,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "23dccbcf-0a2d-432e-b377-3e39a25cf7f7",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "b748089d-b811-4b29-bf96-9220696e2b3a",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "9988589e-fd7d-426b-affe-46a319f4a5a9",
+        "documentTypeId": 464,
+        "documentName": "Other",
+        "documentFields": [],
+        "tableHeaders": [],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "",
+        "description": "Document which does not belong to any of the previously mentioned classes should be classified as Other",
+        "documentClassID": 0
+      },
+      {
+        "documentClassGuid": "0dc5fcbd-3d4f-4e72-a060-bc4b810695bf",
+        "documentTypeId": 465,
+        "documentName": "PO_Values_Reading Prompt",
+        "documentFields": [
+          {
+            "fieldName": "Customer Address",
+            "description": "&quot;Customer address&quot; refers to the designated location or address of the company who created the purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Mail",
+            "description": "&quot;Customer email&quot; &quot;Customer Mail&quot; refers to the designated Email of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Name",
+            "description": "Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Phone",
+            "description": "Customer phone refers to company phone number or telephone number,  it is not delivery phone number. Usually found in company details.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "File Type",
+            "description": "File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number&#39;. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Order Type",
+            "description": "Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item , classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Pick Note",
+            "description": "Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Date",
+            "description": "PO date is date filed to indicate the purchase order creation date.If the Po date is missing or not provided in the input source, consider order date as PO date. Provide this date in YYYY-MM-DD format",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Number",
+            "description": "Purchase number is a unique identifier used to identify the Purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Self Pick",
+            "description": "Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To address",
+            "description": "&quot;Ship To&quot; refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Mail",
+            "description": "&quot;Ship To&quot; &quot;Ship To Mail&quot; refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Name",
+            "description": "In &quot;Ship To&quot; &quot;Ship To Name&quot; refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Phone",
+            "description": "&quot;Ship To&quot; &quot;Ship To phone &quot; refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO. If no phone number is found, return &#39;null&#39;",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor",
+            "description": "Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Item Details",
+            "tableFields": [
+              {
+                "fieldId": 109,
+                "documentClassId": 0,
+                "fieldName": "Product and Description",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Item or Product Description refers to a detailed explanation of the specific product or service being bought"
+              },
+              {
+                "fieldId": 110,
+                "documentClassId": 0,
+                "fieldName": "Quantity",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier"
+              },
+              {
+                "fieldId": 111,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item"
+              },
+              {
+                "fieldId": 112,
+                "documentClassId": 0,
+                "fieldName": "Currency Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "In a Purchase Order (PO) document, the &quot;currency&quot; listed in the item details refers to the specific monetary unit used to price that particular item"
+              },
+              {
+                "fieldId": 113,
+                "documentClassId": 0,
+                "fieldName": "Currency Name",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., &quot;U$123&quot;) and provide their corresponding ISO currency codes and names."
+              },
+              {
+                "fieldId": 114,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order"
+              },
+              {
+                "fieldId": 115,
+                "documentClassId": 0,
+                "fieldName": "Required Date",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor"
+              },
+              {
+                "fieldId": 116,
+                "documentClassId": 0,
+                "fieldName": "U/M",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order"
+              },
+              {
+                "fieldId": 117,
+                "documentClassId": 0,
+                "fieldName": "Line Number",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Line - indicates the sequence number of the items. Provide the sequence number based on this order. If the line number is missing or not provided in the input source, assign a sequential number to each table row based on its order of appearance. This number should represent the row&#39;s position in the table."
+              }
+            ],
+            "isRequired": false,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": ""
+          }
+        ],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "None",
+        "description": "Any Invoice or PO document can be classified as PO_Values_Reading Prompt",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": "",
+      "dcPrompt": "$Document Classification System Prompt Start$\nYou are a document classification expert who can analyze and classify multiple documents and their page boundaries within a document package from various domains. \nYour task is to determine the document type based on its content and structure, using the provided document type definitions. \nYour output must be valid JSON according to the requested format.\n$Document Classification System Prompt End$\n\n$Document Classification Task Prompt Start$\n&lt;task-description&gt;\nYou are a document classification system. Your task is to analyze a document package containing multiple pages and identify distinct document segments, classifying each segment according to the predefined document types provided below.\nYou&#39;ll be provided with the OCR results of the document.\n&lt;/task-description&gt;\n\n&lt;documentclasses&gt;\nType: PO_Values_Reading Prompt\nDescription: Any Invoice or PO document can be classified as PO_Values_Reading Prompt\n\nType: Other\nDescription: Document which does not belong to any of the previously mentioned classes should be classified as Other\n&lt;/documentclasses&gt;\n\n&lt;instructions&gt;\n1. Analyze each page of the input document.\n2. Identify each separate document instance and where it begins and ends. Refer to the &lt;document_boundary_detection&gt; to decide document instance separations.\n3. Classify each document instance according to the provided classes.\n4. Provide confidence scores for each classification.\n5. Include the specific page numbers for each document (single page as &quot;1&quot;, multiple pages as &quot;4,5,6,7,8&quot;).\n&lt;/instructions&gt;\n\n&lt;document_boundary_detection&gt;\n1. Identify the start and end and page numbers of each distinct document.\n2. New reference numbers mean new document instances. This has the topmost priority for identifying distinct document instances.Each unique invoice number, reference number, document ID, or similar identifier indicates a separate document.\nExamples: Invoice #00576781, Invoice #00576782, PO #00576783, etc.\nEven if documents are the same type, different numbers is equal to different documents.\nTreat each subdocument or subinvoice or summarydocument as separate document.\n- If a document contains a summary of multiple invoice numbers, treat the summary as Document #1.\n- Each individual detailed invoice should be treated as separate documents.\n- Summary pages should NOT be included in individual invoice page ranges.\n- Example: If page 1 lists invoices #001, #002, #003, and pages 2-3 contain details for #001:\n  - Document 1: Summary (page 1).\n  - Document 2: Invoice #001 details (pages 2-3).\n3. Some other lower priority guidelines are as follows-\n- Look for subtle distinctions in addressing, reference numbers, dates, or unique document identifiers.\n- Note page breaks, section markers, or other formatting clues that signal document boundaries.\n- Recognize header/footer patterns that might indicate new documents.\n- Pay attention to standard document markers like headers, signatures, dates, and greeting/closing lines.\n- Consider format shifts, topic changes, or addressing changes as potential boundaries.\n&lt;/document_boundary_detection&gt;\n\n&lt;output_format&gt;\nStrictly provide the response containing only valid JSON in the provided structure and do not use code block formatting or any other text formatting. Output only raw JSON:\n{\n    &quot;DocumentClassification&quot;: [\n        {\n            &quot;DocumentDetected&quot;: &quot;Predicted Document Class name&quot;,\n            &quot;ConfidenceScore&quot;: &quot;Predicted Document Class Score Percentage out of 100 as float&quot;,\n            &quot;ListOfClass&quot;: {\n                &quot;0&quot;: &quot;PO_Values_Reading Prompt&quot;,\n                &quot;1&quot;: &quot;Other&quot;\n            },\n            &quot;ConfidenceOfClass&quot;: {\n                &quot;PO_Values_Reading Prompt&quot;: &quot;Percentage Score out of 100 of document being a PO_Values_Reading Prompt represented as a float&quot;,\n                &quot;Other&quot;: &quot;Percentage Score out of 100 of document being a Other represented as a float&quot;\n            },\n            &quot;PageNo&quot;: &quot;Page number(s) where this document appears (e.g., &#39;1&#39; for single page or &#39;4,5,6,7,8&#39; for multiple pages)&quot;,\n            &quot;KeyIdentifiers&quot;: [\n                &quot;List of specific identifiers found in this document that helped determine its boundaries and classification like headers, signatures, formatting patterns, reference numbers&quot;\n            ]\n        }\n    ]\n}\n&lt;/output_format&gt;\n\n&lt;document_ocr&gt;\n{OCR_TEXT}\n&lt;/document_ocr&gt;\n$Document Classification Task Prompt End$",
+      "ecPrompt": [
+        {
+          "PO_Values_Reading Prompt": "$Entity Classification System Prompt Start$\nYou are an expert document processing system designed to extract and validate structured or unstructured data from documents. You will receive BOTH the original document file (image/PDF) AND pre-extracted OCR text data for each page. Your task is to intelligently combine both inputs to achieve maximum accuracy in data extraction from provided document.\n$Entity Classification System Prompt End$\n\n$Entity Classification Task Prompt Start$\n<background>\nYou are an expert in document analysis and information extraction.\nYou can understand and extract key information from documents classified as type: PO_Values_Reading Prompt.\n</background>\n\n<task>\nYour task is to analyze the provided document along with its OCR-extracted text, using the layout details from the document pages to guide your understanding of the structure. Identify the main entities, attributes, or categories mentioned in the entity list below and use them as keys in the JSON object.\nThen, extract the relevant information from the text and populate the corresponding values in the JSON object.\n</task>\n\n<extraction_guidelines>\n    1. OCR Data:\n- Line breaks and spacing in OCR text may indicate layout structure.\n- Use OCR text to rely on characters when the text is not clear in the original document\nDocument Layout:\n- Evaluate both the visual layout of the document and the OCR text to analyze the document structure including headers, tables accurately.\n2. If a field is not found or if unsure, return null.\n3. There are 15 entities in <entities> tags, be diligent in ensuring to capture all entities value completely upfront without missing any.\n4. Go through the clues one by one and understand the meaning of each entity type and extract correct values only if you're certain with less false positives.\n5. Avoid calculating any entity value and do not include any other entity outside the <entities> tags.\n6. If there are multiple instances of one entity type present in the document, extract all the distinct values with page numbers for that entity type and give them as an array of values. Example: there are multiple \"Invoice Number\" values, include all of them in the output like this: {\"entity\": \"Invoice Number\", \"value\": [\"26\", \"123\", \"456\"], \"confidence\": \"High\", PageNo:[\"1,2\",\"3,4\",\"5,6\"]}.\n7. Format your output as a JSON object for each type-value pair you extract, in this format:\n<format> {\"entity\": <entity selected from <entities> list>, \"value\": <value text from input document>, \"confidence\": <confidence in entity match>}, \"PageNo\": <Comma separated all page numbers where the entity is present></format>\n8. Your response should include text from only documents and wrapped in <result></result> tags. Do not include any other explanatory text\n9. If an entity appears on multiple pages, regardless of whether the value is the same or different, list all the corresponding page numbers in the \"PageNo\" field. If the value is the same across pages, the page numbers should be provided as a comma-separated string, e.g., \"1,2,4\" If the values differ, group the page numbers into lists, e.g., [\"1,2\", \"3,4\", \"2,5\"], corresponding to their respective values, e.g., [\"value1\", \"value2\", \"value3\"].\n10. When providing confidence in your answer, do not use numeric scores or percentages. Instead, choose one of the following ordinal categories to indicate confidence:\nVery Low = Little to no confidence; mostly a guess.\nLow = Some weak evidence, but still doubtful.\nMedium = Uncertain, but the answer is reasonable.\nHigh = Strong confidence with minor uncertainty.\nVery High = Near certainty; answer is clear and well-supported.\n\n    <Quality_Assurance_Validations>\n        1.Ensure that the all addresses fields are extracted as it is from the key labels present in the document.\n2.Ensure that all the amounts extracted in decimal format and excluding non numeric fields like currency. For example, if the value is $1200, extract it as 1200 only.\n    </Quality_Assurance_Validations>\n\n</extraction_guidelines>\n\nBelow are the entity definitions for the entities to be extracted. Use these entity names and their descriptions to accurately identify and extract values from the document. Extract and return only the specified entities, using the provided definitions as a reference.\n\n<entities>\n    Customer Address - \"Customer address\" refers to the designated location or address of the company who created the purchase order.\nCustomer Mail - \"Customer email\" \"Customer Mail\" refers to the designated Email of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com\nCustomer Name - Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.\nCustomer Phone - Customer phone refers to company phone number or telephone number,  it is not delivery phone number. Usually found in company details.\nFile Type - File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number'. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num\nOrder Type - Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item , classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.\nPick Note - Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.\nPO Date - PO date is date filed to indicate the purchase order creation date.If the Po date is missing or not provided in the input source, consider order date as PO date. Provide this date in YYYY-MM-DD format\nPO Number - Purchase number is a unique identifier used to identify the Purchase order.\nSelf Pick - Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.\nShip To address - \"Ship To\" refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Mail - \"Ship To\" \"Ship To Mail\" refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the \"Ship To\" field on the PO.\nShip To Name - In \"Ship To\" \"Ship To Name\" refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Phone - \"Ship To\" \"Ship To phone \" refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO. If no phone number is found, return 'null'\nVendor - Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO\n</entities>\n\n<output_format>\nProvide your response in the following json format. Only provide the json and do not provide any preamble\n<result>\n{\n      \"entities\":\n    [\n        {\"entity\":\"Customer Address\",\"value\":\"Customer Address Value\", \"confidence\": 84, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Mail\",\"value\":\"Customer Mail Value\", \"confidence\": 95, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Name\",\"value\":\"Customer Name Value\", \"confidence\": 99, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Phone\",\"value\":\"\", \"confidence\": 95, \"PageNo\":\"1,2,3\"}\n    ]\n}\n</result>\nBefore providing your response, ensure that you return all entities identified within the <entities> tags. Deliver your final response within the <result> tags.\n</output_format>\n\nPlease process the provided document file and corresponding page-by-page OCR text, using visual analysis to interpret the text structure and maximize extraction accuracy.\n\n<document_ocr>\n{OCR_TEXT}\n</document_ocr>\n\n$Entity Classification Task Prompt End$\n\n$Table Detection System Prompt Start$\nYou are an expert document processing system designed to extract and validate structured or unstructured data from documents. \nYou will receive BOTH the original document file (image/PDF) AND pre-extracted OCR text data for each page. \nYour task is to intelligently combine both inputs to achieve maximum accuracy in data extraction from provided document.\n$Table Detection System Prompt End$\n$Table Detection Task Prompt Start$\n<background>\nYou are an expert in document analysis and information extraction. \nYou can understand and extract key information from documents classified as type: PO_Values_Reading Prompt. \n</background>\n\n<task>\nYour task is to analyze the provided document along with its OCR-extracted text, using the layout details from the document pages to guide your understanding of the structure. Focus on identifying the \"Item Details\" - .\nCarefully examine the visual and textual structure to detect table headers, rows, and corresponding data across all pages.\n</task>\n\n<extraction_guidelines>\n1. OCR Data:\n- Line breaks and spacing in OCR text may indicate layout structure.\n- Use OCR text to rely on characters when the text is not clear in the original document\nDocument Layout:\n- Evaluate both the visual layout of the document and the OCR text to analyze the document structure including headers, tables accurately.\n2. If a field is not found or if unsure, return null.\n3. The response must include an additional column called \"PageNo\", which indicates the page number(s) from which each row's data was extracted. If the data spans multiple pages, list the page numbers as a comma-separated string (e.g., \"1\", \"3\", or \"1,2\").\n4. When assigning confidence at the column level, do not use numeric scores or percentages. Instead, evaluate each extracted column and assign one of the following ordinal categories based on how accurately it matches the expected column definition provided in a <clues> tag and supporting evidence from its values:\n    Very Low = Little to no confidence; mostly a guess.\n    Low = Some weak evidence, but still doubtful.\n    Medium = Uncertain, but the match appears reasonable.\n    High = Strong confidence with minor uncertainty.\n    Very High = Near certainty; the column name and values are clearly aligned.\n  Ensure that each column is assigned its own confidence value based on this scale.\n  DO NOT give low confidence for empty valued column values, if they are genuinely not present in document.\n\n  <Quality_Assurance_Validations>\n    \n  </Quality_Assurance_Validations>\n</extraction_guidelines>\n\nBelow are the column definitions for the tables to extract. Use these column names and their descriptions to guide accurate identification and extraction of values from the document. Only extract and return the specified columns using the provided definitions as reference.\n\nTable Name: \"Item Details\"\n<columns>\nProduct and Description - Item or Product Description refers to a detailed explanation of the specific product or service being bought\nQuantity - Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier\nUnit Price - Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item\nCurrency Code - In a Purchase Order (PO) document, the \"currency\" listed in the item details refers to the specific monetary unit used to price that particular item\nCurrency Name - Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., \"U$123\") and provide their corresponding ISO currency codes and names.\nItem Code - An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order\nRequired Date - Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor\nU/M - U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order\nLine Number - Line - indicates the sequence number of the items. Provide the sequence number based on this order. If the line number is missing or not provided in the input source, assign a sequential number to each table row based on its order of appearance. This number should represent the row's position in the table.\n<columns>\n\n<output_format>\nProvide your response in the following json format. Only provide the json and do not provide any preamble.\n\n<result>\n{\n  \"Item Details\": {\n    \"rows\": [\n      [\n        \"Product and Description\",\n        \"Quantity\",\n        \"Unit Price\",\n        \"Currency Code\",\n        \"Currency Name\",\n        \"Item Code\",\n        \"Required Date\",\n        \"U/M\",\n        \"Line Number\",\n        \"PageNo\"\n      ],\n      [\n        \"Product and Description Value 1\",\n        \"Quantity Value 1\",\n        \"Unit Price Value 1\",\n        \"Currency Code Value 1\",\n        \"Currency Name Value 1\",\n        \"Item Code Value 1\",\n        \"Required Date Value 1\",\n        \"U/M Value 1\",\n        \"Line Number Value 1\",\n        \"PageNo Value 1\"\n      ]\n    ],\n    \"Column_Confidences\": {\n      \"Product and Description\": \"Confidence Level\",\n      \"Quantity\": \"Confidence Level\",\n      \"Unit Price\": \"Confidence Level\",\n      \"Currency Code\": \"Confidence Level\",\n      \"Currency Name\": \"Confidence Level\",\n      \"Item Code\": \"Confidence Level\",\n      \"Required Date\": \"Confidence Level\",\n      \"U/M\": \"Confidence Level\",\n      \"Line Number\": \"Confidence Level\",\n      \"PageNo\": \"Confidence Level\"\n    },\n    \"Table_Confidence\": \"Confidence Level\"\n  }\n}\n</result>\n\nThe allowed values for Confidence Level are \"Very High\", \"High\", \"Medium\", \"Low\", \"Very Low\" by considering instructions.\nThe \"PageNo\" should be in comma separated page numbers (example, \"2\" or \"2,3\" ) from where the row data is fetched.\nStrictly provide the response in the above provided structure enclosed in <result></result> and do not use code block formatting or any other text formatting. The json inside result tags should be valid and without any error.\nIf no table is present in the document or if the document contains an empty table, the output format should be <result></result>.\n</output_format>\n\nPlease process the provided document file and corresponding page-by-page OCR text, using visual analysis to interpret the text structure and maximize extraction accuracy.\n\n<document_ocr>\n{OCR_TEXT}\n</document_ocr>\n$Table Detection Task Prompt End$"
+        }
+      ]
+    },
+    "createtime": "2025-03-09T13:33:52",
+    "updatedtime": "2026-01-29T17:07:29.0772788+00:00",
+    "errormsg": "",
+    "dpfVersionId": 563,
+    "versionID": "2",
+    "versionName": "v2",
+    "versionStatus": "InActive",
+    "promptStructure": null,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  },
+  {
+    "documetFlowID": 496,
+    "documentFlowName": "CSI_COCreation_Extract",
+    "documentFlowDescription": "",
+    "activities": [
+      {
+        "activityId": 466,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "781c9e00-8dc8-430e-a721-e9172d622ed3",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "b748089d-b811-4b29-bf96-9220696e2b3a",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "0671fc5d-dd7b-432b-8d54-017525370195",
+        "documentTypeId": 466,
+        "documentName": "PO_Values_Reading Prompt",
+        "documentFields": [
+          {
+            "fieldName": "Customer Address",
+            "description": "&quot;Customer address&quot; refers to the designated location or address of the company who created the purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Mail",
+            "description": "&quot;Customer email&quot; &quot;Customer Mail&quot; refers to the designated Email of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Name",
+            "description": "Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Customer Phone",
+            "description": "Customer phone refers to company phone number or telephone number,  it is not delivery phone number. Usually found in company details.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "File Type",
+            "description": "File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number&#39;. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Order Type",
+            "description": "Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item , classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Pick Note",
+            "description": "Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Date",
+            "description": "PO date is date filed to indicate the purchase order creation date.If the Po date is missing or not provided in the input source, consider order date as PO date. Provide this date in YYYY-MM-DD format",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Number",
+            "description": "Purchase number is a unique identifier used to identify the Purchase order.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Self Pick",
+            "description": "Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.",
+            "fieldType": "boolean",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To address",
+            "description": "&quot;Ship To&quot; refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Mail",
+            "description": "&quot;Ship To&quot; &quot;Ship To Mail&quot; refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Name",
+            "description": "In &quot;Ship To&quot; &quot;Ship To Name&quot; refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Ship To Phone",
+            "description": "&quot;Ship To&quot; &quot;Ship To phone &quot; refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the &quot;Ship To&quot; field on the PO. If no phone number is found, return &#39;null&#39;",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor",
+            "description": "Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Item Details",
+            "tableFields": [
+              {
+                "fieldId": 118,
+                "documentClassId": 0,
+                "fieldName": "Product and Description",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Item or Product Description refers to a detailed explanation of the specific product or service being bought"
+              },
+              {
+                "fieldId": 119,
+                "documentClassId": 0,
+                "fieldName": "Quantity",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier"
+              },
+              {
+                "fieldId": 120,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item"
+              },
+              {
+                "fieldId": 121,
+                "documentClassId": 0,
+                "fieldName": "Currency Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "In a Purchase Order (PO) document, the &quot;currency&quot; listed in the item details refers to the specific monetary unit used to price that particular item"
+              },
+              {
+                "fieldId": 122,
+                "documentClassId": 0,
+                "fieldName": "Currency Name",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., &quot;U$123&quot;) and provide their corresponding ISO currency codes and names."
+              },
+              {
+                "fieldId": 123,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order"
+              },
+              {
+                "fieldId": 124,
+                "documentClassId": 0,
+                "fieldName": "Required Date",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor"
+              },
+              {
+                "fieldId": 125,
+                "documentClassId": 0,
+                "fieldName": "U/M",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order"
+              },
+              {
+                "fieldId": 126,
+                "documentClassId": 0,
+                "fieldName": "Line Number",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Line - indicates the sequence number of the items. Provide the sequence number based on this order. If the line number is missing or not provided in the input source, assign a sequential number to each table row based on its order of appearance. This number should represent the row&#39;s position in the table."
+              }
+            ],
+            "isRequired": false,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": ""
+          }
+        ],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "None",
+        "description": "Any Invoice or PO document can be classified as PO_Values_Reading Prompt",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": null,
+      "dcPrompt": null,
+      "ecPrompt": [
+        {
+          "PO_Values_Reading Prompt": "$Entity Classification Prompt Start$User: You are an expert Document-Based Question-Answering tool assigned to extract specified entities from a provided document. Analyze the provided PDF document carefully. The document includes layout details, and the OCR text is provided page by page within <Page {Page Number}> tags. Entities to be detected are marked within <entities></entities> tags. Think step by step and use the clues to consider what information is potentially relevant for an entity.\n\n<entities>\nCustomer Address,Customer Mail,Customer Name,Customer Phone,File Type,Order Type,Pick Note,PO Date,PO Number,Self Pick,Ship To address,Ship To Mail,Ship To Name,Ship To Phone,Vendor\n</entities>\n\nClues:\nCustomer Address - \"Customer address\" refers to the designated location or address of the company who created the purchase order.\nCustomer Mail - \"Customer email\" \"Customer Mail\" refers to the designated Email of the company, essentially the found in buyer company details who created the purchse oder. Extract only valid email addresses from the document. Do not extract website URLs or domain names unless they are part of a complete email address (e.g., info@example.com). Ignore standalone web addresses like www.example.com or example.com\nCustomer Name - Customer refers to the buyer or the company placing the order with a supplier; essentially, the entity that is requesting goods or services from the vendor, and will be receiving the items detailed on the PO.\nCustomer Phone - Customer phone refers to company phone number or telephone number,  it is not delivery phone number. Usually found in company details.\nFile Type - File Type Returns PO if the document contains only a PO number This option is typically mentioned in the pdf file with as phrases such as P.O.,Purchase Order,PO number'. Return Non PO if it contains an Invoice number.  This option is typically mentioned in the pdf file with as phrases such as Invoice No., Invoice #, Inv num\nOrder Type - Order Type Return Blanket Order or Regular Order Based on the conditions. If the document explicitly mentions Blanket Order, Blanket PO, Open PO, or Release Order, classify it as a Blanket Order.If the document explicitly mentions Regular Order or Standard Purchase Order, classify it as a Regular Order.If no such words are found, check for key indicators:If the PO contains Rel:, Total Released, Total Received, Effective Date, Expiration Date, or multiple due dates for the same item , classify it as a Blanket Order.If each item has only one due date and no release-related terms (single delivery schedule), classify it as a Regular Order.\nPick Note - Pick Note refers any notes, comments, or special instructions provided in the document. Include the text exactly as written, such as delivery instructions, handling instructions, or other remarks. If no notes or special instructions are present, return null.\nPO Date - PO date is date filed to indicate the purchase order creation date.If the Po date is missing or not provided in the input source, consider order date as PO date. Provide this date in YYYY-MM-DD format\nPO Number - Purchase number is a unique identifier used to identify the Purchase order.\nSelf Pick - Self Pick is a boolean field indicating if the goods will be collected by the buyer. Check only the Notes/Via, Special Instructions, Delivery To, or Ship To sections for pickup-related phrases. If any of these sections contain phrases such as will collect, buyer to collect, self pick up, collect from supplier, pick up, pickup, or collect in person, set Self Pick = true. If none of these phrases are found in those sections, set Self Pick = false. If these sections are missing or empty, set Self Pick = NA.\nShip To address - \"Ship To\" refers to the designated location or address where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Mail - \"Ship To\" \"Ship To Mail\" refers to the designated Email  of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address and this email is listed in the \"Ship To\" field on the PO.\nShip To Name - In \"Ship To\" \"Ship To Name\" refers to the designated Name of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO.\nShip To Phone - \"Ship To\" \"Ship To phone \" refers to the designated phone number of the Ship to party  where the ordered goods should be delivered, essentially the recipient of the shipment; it is usually the department or individual within the company who needs the items, and their address is listed in the \"Ship To\" field on the PO. If no phone number is found, return 'null'\nVendor - Vendor refers to the seller or supplier, the company or individual that is being requested to provide goods or services by the buyer who creates the PO\n\n<instructions>\n1. There are 15 entities in <entities></entities> tag, be diligent in ensuring to capture all entities value completely upfront without missing any.\n2. Go through the clues one by one and understand the meaning of each entity type and extract correct values with less false positive.\n3. Avoid calculating any entity value and do not include any other entity outside <entities></entities> tag.\n4. If there are multiple instances of one entity type present in the document, extract all the distinct values with page numbers for that entity type and give them as an array of values. Example: there are multiple \"Invoice Number\" values, include all of them in the output like this: {\"entity\": \"Invoice Number\", \"value\": [\"26\", \"123\", \"456\"], \"confidence\": 100, \"PageNo\":[\"1,2\",\"3,4\",\"5,6\"]}.\n5. Format your output as a JSON object for each type-value pair you extract, in this format: <format> {\"entity\": <entity selected from <entities> list>, \"value\": <value text from input document>, \"confidence\": <confidence in entity match>, \"PageNo\": <Comma separated all page numbers where the entity is present>}</format>\n6. Your response should include text from only document and wrapped in <result></result> tags. Do not include any other explanatory text\n7. If an entity appears on multiple pages, regardless of whether the value is the same or different, list all the corresponding page numbers in the \"PageNo\" field. If the value is the same across pages, the page numbers should be provided as a comma-separated string, e.g., \"1,2,4.\" If the values differ, group the page numbers into lists, e.g., [\"1,2\", \"3,4\", \"2,5\"], corresponding to their respective values, e.g., [\"value1\", \"value2\", \"value3\"].\n</instructions>\n\nReturn the result as JSON:\n<result>\n{\n    \"entities\":\n    [\n        {\"entity\":\"Customer Address\",\"value\":\"Customer Address Value\", \"confidence\": 96, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Mail\",\"value\":\"Customer Mail Value\", \"confidence\": 80, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Name\",\"value\":\"Customer Name Value\", \"confidence\": 99, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Customer Phone\",\"value\":\"\", \"confidence\": 99, \"PageNo\":\"1,2,3\"}\n    ]\n}\n</result>\n\n\nBefore giving the response, please make sure you return all entities present in <entities></entities> tag. Provide your final response within <result></result> tags.\n\nExpert:$Entity Classification Prompt End$\n\n$Table Detection Prompt Start$\nUser:\nYou are an expert document-based table extractor assigned to extract tables from provided documents.\nYou are given with the document for layout understanding and the complete OCR of document page by page enclosed in <Page {Page Number}> OCR of Page </Page {Page Number}>\nYour task is to extract the Item Details Table -  from the all pages of provided document referring the Columns List and Clues. You can refer to the provided document only for understanding the layout of the tables.\n\nTables to Extract: [Item Details]\n\nTask:\n1. Analyze the table information thoroughly from the provided OCR text.\n2. Refer to the provided image to understand the layout structure of the tables.\n3. Extract only the tables mentioned in the Tables to Extract section. Organize the extracted tables into a tabular format using only the OCR text provided, while following the layout structure from the image.\n4. Ensure that all columns from the Column List are included and provide appropriate and correct values for those that exist in the document. Exclude any columns listed in the Column List that are not present in the document. If there are any additional columns present inside the table in the original document that have not been accounted for as part of the columns in Columns List, provide these extra columns separately under \"Other\" with their actual column names from the OCR. Provide these only if they are not already accounted for in a column in Columns List. For example if Balance Due is already brought under column Quantity BackOrder, it should not be brought again as \"Other (Balance Due)\". Similary if Extended Price is brought under Subtotal column, \"Other (Extended Price)\" should not be brought again.\n5. Provide the column headers in the output as \"Columnname from Columns List\". For the extra columns, provide each as a separate \"Other\" entry with the format \"Other (Actual column header name as per OCR)\": \"Value\". For example, if the column name from the Columns List is \"Item Number\", then provide the column header as Item Number. If extra columns/additional information is present in the table, for example Batch Number, Delivery Date, they should be provided as separate columns - \"Other (Batch Number)\": \"Value\", \"Other (Delivery Date)\": \"Value\". Do not group these under a single \"Other\" object.\n6. After extracting each table, provide Table Confidence in the format:\n\"{Table_Confidence}\": \"{Table extraction Confidence percentage in the range 0 to 100}\n7. Double check that all the column headers are provided as \"Columnname from Columns List\" and all the extra columns are extracted separately as \"Other\"(Actual column header names as per OCR)\n\nColumns List:\nItem Details - [Currency Code, Currency Name, Item Code, Line Number, Product and Description, Quantity, Required Date, U/M, Unit Price]\n\nClues:\nItem Details Table:\nProduct and Description - Item or Product Description refers to a detailed explanation of the specific product or service being bought\nQuantity - Quantity refers to the exact number of units of a specific item that a buyer is ordering from a supplier\nUnit Price - Unit price refers to the cost of a single unit of an item that is being purchased from a supplier; it is the price per item\nCurrency Code - In a Purchase Order (PO) document, the \"currency\" listed in the item details refers to the specific monetary unit used to price that particular item\nCurrency Name - Extract full currency name from the following Purchase Order (PO) document. Identify currency symbols in prices (e.g., \"U$123\") and provide their corresponding ISO currency codes and names.\nItem Code - An Item number on a Purchase Order (PO) is a unique identifier assigned to each individual item listed on the order\nRequired Date - Required Date refers to the date by which the company needs to receive the goods or services ordered from the vendor\nU/M - U/A which refers to the standard unit used to quantify the quantity of an item being ordered on a purchase order\nLine Number - Line - indicates the sequence number of the items. Provide the sequence number based on this order. If the line number is missing or not provided in the input source, assign a sequential number to each table row based on its order of appearance. This number should represent the row's position in the table.\n\nGuidelines:\n1. Ensure that the table has a proper table name matching with the table in Tables to Extract Section, table column headers, and respective column values under column headers.\n2. For extra columns, provide them separately under \"Other\" with their actual column names from the OCR.\n3. Make sure to omit the columns that are nowhere present in the document ocr.\n4. Do not compute values on your own. Provide only if they are present in the document. For example Totals, Subtotals, Line Numbers.\n\n\n\nOutput Format:\nProvide the table information in below format. There may be occurances of empty column values. Parse the column values accurately and map to correct columns.\n\n<result>\n{\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"},\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"}}\n</result>\n\nGuidelines:\nResponse should not contain any comments and new lines.\nThe table structure should be in above format, with proper table names, column names and column values with Page number under column \"PageNo\".\nStrictly provide the response containing only valid XML in the above provided structure enclosed in <result></result> and do not use code block formatting or any other text formatting. The json inside result tags should be valid and without any error.\nIf no table is present in the document or if the document contains an empty table, the output format should be <result></result>.\n$Table Detection Prompt End$"
+        }
+      ]
+    },
+    "createtime": "2025-03-09T13:33:52",
+    "updatedtime": "2026-01-29T17:07:29.0850937+00:00",
+    "errormsg": "",
+    "dpfVersionId": 564,
+    "versionID": "3",
+    "versionName": "v3",
+    "versionStatus": "Active",
+    "promptStructure": null,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  }
+]

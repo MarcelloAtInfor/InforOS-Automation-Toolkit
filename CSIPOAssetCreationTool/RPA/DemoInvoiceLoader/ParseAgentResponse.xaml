@@ -1,0 +1,530 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="agentResponse" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="vendorNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="poNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="itemsCreated" Type="OutArgument(x:String)" />
+    <x:Property Name="itemCount" Type="OutArgument(x:String)" />
+    <x:Property Name="agentOverallStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="agentErrors" Type="OutArgument(x:String)" />
+    <x:Property Name="agentNotes" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>Infor.RPA.Utilities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Infor.RPA.Utilities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="TryCatch Parse Agent Response" sap2010:WorkflowViewState.IdRef="TryCatch_Main">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="njl:JToken" Name="parsedJson" />
+      <Variable x:TypeArguments="njl:JArray" Name="messagesArray" />
+      <Variable x:TypeArguments="x:String" Name="contentText" />
+      <Variable x:TypeArguments="x:String" Name="jsonContent" />
+      <Variable x:TypeArguments="njl:JObject" Name="parsedResult" />
+      <Variable x:TypeArguments="njl:JArray" Name="itemsArray" />
+      <Variable x:TypeArguments="scg:List(x:String)" Name="itemCodesList" />
+      <Variable x:TypeArguments="x:Int32" Name="jsonStartPos" />
+      <Variable x:TypeArguments="x:Int32" Name="jsonEndPos" />
+      <Variable x:TypeArguments="njl:JArray" Name="errorsArray" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence DisplayName="Parse Agent Response (JSON)" sap2010:WorkflowViewState.IdRef="Sequence_Main">
+        <Assign DisplayName="Init Vendor Number" sap2010:WorkflowViewState.IdRef="Assign_InitVendorNumber">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[vendorNumber]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Vendor Name" sap2010:WorkflowViewState.IdRef="Assign_InitVendorName">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[vendorName]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init PO Number" sap2010:WorkflowViewState.IdRef="Assign_InitPONumber">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[poNumber]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Items Created" sap2010:WorkflowViewState.IdRef="Assign_InitItemsCreated">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[itemsCreated]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Item Count" sap2010:WorkflowViewState.IdRef="Assign_InitItemCount">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[itemCount]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["0"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Agent Overall Status" sap2010:WorkflowViewState.IdRef="Assign_InitAgentOverallStatus">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentOverallStatus]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Agent Errors" sap2010:WorkflowViewState.IdRef="Assign_InitAgentErrors">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentErrors]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Agent Notes" sap2010:WorkflowViewState.IdRef="Assign_InitAgentNotes">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentNotes]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Content Text" sap2010:WorkflowViewState.IdRef="Assign_InitContentText">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[contentText]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init JSON Content" sap2010:WorkflowViewState.IdRef="Assign_InitJsonContent">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[jsonContent]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Items Code List" sap2010:WorkflowViewState.IdRef="Assign_InitItemCodesList">
+          <Assign.To>
+            <OutArgument x:TypeArguments="scg:List(x:String)">[itemCodesList]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="scg:List(x:String)">[New List(Of String)]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <If Condition="[Not String.IsNullOrWhiteSpace(agentResponse)]" DisplayName="Check Response Not Empty" sap2010:WorkflowViewState.IdRef="If_ResponseNotEmpty">
+          <If.Then>
+            <Sequence DisplayName="Parse Response" sap2010:WorkflowViewState.IdRef="Sequence_ParseResponse">
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Starting Parse" sap2010:WorkflowViewState.IdRef="Append_Line_StartParse" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: Starting JSON parse of agent response (length: &quot;+agentResponse.Length.ToString()+&quot;)&quot;]" Source="[logFile]" />
+              <Assign DisplayName="Parse API Response JSON" sap2010:WorkflowViewState.IdRef="Assign_ParseJsonToken">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="njl:JToken">[parsedJson]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="njl:JToken">[JToken.Parse(agentResponse)]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <If Condition="[TypeOf parsedJson Is JArray]" DisplayName="Check if Array" sap2010:WorkflowViewState.IdRef="If_IsArray">
+                <If.Then>
+                  <Assign DisplayName="Use Array Directly" sap2010:WorkflowViewState.IdRef="Assign_UseArrayDirectly">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="njl:JArray">[messagesArray]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="njl:JArray">[CType(parsedJson, JArray)]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                </If.Then>
+                <If.Else>
+                  <Sequence DisplayName="Extract from Object" sap2010:WorkflowViewState.IdRef="Sequence_ExtractFromObject">
+                    <If Condition="[parsedJson(&quot;items&quot;) IsNot Nothing AndAlso TypeOf parsedJson(&quot;items&quot;) Is JArray]" DisplayName="Check items property (paginated)" sap2010:WorkflowViewState.IdRef="If_HasItemsProperty">
+                      <If.Then>
+                        <Assign DisplayName="Get Items Array (paginated)" sap2010:WorkflowViewState.IdRef="Assign_GetItemsArray">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="njl:JArray">[messagesArray]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="njl:JArray">[CType(parsedJson("items"), JArray)]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </If.Then>
+                      <If.Else>
+                        <If Condition="[parsedJson(&quot;messages&quot;) IsNot Nothing AndAlso TypeOf parsedJson(&quot;messages&quot;) Is JArray]" DisplayName="Check messages property" sap2010:WorkflowViewState.IdRef="If_HasMessagesProperty">
+                          <If.Then>
+                            <Assign DisplayName="Get Messages Array" sap2010:WorkflowViewState.IdRef="Assign_GetMessagesArray">
+                              <Assign.To>
+                                <OutArgument x:TypeArguments="njl:JArray">[messagesArray]</OutArgument>
+                              </Assign.To>
+                              <Assign.Value>
+                                <InArgument x:TypeArguments="njl:JArray">[CType(parsedJson("messages"), JArray)]</InArgument>
+                              </Assign.Value>
+                            </Assign>
+                          </If.Then>
+                        </If>
+                      </If.Else>
+                    </If>
+                  </Sequence>
+                </If.Else>
+              </If>
+              <If Condition="[messagesArray IsNot Nothing]" DisplayName="Check Messages Found" sap2010:WorkflowViewState.IdRef="If_MessagesFound">
+                <If.Then>
+                  <Sequence DisplayName="Find LLM Message" sap2010:WorkflowViewState.IdRef="Sequence_FindLLM">
+                    <ForEach x:TypeArguments="njl:JToken" DisplayName="Find LLM Message" sap2010:WorkflowViewState.IdRef="ForEach_Messages" Values="[messagesArray]">
+                      <ActivityAction x:TypeArguments="njl:JToken">
+                        <ActivityAction.Argument>
+                          <DelegateInArgument x:TypeArguments="njl:JToken" Name="msg" />
+                        </ActivityAction.Argument>
+                        <If Condition="[msg(&quot;sender&quot;) IsNot Nothing AndAlso msg(&quot;sender&quot;).ToString() = &quot;LLM&quot; AndAlso msg(&quot;content&quot;) IsNot Nothing]" DisplayName="Check if LLM Message" sap2010:WorkflowViewState.IdRef="If_IsLLMMessage">
+                          <If.Then>
+                            <Assign DisplayName="Get Content Text" sap2010:WorkflowViewState.IdRef="Assign_GetContentText">
+                              <Assign.To>
+                                <OutArgument x:TypeArguments="x:String">[contentText]</OutArgument>
+                              </Assign.To>
+                              <Assign.Value>
+                                <InArgument x:TypeArguments="x:String">[msg("content").ToString()]</InArgument>
+                              </Assign.Value>
+                            </Assign>
+                          </If.Then>
+                        </If>
+                      </ActivityAction>
+                    </ForEach>
+                  </Sequence>
+                </If.Then>
+              </If>
+              <If Condition="[Not String.IsNullOrWhiteSpace(contentText)]" DisplayName="Check Content Found" sap2010:WorkflowViewState.IdRef="If_ContentFound">
+                <If.Then>
+                  <Sequence DisplayName="Extract JSON from Content" sap2010:WorkflowViewState.IdRef="Sequence_ExtractJSON">
+                    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Content Found" sap2010:WorkflowViewState.IdRef="Append_Line_ContentFound" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: Found LLM content (length: &quot;+contentText.Length.ToString()+&quot;)&quot;]" Source="[logFile]" />
+                    <Assign DisplayName="Strip markdown code block start" sap2010:WorkflowViewState.IdRef="Assign_StripMarkdownStart">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[jsonContent]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(contentText.Contains("```json"), contentText.Substring(contentText.IndexOf("```json") + 7), If(contentText.Contains("```"), contentText.Substring(contentText.IndexOf("```") + 3), contentText))]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <Assign DisplayName="Strip markdown code block end" sap2010:WorkflowViewState.IdRef="Assign_StripMarkdownEnd">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[jsonContent]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">[If(jsonContent.Contains("```"), jsonContent.Substring(0, jsonContent.LastIndexOf("```")), jsonContent).Trim()]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <If Condition="[jsonContent.StartsWith(&quot;{&quot;) AndAlso jsonContent.EndsWith(&quot;}&quot;)]" DisplayName="Check Valid JSON Structure" sap2010:WorkflowViewState.IdRef="If_ValidJsonStructure">
+                      <If.Then>
+                        <Sequence DisplayName="Parse and Extract JSON Fields" sap2010:WorkflowViewState.IdRef="Sequence_ParseJsonFields">
+                          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log JSON content" sap2010:WorkflowViewState.IdRef="Append_Line_JsonContent" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: JSON content extracted (length: &quot;+jsonContent.Length.ToString()+&quot;)&quot;]" Source="[logFile]" />
+                          <Assign DisplayName="Parse Result JSON" sap2010:WorkflowViewState.IdRef="Assign_ParseResultJson">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="njl:JObject">[parsedResult]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="njl:JObject">[JObject.Parse(jsonContent)]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Vendor Number" sap2010:WorkflowViewState.IdRef="Assign_ExtractVendorNumber">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[vendorNumber]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("vendor.vendorNumber") IsNot Nothing, parsedResult.SelectToken("vendor.vendorNumber").ToString(), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Vendor Name" sap2010:WorkflowViewState.IdRef="Assign_ExtractVendorName">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[vendorName]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("vendor.name") IsNot Nothing, parsedResult.SelectToken("vendor.name").ToString(), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract PO Number" sap2010:WorkflowViewState.IdRef="Assign_ExtractPONumber">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[poNumber]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("purchaseOrder.poNumber") IsNot Nothing, parsedResult.SelectToken("purchaseOrder.poNumber").ToString(), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Item Count" sap2010:WorkflowViewState.IdRef="Assign_ExtractItemCount">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[itemCount]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("items.created") IsNot Nothing, parsedResult.SelectToken("items.created").ToString(), "0")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Get Items Array" sap2010:WorkflowViewState.IdRef="Assign_GetItemsDetailsArray">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="njl:JArray">[itemsArray]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="njl:JArray">[If(parsedResult.SelectToken("items.details") IsNot Nothing AndAlso TypeOf parsedResult.SelectToken("items.details") Is JArray, CType(parsedResult.SelectToken("items.details"), JArray), Nothing)]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Agent Overall Status" sap2010:WorkflowViewState.IdRef="Assign_ExtractAgentOverallStatus">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentOverallStatus]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("status") IsNot Nothing, parsedResult.SelectToken("status").ToString(), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Get Errors Array" sap2010:WorkflowViewState.IdRef="Assign_GetErrorsArray">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="njl:JArray">[errorsArray]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="njl:JArray">[If(parsedResult.SelectToken("errors") IsNot Nothing AndAlso TypeOf parsedResult.SelectToken("errors") Is JArray, CType(parsedResult.SelectToken("errors"), JArray), Nothing)]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Agent Errors - Join Array" sap2010:WorkflowViewState.IdRef="Assign_ExtractAgentErrors">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentErrors]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(errorsArray IsNot Nothing AndAlso errorsArray.Count > 0, String.Join("; ", errorsArray.Select(Function(e) e.ToString())), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <Assign DisplayName="Extract Agent Notes" sap2010:WorkflowViewState.IdRef="Assign_ExtractAgentNotes">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="x:String">[agentNotes]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="x:String">[If(parsedResult.SelectToken("notes") IsNot Nothing, parsedResult.SelectToken("notes").ToString(), "")]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                          <If Condition="[itemsArray IsNot Nothing]" DisplayName="Check Items Array Exists" sap2010:WorkflowViewState.IdRef="If_ItemsArrayExists">
+                            <If.Then>
+                              <Sequence DisplayName="Build Items List" sap2010:WorkflowViewState.IdRef="Sequence_BuildItemsList">
+                                <ForEach x:TypeArguments="njl:JToken" DisplayName="Iterate Item Details" sap2010:WorkflowViewState.IdRef="ForEach_ItemDetails" Values="[itemsArray]">
+                                  <ActivityAction x:TypeArguments="njl:JToken">
+                                    <ActivityAction.Argument>
+                                      <DelegateInArgument x:TypeArguments="njl:JToken" Name="item" />
+                                    </ActivityAction.Argument>
+                                    <If Condition="[item(&quot;itemCode&quot;) IsNot Nothing]" DisplayName="Check Item Has Code" sap2010:WorkflowViewState.IdRef="If_ItemHasCode">
+                                      <If.Then>
+                                        <InvokeMethod DisplayName="Add Item Code" sap2010:WorkflowViewState.IdRef="InvokeMethod_AddItemCode" MethodName="Add">
+                                          <InvokeMethod.TargetObject>
+                                            <InArgument x:TypeArguments="scg:List(x:String)">[itemCodesList]</InArgument>
+                                          </InvokeMethod.TargetObject>
+                                          <InArgument x:TypeArguments="x:String">[item("itemCode").ToString()]</InArgument>
+                                        </InvokeMethod>
+                                      </If.Then>
+                                    </If>
+                                  </ActivityAction>
+                                </ForEach>
+                                <Assign DisplayName="Set Items Created String" sap2010:WorkflowViewState.IdRef="Assign_SetItemsCreated">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="x:String">[itemsCreated]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="x:String">[If(itemCodesList.Count > 0, String.Join(", ", itemCodesList), "")]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                              </Sequence>
+                            </If.Then>
+                          </If>
+                          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Parsed Results" sap2010:WorkflowViewState.IdRef="Append_Line_ParsedResults" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: Status=&quot;+agentOverallStatus+&quot;, Errors=&quot;+If(errorsArray IsNot Nothing, errorsArray.Count.ToString(), &quot;0&quot;)+&quot;, Notes=&quot;+agentNotes.Length.ToString()+&quot; chars&quot;+System.Environment.NewLine+&quot;  JSON Extracted values:&quot;+System.Environment.NewLine+&quot;    Vendor Number: &quot;+vendorNumber+System.Environment.NewLine+&quot;    Vendor Name: &quot;+vendorName+System.Environment.NewLine+&quot;    PO Number: &quot;+poNumber+System.Environment.NewLine+&quot;    Items Created: &quot;+itemsCreated+System.Environment.NewLine+&quot;    Item Count: &quot;+itemCount+If(agentErrors.Length &gt; 0, System.Environment.NewLine+&quot;    Errors: &quot;+agentErrors, &quot;&quot;)+If(agentNotes.Length &gt; 0, System.Environment.NewLine+&quot;    Notes: &quot;+agentNotes, &quot;&quot;)]" Source="[logFile]" />
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Invalid JSON" sap2010:WorkflowViewState.IdRef="Append_Line_InvalidJson" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: Content is not valid JSON structure. Content starts with: &quot;+If(jsonContent.Length > 100, jsonContent.Substring(0, 100)+&quot;...&quot;, jsonContent)]" Source="[logFile]" />
+                      </If.Else>
+                    </If>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log No Content" sap2010:WorkflowViewState.IdRef="Append_Line_NoContent" Line="[&quot;  ParseAgentResponse: No LLM content found in response&quot;]" Source="[logFile]" />
+                </If.Else>
+              </If>
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Empty Response" sap2010:WorkflowViewState.IdRef="Append_Line_EmptyResponse" Line="[&quot;  ParseAgentResponse: Agent response is empty or null&quot;]" Source="[logFile]" />
+          </If.Else>
+        </If>
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Handle Exception" sap2010:WorkflowViewState.IdRef="Sequence_HandleException">
+            <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Exception" sap2010:WorkflowViewState.IdRef="Append_Line_Exception" Line="[System.Environment.NewLine+&quot;  ParseAgentResponse: EXCEPTION - &quot;+exception.Message+System.Environment.NewLine+&quot;  StackTrace: &quot;+exception.StackTrace]" Source="[logFile]" />
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_InitVendorNumber" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitVendorName" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitPONumber" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitItemsCreated" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitItemCount" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitAgentOverallStatus" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitAgentErrors" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitAgentNotes" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitContentText" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitJsonContent" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Assign_InitItemCodesList" sap:VirtualizedContainerService.HintSize="564,60" />
+      <sap2010:ViewStateData Id="Append_Line_StartParse" sap:VirtualizedContainerService.HintSize="512,22" />
+      <sap2010:ViewStateData Id="Assign_ParseJsonToken" sap:VirtualizedContainerService.HintSize="512,60" />
+      <sap2010:ViewStateData Id="Assign_UseArrayDirectly" sap:VirtualizedContainerService.HintSize="460,60" />
+      <sap2010:ViewStateData Id="Assign_GetItemsArray" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_GetMessagesArray" sap:VirtualizedContainerService.HintSize="356,60" />
+      <sap2010:ViewStateData Id="If_HasMessagesProperty" sap:VirtualizedContainerService.HintSize="386,210" />
+      <sap2010:ViewStateData Id="If_HasItemsProperty" sap:VirtualizedContainerService.HintSize="438,360" />
+      <sap2010:ViewStateData Id="Sequence_ExtractFromObject" sap:VirtualizedContainerService.HintSize="460,478">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_IsArray" sap:VirtualizedContainerService.HintSize="512,628" />
+      <sap2010:ViewStateData Id="Assign_GetContentText" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="If_IsLLMMessage" sap:VirtualizedContainerService.HintSize="456,210" />
+      <sap2010:ViewStateData Id="ForEach_Messages" sap:VirtualizedContainerService.HintSize="504,360" />
+      <sap2010:ViewStateData Id="Sequence_FindLLM" sap:VirtualizedContainerService.HintSize="526,478">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_MessagesFound" sap:VirtualizedContainerService.HintSize="512,628" />
+      <sap2010:ViewStateData Id="Append_Line_ContentFound" sap:VirtualizedContainerService.HintSize="460,22" />
+      <sap2010:ViewStateData Id="Assign_StripMarkdownStart" sap:VirtualizedContainerService.HintSize="460,60" />
+      <sap2010:ViewStateData Id="Assign_StripMarkdownEnd" sap:VirtualizedContainerService.HintSize="460,60" />
+      <sap2010:ViewStateData Id="Append_Line_JsonContent" sap:VirtualizedContainerService.HintSize="408,22" />
+      <sap2010:ViewStateData Id="Assign_ParseResultJson" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractVendorNumber" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractVendorName" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractPONumber" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractItemCount" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_GetItemsDetailsArray" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractAgentOverallStatus" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_GetErrorsArray" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractAgentErrors" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="Assign_ExtractAgentNotes" sap:VirtualizedContainerService.HintSize="408,60" />
+      <sap2010:ViewStateData Id="InvokeMethod_AddItemCode" sap:VirtualizedContainerService.HintSize="252,22" />
+      <sap2010:ViewStateData Id="If_ItemHasCode" sap:VirtualizedContainerService.HintSize="300,172" />
+      <sap2010:ViewStateData Id="ForEach_ItemDetails" sap:VirtualizedContainerService.HintSize="348,322" />
+      <sap2010:ViewStateData Id="Assign_SetItemsCreated" sap:VirtualizedContainerService.HintSize="356,60" />
+      <sap2010:ViewStateData Id="Sequence_BuildItemsList" sap:VirtualizedContainerService.HintSize="378,500">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_ItemsArrayExists" sap:VirtualizedContainerService.HintSize="408,650" />
+      <sap2010:ViewStateData Id="Append_Line_ParsedResults" sap:VirtualizedContainerService.HintSize="408,22" />
+      <sap2010:ViewStateData Id="Sequence_ParseJsonFields" sap:VirtualizedContainerService.HintSize="430,1200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_InvalidJson" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="If_ValidJsonStructure" sap:VirtualizedContainerService.HintSize="460,1350" />
+      <sap2010:ViewStateData Id="Sequence_ExtractJSON" sap:VirtualizedContainerService.HintSize="482,1600">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_NoContent" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="If_ContentFound" sap:VirtualizedContainerService.HintSize="512,1750" />
+      <sap2010:ViewStateData Id="Sequence_ParseResponse" sap:VirtualizedContainerService.HintSize="534,3000">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_EmptyResponse" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="If_ResponseNotEmpty" sap:VirtualizedContainerService.HintSize="564,3150" />
+      <sap2010:ViewStateData Id="Sequence_Main" sap:VirtualizedContainerService.HintSize="586,3800">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Append_Line_Exception" sap:VirtualizedContainerService.HintSize="564,22" />
+      <sap2010:ViewStateData Id="Sequence_HandleException" sap:VirtualizedContainerService.HintSize="586,140">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_Main" sap:VirtualizedContainerService.HintSize="638,4100" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="678,4180" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

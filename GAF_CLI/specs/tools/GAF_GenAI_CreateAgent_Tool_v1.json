@@ -1,0 +1,20 @@
+{
+  "guid": "543f8f6b-854c-4789-b824-b69eb4adab7e",
+  "name": "GAF_GenAI_CreateAgent_Tool_v1",
+  "description": "Create a new TOOLKIT-type Agent in Infor OS GenAI from a specification.",
+  "instructions": "Create a new Agent in Infor OS GenAI. Agents MUST use type TOOLKIT. Required fields: name (GAF_<Product>_<Capability>_Agent_v<N> format), description, instructions (short summary), type (MUST be TOOLKIT), data object, utterances array. The data object MUST contain: workflow (detailed behavior), tools (array of tool names), model. Returns: guid, name, type. HTTP 409 means name conflict - use UpdateAsset instead.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "Method: POST\nEndpoint: /api/v1/tools\nHeaders: Content-Type: application/json\nBody: JSON array with ONE agent object.\nREQUIRED PAYLOAD STRUCTURE:\n[{\n  \"name\": \"GAF_<Product>_<Capability>_Agent_v<N>\",\n  \"description\": \"What the agent does\",\n  \"instructions\": \"Short summary of agent purpose (under 200 chars)\",\n  \"type\": \"TOOLKIT\",\n  \"data\": {\n    \"workflow\": \"Detailed agent behavior, available tools, workflow steps, validation rules, tone guidelines\",\n    \"tools\": [\"ToolName1\", \"ToolName2\"],\n    \"model\": {\"model\": \"CLAUDE\", \"version\": \"claude-3-7-sonnet-20250219-v1:0\"}\n  },\n  \"utterances\": [\"example trigger phrase 1\", \"example trigger phrase 2\"],\n  \"status\": 1\n}]\nIMPORTANT: type MUST be TOOLKIT. utterances array is REQUIRED for TOOLKIT type.\nExample Request:\nPOST /api/v1/tools\nContent-Type: application/json\n[{\"name\":\"GAF_Test_Sample_Agent_v1\",\"description\":\"Sample agent\",\"instructions\":\"Use this agent\",\"type\":\"TOOLKIT\",\"data\":{\"workflow\":\"Agent behavior\",\"tools\":[\"GAF_GenAI_ListAssets_Tool_v1\"],\"model\":{\"model\":\"CLAUDE\",\"version\":\"claude-3-7-sonnet-20250219-v1:0\"}},\"utterances\":[\"trigger phrase\"],\"status\":1}]",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "responseInstructions": "Success: [{\"guid\":\"new-guid\",\"name\":\"...\",\"type\":\"TOOLKIT\",...}]. HTTP 409: Name conflict (agent exists). HTTP 422: Validation failure (check utterances). HTTP 500: Check payload structure matches required format exactly.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

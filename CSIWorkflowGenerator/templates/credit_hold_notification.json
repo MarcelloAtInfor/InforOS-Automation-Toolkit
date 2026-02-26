@@ -1,0 +1,50 @@
+{
+  "name": "CS_CreditHold_Notification",
+  "description": "Notification-only workflow: alerts sales team when a customer is placed on credit hold. No approval or write-back needed.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCustomers",
+    "monitored_field": "CreditHold",
+    "workflow_inputs": {
+      "CustNum": "CustNum",
+      "CustName": "Name",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.Customers",
+    "access_as": "ue_",
+    "handler_sequence": 202,
+    "handler_description": "ue_CreditHoldNotification"
+  },
+  "variables": [
+    {"name": "CustNum", "type": "STRING", "input": true},
+    {"name": "CustName", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true}
+  ],
+  "views": [
+    {
+      "name": "CustomerDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "CustomerView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CustNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "notification",
+      "name": "Credit Hold Alert",
+      "message": "Customer [CustName] (ID: [CustNum]) has been placed on credit hold.",
+      "distribution": "user1",
+      "send_email": true,
+      "params": [
+        {"label": "Customer", "variable": "CustName"},
+        {"label": "Customer ID", "variable": "CustNum"},
+        {"label": "Customer Details", "view": "CustomerDrillBack"}
+      ]
+    }
+  ]
+}

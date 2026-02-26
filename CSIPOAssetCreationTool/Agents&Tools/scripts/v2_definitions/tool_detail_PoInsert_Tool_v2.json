@@ -1,0 +1,30 @@
+{
+  "guid": "4ed7b512-6fec-4c20-b69d-3b9598c69ecf",
+  "name": "PoInsert_Tool_v2",
+  "description": "Create a new purchase order in SyteLine linked to a vendor",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLPOs\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains PO details in the Changes array:\n{\n  \"IDOName\": \"SLPOs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Type\", \"Value\": \"R\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoCurrCode\", \"Value\": \"USD\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. PoNum must be exactly 10 characters. VendNum links PO to vendor.\nExample request:\n POST /update/SLPOs",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate PoNum):\n{\n  \"Success\": false,\n  \"Message\": \"Purchase order number already exists\",\n  \"Items\": []\n}\n\nExample error response (invalid VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created PO record (includes _ItemId)\n- _ItemId: Unique identifier for the created PO\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create a new purchase order in SyteLine.\n\nIMPORTANT: Always use PoSearch_Tool_v2 first to ensure the PO doesn't already exist!\n\nRequired fields:\n- PoNum: Exactly 10 characters, unique\n- VendNum: Vendor number - EXACTLY 7 chars (CRITICAL - was missing in v1!)\n- TermsCode: Payment terms (N30, N45, COD, etc.)\n- Stat: Default \"O\" (open)\n- Type: Default \"R\" (regular)\n- Whse: Warehouse (MAIN, etc.)\n- PoCurrCode: Default \"USD\"\n\nThe VendNum must come from a vendor that was either:\n1. Created using VendorInsert_Tool_v2\n2. Found using VendorSearch_Tool_v2\n\nReturns the created PO with PoNum and _ItemId.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:39.389248Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}

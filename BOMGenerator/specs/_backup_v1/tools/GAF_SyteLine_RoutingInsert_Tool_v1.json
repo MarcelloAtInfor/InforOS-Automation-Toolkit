@@ -1,0 +1,23 @@
+{
+  "guid": "48b61dae-19bd-48da-8183-fd69c3ce933d",
+  "name": "GAF_SyteLine_RoutingInsert_Tool_v1",
+  "description": "Add routing operations (manufacturing steps) to a standard job in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLJobRoutes\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nBatch insert multiple routing operations in one call:\n{\n  \"IDOName\": \"SLJobRoutes\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Job\", \"Value\": \"         2\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"OperNum\", \"Value\": \"10\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Wc\", \"Value\": \"FA-400\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"SetupHrsT\", \"Value\": \"1.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"RunHrsTLbr\", \"Value\": \"0.50\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"RunHrsTMch\", \"Value\": \"0.00\"}\n      ]\n    },\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Job\", \"Value\": \"         2\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"OperNum\", \"Value\": \"20\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Wc\", \"Value\": \"INS-20\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"SetupHrsT\", \"Value\": \"0.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"RunHrsTLbr\", \"Value\": \"0.25\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"RunHrsTMch\", \"Value\": \"0.00\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 = insert. Include ALL operations in a single Changes array.\nOperation numbers increment by 10 (10, 20, 30...).\nJob number must be left-padded with spaces to 10 chars.\nWork center code (Wc) must be a valid existing work center.\nExample Request:\nPOST /update/SLJobRoutes\nAdd two operations to job 2: assembly at FA-400, then inspection at INS-20:",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if all inserts succeeded\n- Message: Error message if Success is false\n- Items: Array of created routing operation records\nEach operation should appear in Items with its Job, OperNum, Wc, and _ItemId.\nIf any operation fails, check the Message for details (common: invalid work center code).\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Add routing operations to a standard job. BATCH: ALL operations in one Changes array.\nFields: Job (10-char padded), Suffix='0', OperNum (10,20,30...), Wc (work center code), SetupHrsT, RunHrsTLbr, RunHrsTMch.\nWork centers: FA-400, AS-500, MC-300, CUT-10, DRL-10, GRD-10, PNT-10, INS-20, PG-300, ST-100, MLD-10.\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

@@ -1,0 +1,40 @@
+{
+  "guid": "941b8d9c-054c-4ad3-b88c-b73adbee1ee7",
+  "name": "UpdateOrderLineDates_Agent_v2",
+  "description": "Agent to automate weekly updates of customer order line due dates to the previous Sunday",
+  "type": "TOOLKIT",
+  "inputs": null,
+  "data": {
+    "workflow": "You are an automated order management assistant for weekly due date updates.\n\nWORKFLOW STEPS:\n\n1. Calculate Previous Sunday:\n   - Find the most recent Sunday before today\n   - Format the date as YYYYMMDD (e.g., \"20260125\")\n   - This will be the new due date for all order lines\n\n2. Query Order Lines:\n   - Use QueryUpcomingOrders_Tool to get 20 order lines with soonest due dates\n   - The tool automatically sorts by DueDate ascending and limits to 20 records\n   - No parameters needed - the tool is pre-configured\n\n3. Update Due Dates:\n   - Use UpdateOrderDueDate_Tool to update all 20 order lines\n   - Build a request with all _ItemId values from step 2\n   - Set all DueDate fields to the previous Sunday date from step 1\n   - Execute in a single API call (batch update)\n\n4. Report Results:\n   - Confirm how many order lines were updated\n   - Show the previous Sunday date used\n   - List the order numbers that were updated\n\nIMPORTANT NOTES:\n- Execute all steps automatically without asking for confirmation\n- Use the _ItemId exactly as returned from the query (do not modify)\n- Date format for updates is YYYYMMDD (8 digits, no separators)\n- All 20 order lines should be updated to the same date (previous Sunday)",
+    "tools": [
+      "QueryUpcomingOrders_Tool",
+      "UpdateOrderDueDate_Tool"
+    ],
+    "logicalIds": [
+      "lid://infor.syteline.update-orderline-dates-v2"
+    ],
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [
+    "Update order line due dates",
+    "Run weekly order date update",
+    "Set order lines to last Sunday",
+    "Update 20 soonest order lines",
+    "Make orders late for the week"
+  ],
+  "stubResponse": "",
+  "instructions": "Agent to automate weekly order line due date updates. Finds 20 order lines with soonest due dates and updates them to previous Sunday. Runs automatically without confirmation.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-27T23:12:13.414158Z",
+  "updatedBy": null,
+  "updatedOn": null,
+  "gp_config": null,
+  "security": {
+    "roles": []
+  }
+}

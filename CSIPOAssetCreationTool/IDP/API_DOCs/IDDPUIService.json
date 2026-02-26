@@ -1,0 +1,269 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Infor Document Processor",
+    "version": "v1"
+  },
+  "host": "mingle-ionapi.inforcloudsuite.com",
+  "basePath": "/<YOUR_TENANT>/COLEMANDDP/iddpuisvc",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/t2v/v1/GetT2VTags": {
+      "post": {
+        "tags": [
+          "TimeToValue"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/GridFilters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/t2v/v1/GetTagResources": {
+      "post": {
+        "tags": [
+          "TimeToValue"
+        ],
+        "summary": "Get all the Resource associated with the tag.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/GridFilters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ui/v{ver}/ExportDPF": {
+      "post": {
+        "tags": [
+          "UIService"
+        ],
+        "summary": "Exports DPF.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ver",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DPFGuids"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ui/v{ver}/ImportDPF": {
+      "post": {
+        "tags": [
+          "UIService"
+        ],
+        "summary": "Import DPF",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ver",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "datajsonfile",
+            "description": "",
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ui/v{ver}/DocumentProcessorFlows/List": {
+      "post": {
+        "tags": [
+          "UIService"
+        ],
+        "summary": "This APIs give List all the Document flows in the System",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ver",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/GridFilters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ui/v{ver}/DocumentProcessorFlows/{documentProcessorFlowGuid}": {
+      "get": {
+        "tags": [
+          "UIService"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "documentProcessorFlowGuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "ver",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DPFGuids": {
+      "type": "object",
+      "properties": {
+        "dpfGuid": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "GridFilters": {
+      "type": "object",
+      "properties": {
+        "currentPage": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "pageSize": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "sortColumn": {
+          "format": "string",
+          "maxLength": 200,
+          "minLength": 0,
+          "type": "string"
+        },
+        "sortDirection": {
+          "format": "string",
+          "maxLength": 10,
+          "minLength": 0,
+          "pattern": "^(ASC|DESC|asc|desc|ascending|descending|ASCENDING|DESCENDING|)$",
+          "type": "string"
+        },
+        "reqFilterExpression": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReqFilterExpression"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ReqFilterExpression": {
+      "type": "object",
+      "properties": {
+        "columnId": {
+          "format": "string",
+          "maxLength": 200,
+          "minLength": 0,
+          "type": "string"
+        },
+        "filterOperator": {
+          "format": "string",
+          "maxLength": 50,
+          "minLength": 0,
+          "type": "string"
+        },
+        "value": {
+          "format": "string",
+          "maxLength": 2000,
+          "minLength": 0,
+          "type": "string"
+        },
+        "filterType": {
+          "format": "string",
+          "maxLength": 50,
+          "minLength": 0,
+          "type": "string"
+        },
+        "timeZone": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

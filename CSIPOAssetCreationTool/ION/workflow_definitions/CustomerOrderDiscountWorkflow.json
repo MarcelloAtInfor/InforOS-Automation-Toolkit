@@ -1,0 +1,881 @@
+{
+  "variables": [
+    {
+      "name": "ApproveReject",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "OldDiscount",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Filter",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Timeout",
+      "dataType": "STRING",
+      "initialValue": "0",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Discount",
+      "dataType": "DECIMAL",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "MongooseConfig",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "ItemID",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "DiscountAmount",
+      "dataType": "DECIMAL",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "CustNum",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Order",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Properties",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Ido",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [
+    {
+      "name": "CustomerOrderDrillBack",
+      "viewSetName": "infor.syteline (SyteLineViews)",
+      "viewName": "SalesOrderView",
+      "viewParameters": [
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        },
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.syteline.csi/dals"
+        },
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "variable": "Order",
+          "name": "ID1"
+        }
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "_type": "tree",
+      "name": "CustomerOrder",
+      "label": "CustomerOrder",
+      "sequence": 0,
+      "treeLabels": [],
+      "treeElementChildren": [
+        {
+          "_type": "field",
+          "name": "Status",
+          "label": "Status",
+          "sequence": 1,
+          "treeLabels": [],
+          "dataType": "STRING"
+        },
+        {
+          "_type": "field",
+          "name": "ExtendedTotal",
+          "label": "Total Without Discount",
+          "sequence": 3,
+          "treeLabels": [],
+          "dataType": "DECIMAL"
+        },
+        {
+          "_type": "field",
+          "name": "Order",
+          "label": "Order",
+          "sequence": 0,
+          "treeLabels": [],
+          "dataType": "STRING"
+        },
+        {
+          "_type": "field",
+          "name": "Total",
+          "label": "Total With Discount",
+          "sequence": 4,
+          "treeLabels": [],
+          "dataType": "DECIMAL"
+        },
+        {
+          "_type": "node",
+          "name": "CoLine",
+          "label": "CoLine",
+          "sequence": 5,
+          "treeLabels": [],
+          "treeElementChildren": [
+            {
+              "_type": "field",
+              "name": "Qty",
+              "label": "Qty",
+              "sequence": 2,
+              "treeLabels": [],
+              "dataType": "DECIMAL"
+            },
+            {
+              "_type": "field",
+              "name": "Line",
+              "label": "Line",
+              "sequence": 0,
+              "treeLabels": [],
+              "dataType": "STRING"
+            },
+            {
+              "_type": "field",
+              "name": "Item",
+              "label": "Item",
+              "sequence": 1,
+              "treeLabels": [],
+              "dataType": "STRING"
+            },
+            {
+              "_type": "field",
+              "name": "Price",
+              "label": "Price",
+              "sequence": 3,
+              "treeLabels": [],
+              "dataType": "DECIMAL"
+            }
+          ]
+        },
+        {
+          "_type": "field",
+          "name": "Date",
+          "label": "Date",
+          "sequence": 2,
+          "treeLabels": [],
+          "dataType": "DATE_AND_TIME"
+        }
+      ]
+    }
+  ],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "parallel",
+        "sequenceNumber": 1,
+        "joinType": "ONE_IN",
+        "sequentialFlows": [
+          {
+            "sequenceNumber": 1,
+            "flowParts": [
+              {
+                "_type": "usertask",
+                "sequenceNumber": 1,
+                "name": "Discount Review",
+                "actionButtonVariable": "ApproveReject",
+                "parallel": false,
+                "priority": "High",
+                "taskMessage": "Please Approve new discount amount of [Discount]% totaling [DiscountAmount] for Customer Order [Order] for Customer [CustNum]",
+                "taskActionType": "CustomActions",
+                "userTaskType": "USER_TASK",
+                "maxEscalationLevel": 1,
+                "distributionComplexity": "Simple",
+                "propagateNotes": false,
+                "parameters": [
+                  {
+                    "variable": "DiscountAmount",
+                    "label": "Discount Amount",
+                    "readOnly": true,
+                    "sequenceNumber": 5,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  },
+                  {
+                    "tree": "CustomerOrder",
+                    "label": "CustomerOrder",
+                    "readOnly": true,
+                    "sequenceNumber": 0,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  },
+                  {
+                    "variable": "CustNum",
+                    "label": "Cust Num",
+                    "readOnly": true,
+                    "sequenceNumber": 3,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  },
+                  {
+                    "variable": "Discount",
+                    "label": "Discount",
+                    "readOnly": false,
+                    "sequenceNumber": 4,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  },
+                  {
+                    "variable": "Order",
+                    "label": "Order",
+                    "readOnly": true,
+                    "sequenceNumber": 2,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  },
+                  {
+                    "view": "CustomerOrderDrillBack",
+                    "label": "Customer Order Drill Back",
+                    "readOnly": true,
+                    "sequenceNumber": 1,
+                    "completionProperty": "NOT_APPLICABLE",
+                    "labels": []
+                  }
+                ],
+                "workflowDistributionItems": [
+                  {
+                    "name": "<USER_GUID>",
+                    "distributionType": "USER",
+                    "description": "<User Name>",
+                    "sendEmail": false
+                  },
+                  {
+                    "name": "<USER_EMAIL>",
+                    "distributionType": "USER",
+                    "description": "<USER_NAME>",
+                    "sendEmail": true
+                  },
+                  {
+                    "name": "<USER_GUID>",
+                    "distributionType": "USER",
+                    "description": "<User Name>",
+                    "sendEmail": false
+                  },
+                  {
+                    "name": "<USER_GUID>",
+                    "distributionType": "USER",
+                    "description": "<User Name>",
+                    "sendEmail": false
+                  }
+                ],
+                "taskMessages": [],
+                "actionButtons": [
+                  {
+                    "label": "Approve",
+                    "value": "Approved",
+                    "sequenceNumber": 0,
+                    "actionButtonLabels": []
+                  },
+                  {
+                    "label": "Reject",
+                    "value": "Rejected",
+                    "sequenceNumber": 1,
+                    "actionButtonLabels": []
+                  }
+                ],
+                "workflowDecisionTables": [],
+                "userTaskEscalations": []
+              }
+            ]
+          },
+          {
+            "sequenceNumber": 2,
+            "flowParts": [
+              {
+                "_type": "assignment",
+                "sequenceNumber": 2,
+                "name": "Timeout Rejected",
+                "assignmentType": "NoAssignment",
+                "serializedAssignments": "[{\"assignmentType\":\"VALUE_ASSIGNMENT\",\"expression\":\"Rejected\",\"treePath\":null,\"variableName\":\"ApproveReject\",\"personFullName\":null},{\"assignmentType\":\"VALUE_ASSIGNMENT\",\"expression\":\"1\",\"treePath\":null,\"variableName\":\"Timeout\",\"personFullName\":null}]",
+                "listOfAllAssignments": [
+                  {
+                    "assignmentType": "VALUE_ASSIGNMENT",
+                    "expression": "Rejected",
+                    "variableName": "ApproveReject"
+                  },
+                  {
+                    "assignmentType": "VALUE_ASSIGNMENT",
+                    "expression": "1",
+                    "variableName": "Timeout"
+                  }
+                ]
+              },
+              {
+                "_type": "wait",
+                "sequenceNumber": 1,
+                "name": "Timeout After 1 Day",
+                "duration": 3,
+                "waitUnit": "DAYS"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "_type": "ionapi",
+        "sequenceNumber": 3,
+        "name": "GetOldDiscount",
+        "description": "Get Old Discount",
+        "timeOut": 600,
+        "retryTime": 600,
+        "ignoreErrors": false,
+        "method": "{\"productLogicalId\":\"infor.syteline\",\"operationProxyPath\":\"CSI/IDORequestService/ido\",\"operationRestPath\":\"/load/{ido}\",\"productName\":\"Infor SyteLine\",\"operationPath\":\"CSI/IDORequestService/ido/load/{ido}\",\"summary\":\"LoadCollection\",\"httpMethod\":\"GET\",\"availableOutputContentTypes\":[\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":\"\",\"name\":\"Authorization\",\"description\":\"Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"MongooseConfig\",\"literalValue\":null,\"name\":\"X-Infor-MongooseConfig\",\"description\":\"Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"Ido\",\"literalValue\":null,\"name\":\"ido\",\"description\":\"IDO name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":\"Properties\",\"literalValue\":null,\"name\":\"properties\",\"description\":\"A comma-delimited property list. Provide�*� to include all, except subcollection properties.\",\"swaggerDatatype\":\"array(string)\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":\"Filter\",\"literalValue\":null,\"name\":\"filter\",\"description\":\"SQL filter string\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"orderBy\",\"description\":\"SQL ORDER BY value\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"recordCap\",\"description\":\"Sets row cap: -1 = default in Mongoose; 0 = unlimited.\",\"swaggerDatatype\":\"integer\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"distinct\",\"description\":\"SQL DISTINCT keyword\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"clm\",\"description\":\"Custom Load Method name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"clmParam\",\"description\":\"Comma-separated Custom Load Method parameters\",\"swaggerDatatype\":\"array(null)\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"loadType\",\"description\":\"Load type, one of FIRST | NEXT | PREVIOUS | LAST\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"bookmark\",\"description\":\"Designate bookmark ID\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"pqc\",\"description\":\"Post Query Command name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"readOnly\",\"description\":\"Read Only flag; if set to 'true', no ItemId is returned with query\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"OldDiscount\",\"type\":\"BODY\",\"path\":\"$.Items[0].UDFDecimal1\",\"optional\":false},{\"wfVariableName\":\"ItemID\",\"type\":\"BODY\",\"path\":\"$.Items[0]._ItemId\",\"optional\":false}],\"inputBody\":null}",
+        "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+        "isCustom": true,
+        "ionApiMethod": {
+          "productLogicalId": "infor.syteline",
+          "operationProxyPath": "CSI/IDORequestService/ido",
+          "operationRestPath": "/load/{ido}",
+          "productName": "Infor SyteLine",
+          "operationPath": "CSI/IDORequestService/ido/load/{ido}",
+          "summary": "LoadCollection",
+          "httpMethod": "GET",
+          "availableOutputContentTypes": [
+            "JSON"
+          ],
+          "outputContentType": "JSON",
+          "input": [
+            {
+              "literalValue": "",
+              "name": "Authorization",
+              "description": "Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "HEADER"
+            },
+            {
+              "wfVariableName": "MongooseConfig",
+              "name": "X-Infor-MongooseConfig",
+              "description": "Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "HEADER"
+            },
+            {
+              "wfVariableName": "Ido",
+              "name": "ido",
+              "description": "IDO name",
+              "swaggerDatatype": "string",
+              "required": true,
+              "type": "PATH"
+            },
+            {
+              "wfVariableName": "Properties",
+              "name": "properties",
+              "description": "A comma-delimited property list. Provide�*� to include all, except subcollection properties.",
+              "swaggerDatatype": "array(string)",
+              "required": true,
+              "type": "QUERY"
+            },
+            {
+              "wfVariableName": "Filter",
+              "name": "filter",
+              "description": "SQL filter string",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "orderBy",
+              "description": "SQL ORDER BY value",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "recordCap",
+              "description": "Sets row cap: -1 = default in Mongoose; 0 = unlimited.",
+              "swaggerDatatype": "integer",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "distinct",
+              "description": "SQL DISTINCT keyword",
+              "swaggerDatatype": "boolean",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "clm",
+              "description": "Custom Load Method name",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "clmParam",
+              "description": "Comma-separated Custom Load Method parameters",
+              "swaggerDatatype": "array(null)",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "loadType",
+              "description": "Load type, one of FIRST | NEXT | PREVIOUS | LAST",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "bookmark",
+              "description": "Designate bookmark ID",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "pqc",
+              "description": "Post Query Command name",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "name": "readOnly",
+              "description": "Read Only flag; if set to 'true', no ItemId is returned with query",
+              "swaggerDatatype": "boolean",
+              "required": false,
+              "type": "QUERY"
+            }
+          ],
+          "output": [
+            {
+              "wfVariableName": "OldDiscount",
+              "type": "BODY",
+              "path": "$.Items[0].UDFDecimal1",
+              "optional": false
+            },
+            {
+              "wfVariableName": "ItemID",
+              "type": "BODY",
+              "path": "$.Items[0]._ItemId",
+              "optional": false
+            }
+          ]
+        }
+      },
+      {
+        "_type": "assignment",
+        "sequenceNumber": 2,
+        "name": "SetVariables",
+        "assignmentType": "NoAssignment",
+        "serializedAssignments": "[{\"assignmentType\":\"EXPRESSION_ASSIGNMENT\",\"expression\":\"\\\"CoNum='\\\"&[Order]&\\\"'\\\"\",\"treePath\":null,\"variableName\":\"Filter\",\"personFullName\":null},{\"assignmentType\":\"VALUE_ASSIGNMENT\",\"expression\":\"<YOUR_SITE>\",\"treePath\":null,\"variableName\":\"MongooseConfig\",\"personFullName\":null},{\"assignmentType\":\"VALUE_ASSIGNMENT\",\"expression\":\"SLCos\",\"treePath\":null,\"variableName\":\"Ido\",\"personFullName\":null},{\"assignmentType\":\"VALUE_ASSIGNMENT\",\"expression\":\"CoNum,UDFDecimal1\",\"treePath\":null,\"variableName\":\"Properties\",\"personFullName\":null}]",
+        "listOfAllAssignments": [
+          {
+            "assignmentType": "EXPRESSION_ASSIGNMENT",
+            "expression": "\"CoNum='\"&[Order]&\"'\"",
+            "variableName": "Filter"
+          },
+          {
+            "assignmentType": "VALUE_ASSIGNMENT",
+            "expression": "<YOUR_SITE>",
+            "variableName": "MongooseConfig"
+          },
+          {
+            "assignmentType": "VALUE_ASSIGNMENT",
+            "expression": "SLCos",
+            "variableName": "Ido"
+          },
+          {
+            "assignmentType": "VALUE_ASSIGNMENT",
+            "expression": "CoNum,UDFDecimal1",
+            "variableName": "Properties"
+          }
+        ]
+      },
+      {
+        "_type": "ifthenelse",
+        "sequenceNumber": 4,
+        "trueBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 1,
+              "name": "UpdateCustomerOrderDiscountApproved",
+              "description": "Set new Discount",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.syteline\",\"operationProxyPath\":\"CSI/IDORequestService/ido\",\"operationRestPath\":\"/update/{ido}\",\"productName\":\"Infor SyteLine\",\"operationPath\":\"CSI/IDORequestService/ido/update/{ido}\",\"summary\":\"UpdateCollection\",\"httpMethod\":\"POST\",\"availableOutputContentTypes\":[\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"Authorization\",\"description\":\"Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"MongooseConfig\",\"literalValue\":null,\"name\":\"X-Infor-MongooseConfig\",\"description\":\"Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"Ido\",\"literalValue\":null,\"name\":\"ido\",\"description\":\"IDO name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"true\",\"name\":\"refresh\",\"description\":\"Refresh after update flag\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[],\"inputBody\":{\"name\":\"body\",\"description\":\"IDOUpdateItem structure\",\"required\":true,\"availableInputContentTypes\":[\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n  \\\"IDOName\\\": \\\"$value(Ido)\\\",\\n  \\\"RefreshAfterSave\\\": true,\\n  \\\"Changes\\\": [\\n    {\\n      \\\"Action\\\": 2,\\n      \\\"ItemId\\\": \\\"$value(ItemID)\\\",\\n      \\\"Properties\\\": [\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"Disc\\\",\\n          \\\"Value\\\": \\\"$value(Discount)\\\"\\n        },\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"InWorkflow\\\",\\n          \\\"Value\\\": \\\"0\\\"\\n        }\\n      ]\\n    }\\n  ]\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"Discount\",\"Ido\",\"ItemID\"]}}",
+              "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+              "isCustom": true,
+              "ionApiMethod": {
+                "productLogicalId": "infor.syteline",
+                "operationProxyPath": "CSI/IDORequestService/ido",
+                "operationRestPath": "/update/{ido}",
+                "productName": "Infor SyteLine",
+                "operationPath": "CSI/IDORequestService/ido/update/{ido}",
+                "summary": "UpdateCollection",
+                "httpMethod": "POST",
+                "availableOutputContentTypes": [
+                  "JSON"
+                ],
+                "outputContentType": "JSON",
+                "input": [
+                  {
+                    "name": "Authorization",
+                    "description": "Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "MongooseConfig",
+                    "name": "X-Infor-MongooseConfig",
+                    "description": "Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "Ido",
+                    "name": "ido",
+                    "description": "IDO name",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "true",
+                    "name": "refresh",
+                    "description": "Refresh after update flag",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [],
+                "inputBody": {
+                  "name": "body",
+                  "description": "IDOUpdateItem structure",
+                  "required": true,
+                  "availableInputContentTypes": [
+                    "JSON"
+                  ],
+                  "inputContentType": "JSON",
+                  "body": "{\n  \"IDOName\": \"$value(Ido)\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"ItemId\": \"$value(ItemID)\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Disc\",\n          \"Value\": \"$value(Discount)\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        }\n      ]\n    }\n  ]\n}",
+                  "ignore": false,
+                  "variableNamesFromBody": [
+                    "Discount",
+                    "Ido",
+                    "ItemID"
+                  ],
+                  "structureNamesFromBody": []
+                }
+              }
+            }
+          ]
+        },
+        "falseBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 1,
+              "name": "UpdateCustomerOrderDiscountRejected",
+              "description": "Set old Discount",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.syteline\",\"operationProxyPath\":\"CSI/IDORequestService/ido\",\"operationRestPath\":\"/update/{ido}\",\"productName\":\"Infor SyteLine\",\"operationPath\":\"CSI/IDORequestService/ido/update/{ido}\",\"summary\":\"UpdateCollection\",\"httpMethod\":\"POST\",\"availableOutputContentTypes\":[\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"Authorization\",\"description\":\"Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"MongooseConfig\",\"literalValue\":null,\"name\":\"X-Infor-MongooseConfig\",\"description\":\"Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"Ido\",\"literalValue\":null,\"name\":\"ido\",\"description\":\"IDO name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"true\",\"name\":\"refresh\",\"description\":\"Refresh after update flag\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[],\"inputBody\":{\"name\":\"body\",\"description\":\"IDOUpdateItem structure\",\"required\":true,\"availableInputContentTypes\":[\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n  \\\"IDOName\\\": \\\"$value(Ido)\\\",\\n  \\\"RefreshAfterSave\\\": true,\\n  \\\"Changes\\\": [\\n    {\\n      \\\"Action\\\": 2,\\n      \\\"ItemId\\\": \\\"$value(ItemID)\\\",\\n      \\\"Properties\\\": [\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"Disc\\\",\\n          \\\"Value\\\": \\\"$value(OldDiscount)\\\"\\n        },\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"InWorkflow\\\",\\n          \\\"Value\\\": \\\"0\\\"\\n        }\\n      ]\\n    }\\n  ]\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"Ido\",\"OldDiscount\",\"ItemID\"]}}",
+              "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+              "isCustom": true,
+              "ionApiMethod": {
+                "productLogicalId": "infor.syteline",
+                "operationProxyPath": "CSI/IDORequestService/ido",
+                "operationRestPath": "/update/{ido}",
+                "productName": "Infor SyteLine",
+                "operationPath": "CSI/IDORequestService/ido/update/{ido}",
+                "summary": "UpdateCollection",
+                "httpMethod": "POST",
+                "availableOutputContentTypes": [
+                  "JSON"
+                ],
+                "outputContentType": "JSON",
+                "input": [
+                  {
+                    "name": "Authorization",
+                    "description": "Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "MongooseConfig",
+                    "name": "X-Infor-MongooseConfig",
+                    "description": "Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "Ido",
+                    "name": "ido",
+                    "description": "IDO name",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "true",
+                    "name": "refresh",
+                    "description": "Refresh after update flag",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [],
+                "inputBody": {
+                  "name": "body",
+                  "description": "IDOUpdateItem structure",
+                  "required": true,
+                  "availableInputContentTypes": [
+                    "JSON"
+                  ],
+                  "inputContentType": "JSON",
+                  "body": "{\n  \"IDOName\": \"$value(Ido)\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"ItemId\": \"$value(ItemID)\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Disc\",\n          \"Value\": \"$value(OldDiscount)\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        }\n      ]\n    }\n  ]\n}",
+                  "ignore": false,
+                  "variableNamesFromBody": [
+                    "Ido",
+                    "OldDiscount",
+                    "ItemID"
+                  ],
+                  "structureNamesFromBody": []
+                }
+              }
+            }
+          ]
+        },
+        "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>ApprovedRejected</UsedSubcondition><Subconditions><Subcondition><Name>ApprovedRejected</Name><Type>AttributeValueComparison</Type><AttributeName>ApproveReject</AttributeName><ComparisonOperator>Equal</ComparisonOperator><Value>Approved</Value></Subcondition></Subconditions></Condition>"
+      },
+      {
+        "_type": "ifthenelse",
+        "sequenceNumber": 5,
+        "trueBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "usertask",
+              "sequenceNumber": 1,
+              "name": "Notify Results",
+              "parallel": false,
+              "priority": "Medium",
+              "taskMessage": "Customer Order [Order] with new discount of [Discount]% has been [ApproveReject]",
+              "taskActionType": "StandardAction",
+              "userTaskType": "NOTIFICATION",
+              "maxEscalationLevel": 1,
+              "distributionComplexity": "Simple",
+              "propagateNotes": true,
+              "parameters": [
+                {
+                  "variable": "Discount",
+                  "label": "Discount",
+                  "readOnly": true,
+                  "sequenceNumber": 3,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "view": "CustomerOrderDrillBack",
+                  "label": "Customer Order Drill Back",
+                  "readOnly": true,
+                  "sequenceNumber": 2,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "variable": "Order",
+                  "label": "Order",
+                  "readOnly": true,
+                  "sequenceNumber": 4,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "variable": "ApproveReject",
+                  "label": "Approve Reject",
+                  "readOnly": true,
+                  "sequenceNumber": 0,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "tree": "CustomerOrder",
+                  "label": "CustomerOrder",
+                  "readOnly": true,
+                  "sequenceNumber": 1,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                }
+              ],
+              "workflowDistributionItems": [
+                {
+                  "name": "<USER_GUID>",
+                  "distributionType": "USER",
+                  "description": "<User Name>",
+                  "sendEmail": false
+                },
+                {
+                  "name": "<USER_GUID>",
+                  "distributionType": "USER",
+                  "description": "<User Name>",
+                  "sendEmail": false
+                },
+                {
+                  "name": "<USER_EMAIL>",
+                  "distributionType": "USER",
+                  "description": "<USER_NAME>",
+                  "sendEmail": true
+                },
+                {
+                  "name": "<USER_GUID>",
+                  "distributionType": "USER",
+                  "description": "<User Name>",
+                  "sendEmail": false
+                }
+              ],
+              "taskMessages": [],
+              "actionButtons": [],
+              "workflowDecisionTables": [],
+              "userTaskEscalations": []
+            }
+          ]
+        },
+        "falseBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "usertask",
+              "sequenceNumber": 1,
+              "name": "Notify Timeout",
+              "parallel": false,
+              "priority": "Medium",
+              "taskMessage": "Due to lack of activity, Customer Order [Order] with new discount of [Discount]% has been [ApproveReject].",
+              "taskActionType": "StandardAction",
+              "userTaskType": "NOTIFICATION",
+              "maxEscalationLevel": 1,
+              "distributionComplexity": "Simple",
+              "propagateNotes": false,
+              "parameters": [
+                {
+                  "variable": "ApproveReject",
+                  "label": "Approve Reject",
+                  "readOnly": true,
+                  "sequenceNumber": 0,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "variable": "Discount",
+                  "label": "Discount",
+                  "readOnly": true,
+                  "sequenceNumber": 3,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "view": "CustomerOrderDrillBack",
+                  "label": "Customer Order Drill Back",
+                  "readOnly": true,
+                  "sequenceNumber": 2,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "tree": "CustomerOrder",
+                  "label": "CustomerOrder",
+                  "readOnly": true,
+                  "sequenceNumber": 1,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                },
+                {
+                  "variable": "Order",
+                  "label": "Order",
+                  "readOnly": true,
+                  "sequenceNumber": 4,
+                  "completionProperty": "NOT_APPLICABLE",
+                  "labels": []
+                }
+              ],
+              "workflowDistributionItems": [
+                {
+                  "name": "<USER_EMAIL>",
+                  "distributionType": "USER",
+                  "description": "<USER_NAME>",
+                  "sendEmail": true
+                },
+                {
+                  "name": "<USER_GUID>",
+                  "distributionType": "USER",
+                  "description": "<User Name>",
+                  "sendEmail": false
+                }
+              ],
+              "taskMessages": [],
+              "actionButtons": [],
+              "workflowDecisionTables": [],
+              "userTaskEscalations": []
+            }
+          ]
+        },
+        "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>Timeout</UsedSubcondition><Subconditions><Subcondition><Name>Timeout</Name><Type>AttributeValueComparison</Type><AttributeName>Timeout</AttributeName><ComparisonOperator>Equal</ComparisonOperator><Value>0</Value></Subcondition></Subconditions></Condition>"
+      }
+    ]
+  },
+  "name": "CustomerOrderDiscountWorkflow",
+  "description": "Customer Order Discount Workflow",
+  "lastUpdatedBy": "<User Name>",
+  "lastUpdatedOn": "2023-06-13T13:24:28.163Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2024-02-08T20:55:05.990Z",
+  "archived": false
+}

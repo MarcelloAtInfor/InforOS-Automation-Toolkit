@@ -1,0 +1,23 @@
+{
+  "guid": "50ec9bcd-54b4-48c9-90f8-addce9d90834",
+  "name": "GAF_SyteLine_ResourceGroupLookup_Tool_v1",
+  "description": "Look up valid resource groups for work centers in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLWcResourceGroups\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: CRITICAL: ONLY use these exact properties: Wc,Rgid,RgrpSLTYPE,QtyResources. Do NOT request any other properties.\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause to filter by work center codes. Use IN clause for multiple WCs. Example: Wc IN ('FA-400','INS-20','PG-300','CUT-10')\nParameter: orderby\nFormat: STRING\nRequired: False\nDescription: Sort order. Use: Wc ASC\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records to return. Set to at least 2x the number of WCs (some WCs have multiple resource groups).\nResponse Fields:\n- Wc: Work center code (e.g., FA-400)\n- Rgid: Resource group ID — the EXACT valid value to use in ResourceGroupInsert (e.g., FA-400-LRG, PG-300-MRG)\n- RgrpSLTYPE: Resource group type. L=Labor, M=Machine, O=Other\n- QtyResources: Number of resources in the group\nIMPORTANT: Use these EXACT Rgid values when calling ResourceGroupInsert. Do NOT guess or derive Rgid from naming convention.\nRgrpSLTYPE determines SchedDrv alignment: L -> SchedDrv='L', M -> SchedDrv='M'.\nExample Request:\nLook up resource groups for 3 work centers:\nGET /load/SLWcResourceGroups?properties=Wc,Rgid,RgrpSLTYPE,QtyResources&filter=Wc IN ('FA-400','INS-20','PG-300')&orderby=Wc ASC&recordCap=10",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\nKey Response Fields:\n- Items: Array of resource group mappings (empty if no WCs match)\n- Each item contains: Wc, Rgid, RgrpSLTYPE, QtyResources\nParse the response to build a WC-to-Rgid mapping:\nFor each item, record: Wc -> Rgid (exact value), RgrpSLTYPE (L or M)\nIf a WC has multiple resource groups (e.g., both LRG and MRG), prefer:\n- LRG (Labor, RgrpSLTYPE='L') for assembly, inspection, staging, packaging operations\n- MRG (Machine, RgrpSLTYPE='M') for machining, cutting, drilling, grinding, molding operations\nIf a WC from the filter has NO matching records, that WC has no valid resource group — report this as an error.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Look up ACTUAL valid resource groups for work centers from SLWcResourceGroups.\nReturns exact Rgid, type (L=Labor/M=Machine), and QtyResources per WC.\nONLY request properties: Wc,Rgid,RgrpSLTYPE,QtyResources.\nUse IN clause to query multiple WCs in one call.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

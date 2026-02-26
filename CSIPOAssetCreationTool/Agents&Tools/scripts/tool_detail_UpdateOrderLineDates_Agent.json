@@ -1,0 +1,38 @@
+{
+  "guid": "da6cd5f4-deff-46ab-866c-2c6fd4d6537c",
+  "name": "UpdateOrderLineDates_Agent",
+  "description": "",
+  "type": "TOOLKIT",
+  "inputs": null,
+  "data": {
+    "workflow": "Instructions:\n\nFirst, call the Getlast20OrderLines tool to retrieve the most recent order lines. The output will contain the order details and the _ItemId string.\n\nExtract the entire _ItemId value string.\n\nConstruct the payload for UpdateLast20OrderLines tool as described above, replacing each \"ItemId\" placeholder with the extracted string.\n\nBy default, set the DueDate \"Value\" field to yesterday\u2019s date in format yyyy-MM-dd hh:mm:ss.fff. If the user specifies a different date, use that instead.\n\nCall the UpdateLast20OrderLines tool with the constructed payload, ensuring the URL and headers are exactly as documented.\n\nHandle the response to confirm success or handle errors.\n\nExample payload format returned by Get last 20 Order Lines tool:\n\n{ \"Items\": [ { \"CoNum\": \"DC00000419\", \"CoLine\": \"1\", \"DueDate\": \"20251201 00:00:00.000\", \"_ItemId\": \"PBT=[coitem] coi.DT=[2025-12-02 11:00:41.520] coi.ID=[01d28d19-1569-4911-b920-0b732274b900]\" } // ... up to 20 order lines ], \"MoreRowsExist\": true, \"Success\": true, \"Message\": null }\n\nTo update those order lines, invoke the UpdateLast20OrderLines tool within this agent. Provide the output from the previous tool transformed into the required update format. By default, the DueDate will be set to yesterday\u2019s date (yyyy-MM-dd hh:mm:ss.fff), unless you specify a different date.\n\nExample payload format sent to UpdateLast20OrderLines tool:\n\n{ \"IDOName\": \"SLCoItems\", \"RefreshAfterSave\": true, \"Changes\": [ { \"Action\": 2, \"ItemId\": \"01d28d19-1569-4911-b920-0b732274b900\", \"Properties\": [ { \"IsNull\": false, \"Modified\": true, \"Name\": \"DueDate\", \"Value\": \"2025-12-04 00:00:00.000\" } ] } // ... repeat for each order line to update ] }\n\nDo not use the literal values of in the example above make sure you transform the output from Getlast20OrderLines into the format",
+    "tools": [
+      "GetLast20OrderLines_Tool",
+      "UpdateLast20OrderLines_Tool"
+    ],
+    "logicalIds": [
+      "lid://infor.syteline"
+    ],
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [
+    "Update order dates to {Input_Date}",
+    "Update Orders",
+    "Update Order Lines"
+  ],
+  "stubResponse": "",
+  "instructions": "This agent automates the process of retrieving and updating the last 20 order lines in CSI/Syteline.\n\nIt uses two tools in sequence:\n\nGet last 20 Order Lines \u2014 fetches the most recent 20 order lines sorted by DueDate descending.\nUpdateLast20OrderLines \u2014 applies updated DueDate values (defaulting to yesterday\u2019s date) to those 20 order lines.\nUse this agent for efficient batch updates of recent order line DueDates.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2025-12-05T15:26:15.403064Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2025-12-05T16:39:30.271386Z",
+  "gp_config": null,
+  "security": {
+    "roles": []
+  }
+}

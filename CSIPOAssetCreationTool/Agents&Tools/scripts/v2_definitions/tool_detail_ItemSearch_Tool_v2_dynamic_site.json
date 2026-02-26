@@ -1,0 +1,30 @@
+{
+  "guid": "f2abd732-2cdd-4238-afda-ab929d65be7b",
+  "name": "ItemSearch_Tool_v2",
+  "description": "Search for existing items in SyteLine by item code or description",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLItems\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Example: Item,Description,UM,ProductCode,_ItemId\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter results. Examples: Item = 'WIDGET-A' or Description LIKE '%widget%'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 10\nExample Requests:\nSearch by item code:\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Item = 'WIDGET-A'\nSearch by description:\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Description LIKE '%Premium%'&recordCap=10",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with item details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"ProductCode\": \"FG-100\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of item objects (empty if not found)\n- Item: Item code (unique identifier)\n- Description: Item description\n- UM: Unit of measure (e.g., EA, LB, BOX)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no items match the search criteria, Items will be an empty array.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing items before creating new ones.\n\nSearch options:\n- By item code (exact match): filter=Item = \"ITEM-CODE\"\n- By description (partial match): filter=Description LIKE \"%text%\"\n\nReturns item details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if an item already exists\n- Look up item code by description\n- Verify item information before inserting\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., \"<YOUR_SITE>\")",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:26.593808Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}

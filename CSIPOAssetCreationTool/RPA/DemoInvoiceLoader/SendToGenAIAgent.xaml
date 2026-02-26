@@ -1,0 +1,485 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:iai="clr-namespace:Infor.Activities.IONAPI;assembly=Infor.Activities.IONAPI"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iru="clr-namespace:Infor.RPA.Utilities;assembly=Infor.RPA.Utilities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="formattedPayload" Type="InArgument(x:String)" />
+    <x:Property Name="genAILogicalId" Type="InArgument(x:String)" />
+    <x:Property Name="pollingIntervalSeconds" Type="InArgument(x:Int32)" />
+    <x:Property Name="maxPollingAttempts" Type="InArgument(x:Int32)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="agentResponse" Type="OutArgument(x:String)" />
+    <x:Property Name="agentStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="sessionId" Type="OutArgument(x:String)" />
+    <x:Property Name="agentErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>System</x:String>
+      <x:String>Infor.RPA.Utilities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Infor.RPA.Utilities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="TryCatch GenAI Agent" sap2010:WorkflowViewState.IdRef="TryCatch_Main">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="x:String" Name="chatEndpoint" />
+      <Variable x:TypeArguments="x:String" Name="messagesEndpoint" />
+      <Variable x:TypeArguments="x:String" Name="requestPayload" />
+      <Variable x:TypeArguments="iru:ResponseObject" Name="apiResponse" />
+      <Variable x:TypeArguments="x:Int32" Name="apiResponseCode" />
+      <Variable x:TypeArguments="x:Int32" Name="pollCount" />
+      <Variable x:TypeArguments="x:Boolean" Default="True" Name="keepPolling" />
+      <Variable x:TypeArguments="x:String" Name="sessionGuid" />
+      <Variable x:TypeArguments="x:String" Name="promptText" />
+      <Variable x:TypeArguments="x:String" Name="errorDetails" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence DisplayName="Send to GenAI Agent" sap2010:WorkflowViewState.IdRef="Sequence_1">
+        <Assign DisplayName="Init Agent Status" sap2010:WorkflowViewState.IdRef="Assign_InitStatus">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["PENDING"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Agent Response" sap2010:WorkflowViewState.IdRef="Assign_InitResponse">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentResponse]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Error Message" sap2010:WorkflowViewState.IdRef="Assign_InitErrorMessage">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Generate Session GUID" sap2010:WorkflowViewState.IdRef="Assign_SessionGuid">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[sessionGuid]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[System.Guid.NewGuid().ToString()]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Set Session ID Output" sap2010:WorkflowViewState.IdRef="Assign_SessionIdOutput">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[sessionId]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[sessionGuid]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Build Chat Endpoint" sap2010:WorkflowViewState.IdRef="Assign_ChatEndpoint">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[chatEndpoint]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[tenantURL.TrimEnd("/"c)+"/GENAI/chatsvc/api/v1/chat"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Build Messages Endpoint" sap2010:WorkflowViewState.IdRef="Assign_MessagesEndpoint">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[messagesEndpoint]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[tenantURL.TrimEnd("/"c)+"/GENAI/chatsvc/api/v1/sessions/"+sessionGuid+"/messages"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Build Prompt Text" sap2010:WorkflowViewState.IdRef="Assign_PromptText">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[promptText]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[("(RPA Generated) Process this invoice data and create the vendor, items, and purchase order in SyteLine: "+formattedPayload+" CRITICAL: Your final response MUST output ONLY a valid JSON object with this structure: {""status"":""success|partial|failed"",""vendor"":{""vendorNumber"":""..."",""name"":""...""},""items"":{""created"":N,""details"":[{""itemCode"":""...""}]},""purchaseOrder"":{""poNumber"":""...""},""errors"":[],""notes"":""...""} STATUS VALUES: 'success' = all operations completed, 'partial' = some operations failed (e.g., vendor created but items failed), 'failed' = critical failure. ERRORS: array of error strings from failed operations, include ---DEBUG--- information from failed tools. (empty [] if none). NOTES: additional context (e.g., 'Vendor already existed, used existing VendNum').").Replace("""", "'")]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Build Request Payload" sap2010:WorkflowViewState.IdRef="Assign_RequestPayload">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[requestPayload]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["{""prompt"": """+promptText+""", ""session"": """+sessionGuid+"""}"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log GenAI Start" sap2010:WorkflowViewState.IdRef="Append_Line_GenAIStart" Line="[System.Environment.NewLine+&quot;  GenAI Agent: Starting - Session: &quot;+sessionGuid+System.Environment.NewLine+&quot;  Endpoint: &quot;+chatEndpoint]" Source="[logFile]" />
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Request Payload" sap2010:WorkflowViewState.IdRef="Append_Line_RequestPayload" Line="[System.Environment.NewLine+&quot;  GenAI Request Payload:&quot;+System.Environment.NewLine+requestPayload]" Source="[logFile]" />
+        <iai:IONAPIRequestWizard FileAttachments="{x:Null}" QueryParameters="{x:Null}" StatusCode="{x:Null}" ContentType="application_json" ContinueOnError="True" DisplayName="POST to Chat Endpoint" HttpMethod="POST" sap2010:WorkflowViewState.IdRef="IONAPIRequestWizard_Chat" PostData="[requestPayload]" Response="[apiResponse]" ResponseCode="[apiResponseCode]" Url="[chatEndpoint]">
+          <iai:IONAPIRequestWizard.Headers>
+            <scg:List x:TypeArguments="scg:List(x:String)" Capacity="4">
+              <scg:List x:TypeArguments="x:String" Capacity="4">
+                <x:String>x-infor-logicalidprefix</x:String>
+              </scg:List>
+              <scg:List x:TypeArguments="x:String" Capacity="4">
+                <x:String>lid://infor.syteline</x:String>
+              </scg:List>
+            </scg:List>
+          </iai:IONAPIRequestWizard.Headers>
+        </iai:IONAPIRequestWizard>
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Chat Response" sap2010:WorkflowViewState.IdRef="Append_Line_ChatResponse" Line="[System.Environment.NewLine+&quot;  GenAI Agent: Chat POST Response Code: &quot;+apiResponseCode.ToString()+System.Environment.NewLine+&quot;  Response: &quot;+If(apiResponse IsNot Nothing, apiResponse.readastext, &quot;null&quot;)]" Source="[logFile]" />
+        <If Condition="[apiResponseCode &lt; 200 OrElse apiResponseCode &gt;= 300]" DisplayName="Check Chat POST Error" sap2010:WorkflowViewState.IdRef="If_ChatPostError">
+          <If.Then>
+            <Sequence DisplayName="Handle Chat POST Failure" sap2010:WorkflowViewState.IdRef="Sequence_ChatPostFailure">
+              <Assign DisplayName="Set Failed Status" sap2010:WorkflowViewState.IdRef="Assign_ChatPostFailed">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Capture Error Details" sap2010:WorkflowViewState.IdRef="Assign_CaptureError">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["Chat POST failed with code "+apiResponseCode.ToString()+": "+If(apiResponse IsNot Nothing, apiResponse.readastext, "No response")]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Chat POST Error" sap2010:WorkflowViewState.IdRef="Append_Line_ChatPostError" Line="[System.Environment.NewLine+&quot;  GenAI Agent: FAILED - &quot;+agentErrorMessage]" Source="[logFile]" />
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <Sequence DisplayName="Continue with Polling" sap2010:WorkflowViewState.IdRef="Sequence_ContinuePolling">
+              <Assign DisplayName="Init Poll Count" sap2010:WorkflowViewState.IdRef="Assign_InitPollCount">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Int32">[pollCount]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Int32">[1]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Init Keep Polling" sap2010:WorkflowViewState.IdRef="Assign_InitKeepPolling">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Boolean">[keepPolling]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <DoWhile DisplayName="Polling Loop" sap2010:WorkflowViewState.IdRef="DoWhile_Poll" Condition="[keepPolling]">
+                <Sequence DisplayName="Poll Iteration" sap2010:WorkflowViewState.IdRef="Sequence_PollIteration">
+                  <Delay DisplayName="Wait Before Poll" Duration="[TimeSpan.FromSeconds(pollingIntervalSeconds)]" sap2010:WorkflowViewState.IdRef="Delay_Poll" />
+                  <iai:IONAPIRequestWizard FileAttachments="{x:Null}" PostData="{x:Null}" StatusCode="{x:Null}" ContentType="application_json" ContinueOnError="True" DisplayName="GET Session Messages" HttpMethod="GET" sap2010:WorkflowViewState.IdRef="IONAPIRequestWizard_Messages" Response="[apiResponse]" ResponseCode="[apiResponseCode]" Url="[messagesEndpoint]">
+                    <iai:IONAPIRequestWizard.Headers>
+                      <scg:List x:TypeArguments="scg:List(x:String)" Capacity="4">
+                        <scg:List x:TypeArguments="x:String" Capacity="0" />
+                        <scg:List x:TypeArguments="x:String" Capacity="0" />
+                      </scg:List>
+                    </iai:IONAPIRequestWizard.Headers>
+                    <iai:IONAPIRequestWizard.QueryParameters>
+                      <scg:List x:TypeArguments="scg:List(x:String)" Capacity="4">
+                        <scg:List x:TypeArguments="x:String" Capacity="4">
+                          <x:String>page</x:String>
+                          <x:String>size</x:String>
+                        </scg:List>
+                        <scg:List x:TypeArguments="x:String" Capacity="4">
+                          <x:String>1</x:String>
+                          <x:String>50</x:String>
+                        </scg:List>
+                      </scg:List>
+                    </iai:IONAPIRequestWizard.QueryParameters>
+                  </iai:IONAPIRequestWizard>
+                  <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Poll Response" sap2010:WorkflowViewState.IdRef="Append_Line_PollResponse" Line="[System.Environment.NewLine+&quot;  GenAI Agent: Poll #&quot;+pollCount.ToString()+&quot; - Response Code: &quot;+apiResponseCode.ToString()]" Source="[logFile]" />
+                  <If Condition="[apiResponseCode &lt; 200 OrElse apiResponseCode &gt;= 300]" DisplayName="Check Poll Error" sap2010:WorkflowViewState.IdRef="If_PollError">
+                    <If.Then>
+                      <Sequence DisplayName="Handle Poll Error" sap2010:WorkflowViewState.IdRef="Sequence_PollError">
+                        <Assign DisplayName="Set Failed from Poll" sap2010:WorkflowViewState.IdRef="Assign_PollFailed">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign DisplayName="Capture Poll Error" sap2010:WorkflowViewState.IdRef="Assign_CapturePollError">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">["Poll #"+pollCount.ToString()+" failed with code "+apiResponseCode.ToString()]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign DisplayName="Stop Polling on Error" sap2010:WorkflowViewState.IdRef="Assign_StopPollingOnError">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:Boolean">[keepPolling]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </Sequence>
+                    </If.Then>
+                    <If.Else>
+                      <Sequence DisplayName="Process Poll Response" sap2010:WorkflowViewState.IdRef="Sequence_ProcessPoll">
+                        <Assign DisplayName="Set Agent Response" sap2010:WorkflowViewState.IdRef="Assign_SetAgentResponse">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[agentResponse]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">[If(apiResponse IsNot Nothing, apiResponse.readastext, "")]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign DisplayName="Increment Poll Count" sap2010:WorkflowViewState.IdRef="Assign_IncrementPoll">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:Int32">[pollCount]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:Int32">[pollCount + 1]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <If Condition="[pollCount &gt; maxPollingAttempts OrElse agentResponse.Contains(&quot;&quot;&quot;sender&quot;&quot;:&quot;&quot;LLM&quot;&quot;&quot;)]" DisplayName="Check Completion or Max Attempts" sap2010:WorkflowViewState.IdRef="If_MaxAttempts">
+                          <If.Then>
+                            <Sequence DisplayName="Complete Polling" sap2010:WorkflowViewState.IdRef="Sequence_CompletePolling">
+                              <Assign DisplayName="Stop Polling" sap2010:WorkflowViewState.IdRef="Assign_StopPolling">
+                                <Assign.To>
+                                  <OutArgument x:TypeArguments="x:Boolean">[keepPolling]</OutArgument>
+                                </Assign.To>
+                                <Assign.Value>
+                                  <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+                                </Assign.Value>
+                              </Assign>
+                              <If Condition="[agentResponse.Contains(&quot;&quot;&quot;sender&quot;&quot;:&quot;&quot;LLM&quot;&quot;&quot;)]" DisplayName="Check LLM Response" sap2010:WorkflowViewState.IdRef="If_LLMResponse">
+                                <If.Then>
+                                  <Sequence DisplayName="Handle LLM Success" sap2010:WorkflowViewState.IdRef="Sequence_LLMSuccess">
+                                    <Assign DisplayName="Set Success Status" sap2010:WorkflowViewState.IdRef="Assign_SuccessStatus">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log GenAI Response" sap2010:WorkflowViewState.IdRef="Append_Line_GenAIResponse" Line="[System.Environment.NewLine+&quot;  GenAI Agent Response:&quot;+System.Environment.NewLine+agentResponse]" Source="[logFile]" />
+                                  </Sequence>
+                                </If.Then>
+                                <If.Else>
+                                  <Sequence DisplayName="Max Polls Reached" sap2010:WorkflowViewState.IdRef="Sequence_MaxPolls">
+                                    <Assign DisplayName="Set Timeout Status" sap2010:WorkflowViewState.IdRef="Assign_TimeoutStatus">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                    <Assign DisplayName="Set Timeout Error" sap2010:WorkflowViewState.IdRef="Assign_TimeoutError">
+                                      <Assign.To>
+                                        <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+                                      </Assign.To>
+                                      <Assign.Value>
+                                        <InArgument x:TypeArguments="x:String">["Max polling attempts ("+maxPollingAttempts.ToString()+") reached without LLM response"]</InArgument>
+                                      </Assign.Value>
+                                    </Assign>
+                                  </Sequence>
+                                </If.Else>
+                              </If>
+                            </Sequence>
+                          </If.Then>
+                        </If>
+                      </Sequence>
+                    </If.Else>
+                  </If>
+                </Sequence>
+              </DoWhile>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log GenAI Result" sap2010:WorkflowViewState.IdRef="Append_Line_GenAIResult" Line="[System.Environment.NewLine+&quot;  GenAI Agent: &quot;+agentStatus+&quot; - Total Polls: &quot;+(pollCount-1).ToString()+If(agentErrorMessage.Length &gt; 0, &quot; - Error: &quot;+agentErrorMessage, &quot;&quot;)]" Source="[logFile]" />
+            </Sequence>
+          </If.Else>
+        </If>
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Handle Exception" sap2010:WorkflowViewState.IdRef="Sequence_HandleException">
+            <Assign DisplayName="Set Failed Status on Exception" sap2010:WorkflowViewState.IdRef="Assign_ExceptionFailed">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[agentStatus]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign DisplayName="Capture Exception Message" sap2010:WorkflowViewState.IdRef="Assign_ExceptionMessage">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[agentErrorMessage]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["Exception: "+exception.Message]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Exception" sap2010:WorkflowViewState.IdRef="Append_Line_Exception" Line="[System.Environment.NewLine+&quot;  GenAI Agent: EXCEPTION - &quot;+exception.Message+System.Environment.NewLine+&quot;  StackTrace: &quot;+exception.StackTrace]" Source="[logFile]" />
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_InitStatus" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_InitResponse" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_InitErrorMessage" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_SessionGuid" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_SessionIdOutput" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_ChatEndpoint" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_MessagesEndpoint" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_PromptText" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_RequestPayload" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Append_Line_GenAIStart" sap:VirtualizedContainerService.HintSize="582,22" />
+      <sap2010:ViewStateData Id="Append_Line_RequestPayload" sap:VirtualizedContainerService.HintSize="582,22" />
+      <sap2010:ViewStateData Id="IONAPIRequestWizard_Chat" sap:VirtualizedContainerService.HintSize="582,22" />
+      <sap2010:ViewStateData Id="Append_Line_ChatResponse" sap:VirtualizedContainerService.HintSize="582,22" />
+      <sap2010:ViewStateData Id="Assign_ChatPostFailed" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_CaptureError" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Append_Line_ChatPostError" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_ChatPostFailure" sap:VirtualizedContainerService.HintSize="264,284">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_InitPollCount" sap:VirtualizedContainerService.HintSize="534,60" />
+      <sap2010:ViewStateData Id="Assign_InitKeepPolling" sap:VirtualizedContainerService.HintSize="534,60" />
+      <sap2010:ViewStateData Id="Delay_Poll" sap:VirtualizedContainerService.HintSize="486,22" />
+      <sap2010:ViewStateData Id="IONAPIRequestWizard_Messages" sap:VirtualizedContainerService.HintSize="486,22" />
+      <sap2010:ViewStateData Id="Append_Line_PollResponse" sap:VirtualizedContainerService.HintSize="486,22" />
+      <sap2010:ViewStateData Id="Assign_PollFailed" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_CapturePollError" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_StopPollingOnError" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Sequence_PollError" sap:VirtualizedContainerService.HintSize="222,320">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_SetAgentResponse" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_IncrementPoll" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_StopPolling" sap:VirtualizedContainerService.HintSize="152,60" />
+      <sap2010:ViewStateData Id="Sequence_LLMSuccess" sap:VirtualizedContainerService.HintSize="174,200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_SuccessStatus" sap:VirtualizedContainerService.HintSize="152,60" />
+      <sap2010:ViewStateData Id="Append_Line_GenAIResponse" sap:VirtualizedContainerService.HintSize="152,22" />
+      <sap2010:ViewStateData Id="Assign_TimeoutStatus" sap:VirtualizedContainerService.HintSize="152,60" />
+      <sap2010:ViewStateData Id="Assign_TimeoutError" sap:VirtualizedContainerService.HintSize="152,60" />
+      <sap2010:ViewStateData Id="Sequence_MaxPolls" sap:VirtualizedContainerService.HintSize="174,220">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_LLMResponse" sap:VirtualizedContainerService.HintSize="200,450" />
+      <sap2010:ViewStateData Id="Sequence_CompletePolling" sap:VirtualizedContainerService.HintSize="174,520">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_MaxAttempts" sap:VirtualizedContainerService.HintSize="200,670" />
+      <sap2010:ViewStateData Id="Sequence_ProcessPoll" sap:VirtualizedContainerService.HintSize="222,870">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_PollError" sap:VirtualizedContainerService.HintSize="486,1020" />
+      <sap2010:ViewStateData Id="Sequence_PollIteration" sap:VirtualizedContainerService.HintSize="508,1200">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="DoWhile_Poll" sap:VirtualizedContainerService.HintSize="534,1350" />
+      <sap2010:ViewStateData Id="Append_Line_GenAIResult" sap:VirtualizedContainerService.HintSize="534,22" />
+      <sap2010:ViewStateData Id="Sequence_ContinuePolling" sap:VirtualizedContainerService.HintSize="556,1600">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_ChatPostError" sap:VirtualizedContainerService.HintSize="582,1750" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="604,2800">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_ExceptionFailed" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Assign_ExceptionMessage" sap:VirtualizedContainerService.HintSize="582,60" />
+      <sap2010:ViewStateData Id="Append_Line_Exception" sap:VirtualizedContainerService.HintSize="582,22" />
+      <sap2010:ViewStateData Id="Sequence_HandleException" sap:VirtualizedContainerService.HintSize="604,284">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_Main" sap:VirtualizedContainerService.HintSize="656,3200" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="696,3280" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

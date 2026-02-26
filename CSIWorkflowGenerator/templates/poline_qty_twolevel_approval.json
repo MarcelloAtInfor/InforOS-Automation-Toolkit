@@ -1,0 +1,197 @@
+{
+  "name": "CS_POLine_QtyApproval",
+  "description": "PO Line quantity change two-level approval with revert on reject",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLPoItems",
+    "monitored_field": "QtyOrderedConv",
+    "workflow_inputs": {
+      "PoNum": "PoNum",
+      "PoLine": "PoLine",
+      "Item": "Item",
+      "ItemDescription": "Description",
+      "VendNum": "PoVendNum",
+      "NewQtyOrdered": "QtyOrderedConv",
+      "OldQtyOrdered": "ROUND(E(OldQtyOrderedConv), 2)",
+      "ItemCost": "ItemCostConv",
+      "MGConfig": "CONFIGNAME()",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.PurchaseOrderLines",
+    "access_as": "ue_",
+    "handler_sequence": 210,
+    "handler_description": "ue_POLineQtyApproval"
+  },
+  "variables": [
+    {"name": "PoNum", "input": true},
+    {"name": "PoLine", "input": true},
+    {"name": "Item", "input": true},
+    {"name": "ItemDescription", "input": true},
+    {"name": "VendNum", "input": true},
+    {"name": "NewQtyOrdered", "type": "DECIMAL", "input": true},
+    {"name": "OldQtyOrdered", "type": "DECIMAL", "input": true},
+    {"name": "ItemCost", "type": "DECIMAL", "input": true},
+    {"name": "MGConfig", "input": true},
+    {"name": "RowPointer", "input": true}
+  ],
+  "views": [
+    {
+      "name": "PODrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "PurchaseOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$PoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "approval_task",
+      "name": "Level 1 Review",
+      "message": "PO [PoNum] Line [PoLine] — Item [Item] qty changed from [OldQtyOrdered] to [NewQtyOrdered]. Level 1 approval required.",
+      "distribution": "user1",
+      "priority": "High",
+      "buttons": [
+        {"label": "Approve", "value": "Approved"},
+        {"label": "Reject", "value": "Rejected"}
+      ],
+      "button_variable": "Level1Result",
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Line", "variable": "PoLine"},
+        {"label": "Item", "variable": "Item"},
+        {"label": "Description", "variable": "ItemDescription"},
+        {"label": "Vendor", "variable": "VendNum"},
+        {"label": "New Qty", "variable": "NewQtyOrdered"},
+        {"label": "Old Qty", "variable": "OldQtyOrdered"},
+        {"label": "Item Cost", "variable": "ItemCost"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ],
+      "due_date": {"value": 8, "unit": "HOURS"}
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "IsLevel1Approved",
+        "variable": "Level1Result",
+        "operator": "Equal",
+        "value": "Approved"
+      },
+      "true_steps": [
+        {
+          "type": "approval_task",
+          "name": "Level 2 Review",
+          "message": "PO [PoNum] Line [PoLine] — Item [Item] qty changed from [OldQtyOrdered] to [NewQtyOrdered]. Level 1 APPROVED by reviewer. Level 2 final approval required.",
+          "distribution": "user1",
+          "priority": "High",
+          "buttons": [
+            {"label": "Approve", "value": "Approved"},
+            {"label": "Reject", "value": "Rejected"}
+          ],
+          "button_variable": "FinalResult",
+          "propagate_notes": true,
+          "params": [
+            {"label": "PO Number", "variable": "PoNum"},
+            {"label": "Line", "variable": "PoLine"},
+            {"label": "Item", "variable": "Item"},
+            {"label": "Description", "variable": "ItemDescription"},
+            {"label": "Vendor", "variable": "VendNum"},
+            {"label": "New Qty", "variable": "NewQtyOrdered"},
+            {"label": "Old Qty", "variable": "OldQtyOrdered"},
+            {"label": "Item Cost", "variable": "ItemCost"},
+            {"label": "Level 1 Decision", "variable": "Level1Result"},
+            {"label": "PO Details", "view": "PODrillBack"}
+          ],
+          "due_date": {"value": 8, "unit": "HOURS"}
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "assignment",
+          "name": "SetFinalRejected",
+          "assignments": [
+            {
+              "variable": "FinalResult",
+              "expression": "Rejected",
+              "assignment_type": "VALUE_ASSIGNMENT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "subworkflow",
+      "name": "Write Back PO Line",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "IsFinalApproved",
+            "variable": "FinalResult",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          "true_assignment": {
+            "name": "SetQtyNew",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "NewQtyOrdered"
+          },
+          "false_assignment": {
+            "name": "SetQtyOld",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldQtyOrdered"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Get PO Line Record",
+          "ido": "SLPoItems",
+          "properties": "PoNum,PoLine,Item,QtyOrderedConv,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update PO Line Record",
+          "ido": "SLPoItems",
+          "changes": [
+            {"property": "QtyOrderedConv", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "PO Line Qty Result",
+      "message": "PO [PoNum] Line [PoLine] — Item [Item] qty change from [OldQtyOrdered] to [NewQtyOrdered] has been [FinalResult].",
+      "distribution": "user1",
+      "propagate_notes": true,
+      "params": [
+        {"label": "PO Number", "variable": "PoNum"},
+        {"label": "Line", "variable": "PoLine"},
+        {"label": "Item", "variable": "Item"},
+        {"label": "New Qty", "variable": "NewQtyOrdered"},
+        {"label": "Old Qty", "variable": "OldQtyOrdered"},
+        {"label": "Status", "variable": "FinalResult"},
+        {"label": "PO Details", "view": "PODrillBack"}
+      ]
+    }
+  ]
+}

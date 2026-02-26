@@ -1,0 +1,23 @@
+{
+  "guid": "7d63513e-218a-4da8-aa32-36355e91a8b8",
+  "name": "GAF_SyteLine_ItemWhseLoad_Tool_v1",
+  "description": "Load item-warehouse records (SLItemwhses) to get _ItemId and current ItwhJob linkage",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLItemwhses\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. Use: Item = 'ITEM-CODE' AND Whse = 'MAIN'\nFor multiple items: (Item = 'ITEM-A' AND Whse = 'MAIN') OR (Item = 'ITEM-B' AND Whse = 'MAIN')\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Max records to return. Use number of items being queried.\nCRITICAL: Do NOT include a 'properties' parameter. This IDO returns 0 records when properties are specified. Omit properties entirely.\nThis tool loads records only. Use the ItemWhse Update tool to update ItwhJob.\nExtract _ItemId from EACH item in the response Items array — each item has its own _ItemId.\nExample Request:\nLoad warehouse record for item CH-10000:\nGET /load/SLItemwhses?filter=Item = 'CH-10000' AND Whse = 'MAIN'&recordCap=1",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\nKey Response Fields:\n- Items: Array of item-warehouse records (one per item+warehouse combo)\n- For each record:\n  - Item: Item code\n  - Whse: Warehouse code\n  - ItwhJob: Current job linkage (null if not yet linked)\n  - Job: Derived from ItwhJob (read-only)\n  - _ItemId: Record identifier REQUIRED for the Update tool\nIf Items is empty: the item does not exist in this warehouse. Verify item code and warehouse.\nEach item has a UNIQUE _ItemId — extract and pair with Item code for the update step.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Load SLItemwhses records to get _ItemId for item-warehouse update.\nCRITICAL: Do NOT include a 'properties' parameter — IDO returns 0 records with properties.\nExtract _ItemId per item for use with ItemWhseUpdate tool.\nWhse is typically 'MAIN'.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

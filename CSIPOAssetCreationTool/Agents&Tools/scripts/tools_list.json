@@ -1,0 +1,998 @@
+[
+  {
+    "guid": "0817fba8-d3ad-44c4-bb7a-5d8f223288be",
+    "name": "GetIFSUserGUID_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "ifsservice",
+      "api_docs": "Method: GET\nENDPOINT: /usermgt/v2/users/me\n\n\n",
+      "headers": {},
+      "responseInstructions": "The following JSON is the response body from this API.\nThe User's GUID is at $.reponse.userlist[0].id\n\n\n{\n  \"response\": {\n    \"userlist\": [\n      {\n        \"id\": \"<USER_GUID>\",\n        \"userName\": \"<USER_EMAIL>\",\n        \"name\": {\n          \"familyName\": \"<LAST_NAME>\",\n          \"givenName\": \"<FIRST_NAME>\"\n        },\n        \"displayName\": \"<USER_NAME>\",\n        \"emails\": [\n          {\n            \"value\": \"<USER_EMAIL>\",\n            \"type\": \"work\",\n            \"primary\": true\n          }\n        ],\n        \"title\": \"<USER_TITLE>\",\n        \"preferredLanguage\": \"en-US\",\n        \"locale\": \"en-US\",\n        \"timezone\": \"Eastern Standard Time\",\n        \"applicationtimezone\": \"America/New_York\",\n        \"languageOrigin\": \"default\",\n        \"localeOrigin\": \"default\",\n        \"timezoneOrigin\": \"default\",\n        \"active\": true,\n        \"ifsPersonId\": \"<USER_EMAIL>\",\n        \"userAlias\": \"<USER_ALIAS>\",\n        \"upn\": \"<USER_EMAIL>\",\n        \"emailVerified\": true,\n        \"groups\": [\n          {\n            \"display\": \"Infor-SystemAdministrator\",\n            \"value\": \"1074C25A-A1DA-4A40-937D-8F157FF5A7E1\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"MingleAdministrator\",\n            \"value\": \"9FC0F4F7-940E-471B-A6E7-14D04F545EB9\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IONDeskSecurityAdmin\",\n            \"value\": \"17E59BD9-5E15-429A-B728-16B96647AB48\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IONDeskAdmin\",\n            \"value\": \"9B180449-7C7F-4AB0-BD15-3C9F073D69C9\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IONDeskOAuthGenerator\",\n            \"value\": \"FAE7978A-F247-4023-9B87-70FAD96BC5B3\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IONAPI-Administrator\",\n            \"value\": \"D5EE616B-7CCA-4312-A777-9E19DDC1B1D6\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"DATALAKE-User\",\n            \"value\": \"B1E8FD96-61A0-4278-8035-7AAB003C1EA4\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CPQEQ-User\",\n            \"value\": \"49CC96A2-EC06-4A1E-B61C-3D353272967D\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"QC Shipping\",\n            \"value\": \"D42E281D-7683-4652-BF8B-000B597046AE\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CSI-LicenseModule-Automation\",\n            \"value\": \"9AFE821F-7F26-40B6-8636-7B0B7E6F5266\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CSI-LicenseModule-Developer\",\n            \"value\": \"CEDE7265-CDED-4FC3-A1A3-713C84757942\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CSI-LicenseModule-Transactional\",\n            \"value\": \"6763A564-66E8-4249-B38F-763F289851F8\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"Birst-SystemAdministrator\",\n            \"value\": \"30BB6AD6-1AB7-40AB-BB29-E2DD03A1B71A\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CSIBIRST-Admin\",\n            \"value\": \"40B37BC3-F554-4029-BE65-D12774D9E734\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"APPBUILDER-Administrator\",\n            \"value\": \"373E89A6-EA3B-4011-A50C-FC818D4DBEFC\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"SmartHelpUser\",\n            \"value\": \"9EB0F44E-80D7-4575-8B56-53452024ACF4\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"PORTAL-User\",\n            \"value\": \"4C4C76DC-7B07-46B7-9709-EEB4A26DA8FF\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"PORTAL-ContentAdministrator\",\n            \"value\": \"AC3DD1FD-B3F2-48D9-82DD-682C1C703D66\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"DATAFABRIC-SuperAdmin\",\n            \"value\": \"959C46D3-AA01-4A0A-8BD0-CFA9A9223C27\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"CPQEQ-administrator\",\n            \"value\": \"DD0137A2-B1BD-4F87-93AF-C693B36A988A\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-ModelerAdmin\",\n            \"value\": \"C624852C-86A4-401C-8DFA-7E524DF96892\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-ModelerViewer\",\n            \"value\": \"B28DF289-E7CF-4BAC-A548-9CFFD235DE64\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-ModelerDesigner\",\n            \"value\": \"394D3B4E-C379-46A4-AB4A-E04167472DFB\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"INBOX-Admin\",\n            \"value\": \"416BB4CF-005C-4BC3-A8A4-9215168F8EAB\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"COLEMANAI-Administrator\",\n            \"value\": \"B16CC030-215A-4E3F-B276-C7D4B2C68EC8\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"COLEMANAI-User\",\n            \"value\": \"E03EBE8E-10C3-4764-9294-89939232DB49\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IONAPI-BaaS-Administrator\",\n            \"value\": \"2999ACD9-E7F6-42C2-B447-452AFEDC6CE5\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"GENAI-Admin\",\n            \"value\": \"B2FC8D31-42BF-4849-ACAF-6F981EAF32F0\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"GENAI-PromptEngineer\",\n            \"value\": \"D0CEE370-7266-484F-B240-B477111E992D\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"GENAI-ToolAdmin\",\n            \"value\": \"9C4F1508-D52B-41F2-A2AD-572D39BC1C9D\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"GENAI-User\",\n            \"value\": \"682D9459-C11B-4A4C-8746-2D6CB8D82D4E\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-MiningAdmin\",\n            \"value\": \"89A9D7A6-2AB8-475E-BF9A-179A8FCBA35D\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-MiningDataEngineer\",\n            \"value\": \"1BB8FA7E-F9A2-484D-A8BA-F9449C1AF741\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-MiningInsightsDesigner\",\n            \"value\": \"25669128-CAE3-48ED-9832-799D205DB207\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"IPI-MiningInsightsViewer\",\n            \"value\": \"28DDFB63-2F05-4E63-94CD-64FA4741D7B0\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"COLEMANDDP-Administrator\",\n            \"value\": \"F238FB4C-519B-42E5-B8D6-F0166B7D7D85\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"COLEMANDDP-User\",\n            \"value\": \"8CEB874F-5772-4B9D-9515-52F415255A9C\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"RPA-ADMIN\",\n            \"value\": \"61A778B1-707F-4E3E-B930-12F9F0E5FD4C\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"RPA-PROCESS_ADMIN\",\n            \"value\": \"66D7A5C8-FA56-490B-91CF-858757714513\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"RPA-USER\",\n            \"value\": \"8E4FBEEE-EFEF-4C56-9E3D-31AF1E42D392\",\n            \"type\": \"Security Role\"\n          },\n          {\n            \"display\": \"PreSales\",\n            \"value\": \"FA314C11-8811-4653-A7D8-62B1F9F15B5D\",\n            \"type\": \"Distribution Group\"\n          },\n          {\n            \"display\": \"AIRedeployNotify\",\n            \"value\": \"67CBB9E3-506D-4E26-9837-CC34F1F4C6DD\",\n            \"type\": \"Distribution Group\"\n          }\n        ],\n        \"lastLogon\": \"2025-11-03T14:17:44.1700000Z\",\n        \"profilePicture\": {\n          \"cdnPath\": \"<PROFILE_PICTURE_URL>\"\n        },\n        \"isServiceUser\": false,\n        \"joinDate\": \"<JOIN_DATE>\"\n      }\n    ]\n  },\n  \"responsestatus\": \"success\",\n  \"errorlist\": []\n}",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "This tool retrieves the current users profile details.\nSpecifically this tool is used by agents to get a users GUID. ",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-03T15:59:17.035605Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "e8d43632-eee2-483a-a991-b5e6ef0db8a5",
+    "name": "CustomerSearch_Tool",
+    "description": "Search for customers in CSI/Syteline by customer number or name",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLCustomers\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of customer properties to return. Example: CustNum, Name, CustSeq\n\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: Filter expression for searching customers. Examples:\n- By customer number: CustNum='CUST001'\n- By name (partial match): Name LIKE 'ABC%'\n- Multiple conditions: CustNum='CUST001' AND CustSeq=0\n\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: -1 (system default), 0 = unlimited\n\nExample Requests:\n\nTo search for a specific customer by number:\n/load/SLCustomers?properties=CustNum,Name,CustSeq&filter=CustNum='CUST001'\n\nTo search for customers by name (partial match):\n/load/SLCustomers?properties=CustNum,Name,CustSeq&filter=Name LIKE 'ABC%'&recordCap=10\n\nTo get all customers (limited):\n/load/SLCustomers?properties=CustNum,Name,CustSeq&recordCap=20",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array.\n\nIf customers are found, the Items array contains one or more objects with the requested properties.\n\nExample response with results:\n{\n  \"Items\": [\n    {\n      \"CustNum\": \"CUST001\",\n      \"Name\": \"ABC Corporation\",\n      \"CustSeq\": 0,\n      \"_ItemId\": \"PBT=[custaddr] custaddr.ID=[guid]\"\n    }\n  ],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nIf no customers match the criteria, the Items array is empty:\n{\n  \"Items\": [],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nHTTP Status Codes:\n- 200 OK: Successful API call (regardless of whether customers were found)\n- 401 Unauthorized: Authentication failed\n- 422 Validation Error: Invalid parameters\n\nKey Response Fields:\n- Items: Array of customer objects\n- MoreRowsExist: Boolean indicating if more records are available\n- Success: Boolean indicating API call success\n- Message: Error message if Success is false",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for customers in CSI/Syteline by customer number or name.\n\nSearch options:\n- Customer Number (CustNum): Exact match (e.g., CustNum='CUST001')\n- Customer Name: Partial match using LIKE (e.g., Name LIKE 'ABC%')\n\nReturns: Customer Number, Name, Sequence, and other requested properties.\n\nUse when user asks to:\n- Find a specific customer\n- Verify customer existence\n- List customers by criteria\n- Get customer information for orders or inquiries\n\nExamples: \"Find customer CUST001\", \"Search for customers starting with ABC\", \"Does customer XYZ exist?\"\n\nReturns customer details if found, or empty result if not found.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T22:24:14.869297Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "901ce71a-5e5f-4802-9142-5b4a98ab1945",
+    "name": "PoLineInsert_Tool_v2",
+    "description": "Create purchase order line items in SyteLine (supports batch insert of multiple lines)",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPoItems\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains PO line details in the Changes array. Use multiple objects in Changes for batch insert:\n{\n  \"IDOName\": \"SLPoItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoLine\", \"Value\": \"1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"WIDGET-A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyOrderedConv\", \"Value\": \"10.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"DueDate\", \"Value\": \"2026-02-27\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. DueDate format is YYYY-MM-DD. QtyOrderedConv must include decimals. All properties above are required for each line.\nExample request:\nPOST /update/SLPOs",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response (batch insert):\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"1\",\n      \"Item\": \"WIDGET-A\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid1]\"\n    },\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"2\",\n      \"Item\": \"GADGET-B\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid2]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response:\n{\n  \"Success\": false,\n  \"Message\": \"Item not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with all created PO line records (includes _ItemId for each)\n- _ItemId: Unique identifier for each created line\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create PO line items in SyteLine.\n\nCRITICAL: Insert ALL line items for a PO in a SINGLE API call!\nBuild the complete Changes array with all lines before calling this tool.\n\nRequired fields (for each line):\n- PoNum: PO number (from PoInsert_Tool_v2)\n- PoLine: Line number as string (\"1\", \"2\", etc.)\n- Item: Item code (from ItemInsert_Tool_v2 or ItemSearch_Tool_v2)\n- QtyOrderedConv: Quantity with decimals (e.g., \"10.00\")\n- UM: Unit of measure (must match item's UM)\n- Stat: Default \"O\" (Ordered)\n- DueDate: Format \"YYYY-MM-DD\" (e.g., \"2026-02-27\")\n- Whse: Warehouse (must match PO's warehouse)\n\nIf DueDate not provided, default to 30 days from today.\n\nReturns array of created line items with _ItemId for each.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:40.237758Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "1d934e54-fef6-4c64-9f2e-0e776b11e4a6",
+    "name": "SearchDocuments_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "IDM/api",
+      "api_docs": "METHOD: GET\nENDPOINT: /items/count\n\nQuery Parameters:\nParameter  | Format | Required | Description\n$query | STRING | True | Filters documents using different properties ,\n$state | INT | False | The document state to search for (0 = Active, 1 = Archived and 2 = Deleted).\n$language | STRING | False | Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\n\nHere's an example of a query when a user is asking to filter by documents that have been created in the last month:\n\n/MDS_GenericDocument[@CREATETS >= \"2025-10-04T04:00:00.000Z\"] SORTBY(@LASTCHANGEDTS DESCENDING)\n\nWhen a user requests how many documents that have been last modified, the date to filter on should be 30 days prior to Today's date. \n\nAlways set $state = 0 \nAlways set $language = 'en'\n",
+      "headers": {},
+      "responseInstructions": "The following JSON is an example of the response body:\n{\n  \"count\": \"13\"\n}",
+      "returnDirect": false,
+      "logicalIds": [
+        "infor.daf"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "This tool will be used to search for documents inside of IDM. ",
+    "createdBy": "<USER_GUID_2>",
+    "createdOn": "2025-11-04T15:39:26.838283Z",
+    "updatedBy": "<USER_GUID_2>",
+    "updatedOn": "2025-11-04T15:48:06.777787Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "bdb42c90-7a2f-40ca-951b-64f1c5f5f3af",
+    "name": "PoSearch_Tool_v2",
+    "description": "Search for existing purchase orders in SyteLine by PO number",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nEndpoint: /load/SLPOs\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties. Example: PoNum,VendNum,OrderDate,Whse,Stat,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. Example: PoNum = 'DP00009000'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records. Default: 1\nExample Request:\n/load/SLPOs?properties=PoNum,VendNum,OrderDate,Whse,Stat,_ItemId&filter=PoNum = 'DP00009000'&recordCap=1",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with PO details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"OrderDate\": \"20260128 00:00:00.000\",\n      \"Whse\": \"MAIN\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array with PO object (empty if not found)\n- PoNum: Purchase order number (10 char, unique)\n- VendNum: Vendor number associated with PO\n- OrderDate: PO order date\n- Whse: Warehouse\n- Stat: Status (O=Open, C=Complete, etc.)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no PO matches the search criteria, Items will be an empty array.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for existing purchase orders before creating new ones.\n\nSearch by PO number (exact match): filter=PoNum = \"PO-NUMBER\"\n\nReturns PO details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if a PO number is already in use\n- Verify PO doesn't exist before creating\n- Look up existing PO information",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:27.266253Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "c380fe0d-a23e-45e5-bc9c-12f397a25cbd",
+    "name": "SearchDocuments_Agent",
+    "description": "",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "Utilizing the SearchDocuments_Tool, pass in various dates based on the user's request in the following format: \"2025-10-04T04:00:00.000Z\"\n\n",
+      "tools": [
+        "SearchDocuments_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.idmcapture"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "How many documents have been added recently ",
+      "How many documents have been added in the past year",
+      "How many documents have been added in the past month"
+    ],
+    "stubResponse": "",
+    "instructions": "This agent uses the SearchDocuments_Tool to count the amount of documents that have been recently added within a certain Date Range. ",
+    "createdBy": "<USER_GUID_2>",
+    "createdOn": "2025-11-04T15:53:17.015551Z",
+    "updatedBy": "<USER_GUID_2>",
+    "updatedOn": "2025-11-04T15:53:43.684230Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "7a206b73-6e2c-4ddc-ac91-019e0a96dfee",
+    "name": "CustomerSearch_Agent",
+    "description": "Agent to help users search for and find customer information in the CSI/Syteline system",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "You are a helpful customer search assistant for the CSI/Syteline system.\n\nWhen users ask about customers:\n\n1. Use the CustomerSearch_Tool to search for customers\n2. For exact customer number searches, use filter: CustNum='CUSTOMER_NUMBER'\n3. For name searches, use filter: Name LIKE 'PARTIAL_NAME%'\n4. Always request properties: CustNum, Name, CustSeq at minimum\n5. Set recordCap to limit results (e.g., 20 for broad searches)\n\nPresent results clearly:\n- List customer number, name, and sequence\n- If multiple customers found, list them in a readable format\n- If no customers found, inform the user politely and suggest alternatives\n- Be concise but friendly\n\nExample interactions:\n- \"Find customer CUST001\" \u2192 filter=CustNum='CUST001'\n- \"Search for customers with ABC in name\" \u2192 filter=Name LIKE 'ABC%'\n- \"List all customers\" \u2192 recordCap=20 (limited)",
+      "tools": [
+        "CustomerSearch_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.syteline.customer-search"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "Find customer {customer_number}",
+      "Search for customers",
+      "Look up customer information",
+      "Find customer by name",
+      "Does customer exist"
+    ],
+    "stubResponse": "",
+    "instructions": "Agent to search for customers in CSI/Syteline. Uses CustomerSearch_Tool to query customer data by number or name. Returns customer details including number, name, and sequence.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T22:39:34.060588Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "230d03f5-3529-499c-8e5a-a5eb11fa9069",
+    "name": "PurchaseOrderSearch_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLPos\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of PO properties to return. Example: PoNum\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: Filter expression for exact PO number match. Example: PoNum='DR00000001'\n\nExample Request:\nTo check existence of PO number MM00000002 returning only the PO number:\n/load/SLPos?properties=PoNum&filter=PoNum='MM00000002'",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array.\n\nIf the purchase order exists, the Items array contains one or more objects with the requested properties (e.g., PoNum).\n\nExample existing PO response snippet:\n{\n\"Items\": [\n{\n\"PoNum\": \"MM00000002\",\n\"_ItemId\": \"PBT=[po] po.ID=[51f05194-3d0f-48db-9183-14d56a8589e2] po.DT=[2025-05-21 13:08:41.990]\"\n}\n],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nIf the purchase order does not exist, the Items array is empty.\n\nExample non-existing PO response snippet:\n{\n\"Items\": [],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nHTTP Status Code:\n\n200 OK indicates a successful API call regardless of whether PO was found.\nNo separate error codes are expected specifically for non-existing POs.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to verify if a specific purchase order number exists in CSI/Syteline.\n\nThis tool performs an exact match search on the purchase order number (PoNum) using the /load/SLPos API.\n\nIf the purchase order number exists, the tool returns details including the PO number and any other requested properties.\n\nIf the purchase order number does not exist, the tool returns an empty result, indicating no matching PO found.\n\nThis check applies across all vendors and all PO statuses \u2014 the tool does not filter by status or vendor.\n\nUse this tool when the prompt requires validation of a PO number prior to further processing.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-10T18:22:13.521827Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-12T19:46:51.946581Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "fb99c0c4-eaf0-4683-a823-0dba3e512113",
+    "name": "QueryUpcomingOrders_Tool",
+    "description": "Retrieve the 20 most recent customer order lines from SyteLine (Ordered status only, sorted by order date)",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLCoitems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Required fields: CoNum, CoLine, Item, DueDate, QtyOrderedConv, Stat, CoOrderDate, _ItemId\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: Filter to only include order lines with Ordered status. Use: Stat='O'\n\nParameter: orderBy\nFormat: STRING\nRequired: True\nDescription: Sort order for results. Use 'CoOrderDate DESC' to get lines from most recent orders first\n\nParameter: recordCap\nFormat: INTEGER\nRequired: True\nDescription: Maximum number of records to return. Use 20 to get the 20 most recent order lines\n\nExample Request:\n\nTo get the 20 most recent order lines (Ordered status only):\n/load/SLCoitems?properties=CoNum,CoLine,Item,DueDate,QtyOrderedConv,Stat,CoOrderDate,_ItemId&filter=Stat='O'&orderBy=CoOrderDate DESC&recordCap=20\n\nResponse Format:\nThe DueDate field is returned in format: YYYYMMDD HH:MM:SS.mmm (e.g., \"20161205 00:00:00.000\")\nThe CoOrderDate field is returned in format: YYYYMMDD HH:MM:SS.mmm (e.g., \"20161114 00:00:00.000\")\nThe Stat field shows order status: 'O'=Ordered, 'C'=Complete, 'P'=Planned",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with order line details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"CoNum\": \"DC00000106\",\n      \"CoLine\": \"1\",\n      \"Item\": \"FA-10000\",\n      \"DueDate\": \"20161205 00:00:00.000\",\n      \"CoOrderDate\": \"20161114 00:00:00.000\",\n      \"QtyOrderedConv\": \"100.00000000\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[8b03ec75-871e-4207-b700-caefc63ba779]\"\n    }\n  ],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of order line objects sorted by CoOrderDate descending (latest first), filtered to Stat='O' only\n- CoNum: Customer order number\n- CoLine: Line number within the order\n- DueDate: Due date in YYYYMMDD HH:MM:SS.mmm format\n- CoOrderDate: Order date in YYYYMMDD HH:MM:SS.mmm format\n- Stat: Order status (will always be 'O' for Ordered due to filter)\n- _ItemId: Required for updates (identifies the specific record)\n- MoreRowsExist: Boolean indicating if more records are available\n- Success: Boolean indicating API call success",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to retrieve the 20 most recent customer order lines based on order date.\n\nIMPORTANT:\n- Only returns order lines with Stat='O' (Ordered status)\n- Sorted by CoOrderDate DESC (most recent orders first, not due date)\n\nReturns: Order number, line number, item, due date, order date, quantity, status, and item ID for each line.\n\nThe results are automatically sorted by order date (newest first), filtered to Ordered status only, and limited to 20 records.\n\nUse when the user asks to:\n- Get recent order lines\n- Find most recently placed orders\n- Retrieve order lines for due date updates\n- Check latest orders",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T23:11:12.585583Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-01-28T00:37:04.739466Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "e4513d7a-45a9-4813-bc7d-9f79c89d416e",
+    "name": "ItemSearch_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of item properties to return. Example: Item, Description\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: Filter expression for exact match.\n\nIf Item is provided: Example: Item='ITEM0001'\nIf Description is provided instead: Example: Description='Bicycle, Model-30, 26\"'\nExample Requests:\n\nTo check existence of item number ITEM0001:\n/load/SLItems?properties=Item,Description&filter=Item='ITEM0001'\n\nTo check existence of an item by description Bicycle, Model-30, 26\":\n/load/SLItems?properties=Item,Description&filter=Description='Bicycle, Model-30, 26\"'",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array.\nIf the item exists, the Items array contains one or more objects with the requested properties (e.g., Item, Description).\nExample existing item response:\n{\n\"Items\": [\n{\n\"Item\": \"ITEM0001\",\n\"Description\": \"Bicycle, Model-30, 26\"\",\n\"_ItemId\": \"PBT=[item] item.ID=[a1b2c3d4-5678-9101-1121-314151617181]\"\n}\n],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nIf the item does not exist, the Items array is empty.\nExample non-existing item response:\n{\n\"Items\": [],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nHTTP Status Code:\n200 OK indicates a successful API call regardless of whether the item was found.\nNo separate error codes are expected specifically for non-existing items.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to verify if a specific item exists in CSI/Syteline.\n\nThis tool performs an exact match search on the item (Item) using the /load/SLItems API. If the item number is missing from the input, the tool searches for the item based on the description (Description) instead.\n\nIf the item exists, the tool returns details including the item number, description, and any other requested properties.\n\nIf the item does not exist, the tool returns an empty result, indicating no matching item found.\n\nThis check applies across all items regardless of status or warehouse.\n\nUse this tool when the prompt requires validation of an item number, or when the description is the only available input.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-12T18:18:41.740912Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-12T18:28:10.923664Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "43fb60c7-276d-4ad9-b25e-97f2e321cd8b",
+    "name": "UpdateOrderDueDate_Tool",
+    "description": "Update the due date for multiple customer order lines in SyteLine using batch update",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nENDPOINT: /update/SLCoitems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nContent-Type: application/json\n\nRequest Body (JSON):\n\nThe body must follow this exact structure for batch updates:\n\n{\n  \"IDOName\": \"SLCoitems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"ItemId\": \"PBT=[coitem] coi.DT=[...] coi.ID=[guid]\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"DueDate\",\n          \"Value\": \"YYYYMMDD\"\n        }\n      ]\n    }\n  ]\n}\n\nCRITICAL: You MUST include ALL order lines in the Changes array. Each order line from the query results must have its own change object in the array.\n\nParameters:\n\nIDOName: Always \"SLCoitems\" (STRING, Required)\nRefreshAfterSave: Always true (BOOLEAN, Required)\nChanges: Array of change objects (ARRAY, Required)\n\nEach change object contains:\n- Action: Always 2 for updates (INTEGER, Required)\n- ItemId: The _ItemId from query results (STRING, Required)\n- Properties: Array with one property object (ARRAY, Required)\n\nEach property object contains:\n- IsNull: Always false (BOOLEAN, Required)\n- Modified: Always true (BOOLEAN, Required)\n- Name: Always \"DueDate\" (STRING, Required)\n- Value: New due date in YYYYMMDD format (STRING, Required)\n\nExample for updating 3 order lines:\n\n{\n  \"IDOName\": \"SLCoitems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"ItemId\": \"PBT=[coitem] coi.DT=[2014-06-30 15:38:01.877] coi.ID=[guid1]\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"DueDate\",\n          \"Value\": \"20260126\"\n        }\n      ]\n    },\n    {\n      \"Action\": 2,\n      \"ItemId\": \"PBT=[coitem] coi.DT=[2014-06-30 15:38:01.877] coi.ID=[guid2]\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"DueDate\",\n          \"Value\": \"20260126\"\n        }\n      ]\n    },\n    {\n      \"Action\": 2,\n      \"ItemId\": \"PBT=[coitem] coi.DT=[2014-06-30 15:38:01.877] coi.ID=[guid3]\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"DueDate\",\n          \"Value\": \"20260126\"\n        }\n      ]\n    }\n  ]\n}",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success of the batch update.\n\nExample successful response:\n{\n  \"Success\": true,\n  \"Message\": null,\n  \"Items\": [...updated items...],\n  \"RowsAffected\": 20\n}\n\nExample error response:\n{\n  \"Success\": false,\n  \"Message\": \"Error description\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if the batch update succeeded\n- Message: Error message if Success is false\n- Items: Array of updated records\n- RowsAffected: Total number of records successfully updated\n\nHTTP Status Codes:\n- 200 OK: Update processed (check Success field)\n- 401 Unauthorized: Authentication failed\n- 422 Validation Error: Invalid request format",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "CRITICAL: Use this tool to update ALL order lines at once in a single batch operation.\n\nInput structure:\n- IDOName: \"SLCoitems\"\n- RefreshAfterSave: true\n- Changes: Array with one object per order line\n\nFor each order line:\n- Action: 2\n- ItemId: The _ItemId from query results\n- Properties: Array with DueDate property\n\nYou MUST include ALL 20 order lines in the Changes array. Do NOT call this tool 20 times - call it ONCE with all 20 changes.\n\nDate format: YYYYMMDD (e.g., \"20260126\")",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T23:11:13.459720Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-01-27T23:39:29.029116Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "1d0403d8-c53f-468b-8d98-e15c034982bc",
+    "name": "VendorSearch_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLVendors\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of vendor properties to return. Example: VendNum, Name, VadAddr_1, VadCity, VadStateDescription, VadZip\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: Filter expression for exact match.\n\nIf Name is provided: Example: Name='Acme Corporation'\nIf Address is used: Combine the properties VadAddr_1, VadCity, VadStateDescription, and VadZip to form the address. Example:\nVadAddr_1='123 Main St' AND VadCity='New York' AND VadStateDescription='New York' AND VadZip='10001'\nExample Requests:\n\nTo search for a vendor by name Acme Corporation:\n/load/SLVendors?properties=VendNum,Name,VadAddr_1,VadCity,VadStateDescription,VadZip&filter=Name='Acme Corporation'\n\nTo search for a vendor by address 123 Main St, New York, New York, 10001:\n/load/SLVendors?properties=VendNum,Name,VadAddr_1,VadCity,VadStateDescription,VadZip&filter=VadAddr_1='123 Main St' AND VadCity='New York' AND VadStateDescription='New York' AND VadZip='10001'",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array.\nIf the vendor exists, the Items array contains one or more objects with the requested properties (e.g., VendNum, VendorName, VadAddr_1, VadCity, VadStateDescription, VadZip).\nExample existing vendor response:\n{\n\"Items\": [\n{\n\"VendNum\": \"VEND001\",\n\"VendorName\": \"Acme Corporation\",\n\"VadAddr_1\": \"123 Main St\",\n\"VadCity\": \"New York\",\n\"VadStateDescription\": \"New York\",\n\"VadZip\": \"10001\",\n\"_ItemId\": \"PBT=[vendor] vendor.ID=[7f8a9b10-1121-3141-5161-718192021222]\"\n}\n],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nIf the vendor does not exist, the Items array is empty.\nExample non-existing vendor response:\n{\n\"Items\": [],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nHTTP Status Code:\n200 OK indicates a successful API call regardless of whether the vendor was found.\nNo separate error codes are expected specifically for non-existing vendors.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for vendors in CSI/Syteline.\n\nThis tool performs an exact match search based on the vendor name (VendorName). If the vendor name is missing, the tool searches for vendors based on the address (VadAddr_1, VadCity, VadStateDescription, VadZip).\n\nIf the vendor exists, the tool returns details including the vendor number, name, address, and any other requested properties.\n\nIf the vendor does not exist, the tool returns an empty result, indicating no matching vendor was found.\n\nThis check applies across all vendors regardless of type or category.\n\nUse this tool when the prompt requires validation of a vendor by name or address.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-12T19:33:25.234959Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-12T19:56:17.509990Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "941b8d9c-054c-4ad3-b88c-b73adbee1ee7",
+    "name": "UpdateOrderLineDates_Agent_v2",
+    "description": "Agent to automate weekly updates of customer order line due dates to the previous Sunday (most recent orders, Ordered status only)",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "You are an automated order management assistant for weekly due date updates.\n\nWORKFLOW STEPS:\n\n1. Calculate Previous Sunday (CRITICAL - GET THIS RIGHT):\n   IMPORTANT: Use proper date calculation to find the most recent Sunday.\n\n   In Python datetime, weekday() returns: Monday=0, Tuesday=1, Wednesday=2, Thursday=3, Friday=4, Saturday=5, Sunday=6\n\n   To find the previous Sunday from any day:\n   - If today is Sunday (weekday=6): go back 7 days to get last Sunday\n   - If today is Monday (weekday=0): go back 1 day to get yesterday's Sunday\n   - If today is Tuesday (weekday=1): go back 2 days\n   - If today is Wednesday (weekday=2): go back 3 days\n   - If today is Thursday (weekday=3): go back 4 days\n   - If today is Friday (weekday=4): go back 5 days\n   - If today is Saturday (weekday=5): go back 6 days\n\n   Formula:\n   - days_to_subtract = (today.weekday() + 1) if today.weekday() != 6 else 7\n\n   Example: If today is Tuesday Jan 27, 2026 (weekday=1):\n   - Days to subtract = 1 + 1 = 2\n   - Previous Sunday = Jan 27 - 2 days = Jan 25, 2026\n\n   Format the date as YYYYMMDD (e.g., \"20260125\" for Jan 25, 2026)\n\n   VERIFY: Always double-check that your calculated date is actually a Sunday!\n\n2. Query Order Lines (by most recent order date):\n   - Use QueryUpcomingOrders_Tool to get order lines\n   - The tool returns the 20 most recent order lines based on ORDER DATE (CoOrderDate DESC)\n   - The tool automatically filters for Stat='O' (Ordered status only)\n   - Store ALL _ItemId values for the batch update\n\n3. Build Batch Update Request:\n   CRITICAL: You must update ALL order lines in ONE API call\n\n   Build a request body with this structure:\n   {\n     \"IDOName\": \"SLCoitems\",\n     \"RefreshAfterSave\": true,\n     \"Changes\": [\n       // ONE object for EACH order line returned by the query\n       {\n         \"Action\": 2,\n         \"ItemId\": \"_ItemId from item 1\",\n         \"Properties\": [\n           {\n             \"IsNull\": false,\n             \"Modified\": true,\n             \"Name\": \"DueDate\",\n             \"Value\": \"YYYYMMDD (previous Sunday - MAKE SURE IT'S CORRECT)\"\n           }\n         ]\n       },\n       {\n         \"Action\": 2,\n         \"ItemId\": \"_ItemId from item 2\",\n         \"Properties\": [...]\n       },\n       // ... repeat for all items from query\n     ]\n   }\n\n4. Execute Single Batch Update:\n   - Call UpdateOrderDueDate_Tool ONCE with the complete Changes array\n   - DO NOT call the tool multiple times\n   - The Changes array must contain all order lines from step 2\n\n5. Report Results:\n   - Confirm how many order lines were updated\n   - Show the previous Sunday date used (format as readable date)\n   - List the order numbers updated\n\nCRITICAL RULES:\n- Double-check your Sunday date calculation - it must be correct!\n- Only update order lines with Stat='O' (query tool handles this filter)\n- Query returns most recent orders by ORDER DATE, not due date\n- Build the Changes array with ALL items before calling the update tool\n- Call UpdateOrderDueDate_Tool exactly ONCE (not multiple times)\n- Each Change object needs Action=2, ItemId, and Properties array\n- All dates must be in YYYYMMDD format (8 digits, no separators)",
+      "tools": [
+        "QueryUpcomingOrders_Tool",
+        "UpdateOrderDueDate_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.syteline.update-orderline-dates-v2"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "Update order line due dates",
+      "Run weekly order date update",
+      "Set order lines to last Sunday",
+      "Update 20 most recent order lines",
+      "Make orders late for the week"
+    ],
+    "stubResponse": "",
+    "instructions": "Agent to automate weekly order line due date updates. Finds the 20 most recent order lines (by order date, Ordered status only) and updates them ALL in ONE batch call to previous Sunday. CRITICAL: Must calculate correct Sunday date!",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T23:12:13.414158Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-01-28T00:38:06.935455Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "9c1b746c-c3d2-48ca-9857-6a0cf0a812ab",
+    "name": "Search_Agent",
+    "description": "",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "Provide either an Item Number, Vendor Name, Vendor Address, or Purchase Order Number as input to this agent for testing.\nThe agent will select the appropriate tool based on the input provided:\nIf the input contains a matching Item Number or Item Description, it will use the Item Search Tool.\nIf the input contains a matching Vendor Name or Vendor Address, it will use the Vendor Search Tool.\nIf the input contains a matching Purchase Order Number, it will use the Purchase Order Search Tool.\nThe agent executes the tool and returns the response for verification. This will include the data retrieved from CSI/Syteline (if it exists) or an empty result indicating the data does not exist.\nUse this agent to validate tool responses for various test cases.",
+      "tools": [
+        "ItemSearch_Tool",
+        "VendorSearch_Tool",
+        "PurchaseOrderSearch_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.genai"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 2,
+    "ignoreSearch": false,
+    "utterances": [
+      "look up Purchase Order {PoNum}",
+      "look up Vendor {Vendor}",
+      "look up item {Item]"
+    ],
+    "stubResponse": "",
+    "instructions": "This agent is designed to test the functionality of tools for searching and verifying data in CSI/Syteline. The agent enables users to pass in simple data, such as item numbers, vendor names, vendor addresses, or purchase order numbers, and test whether the corresponding tools return the correct results.\n\nThe agent interacts with the following tools:\n\nItem Search Tool\nVendor Search Tool\nPurchase Order Search Tool\nThis agent is intended for testing purposes only and does not include advanced business logic or error handling outside of those defined by the tools themselves.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-12T19:42:32.928903Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-13T19:20:32.792510Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "96bb5e28-0963-472e-82b1-423e49f16333",
+    "name": "ItemInsert_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameter:\n\nrefresh: true\nBody:\nThe body of the request contains the item details in the Changes array. Below is the structure of the body:\n\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Item\",\n          \"Value\": \"{item}\" // Dynamic value that should be replaced by the agent based on the item being checked.\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"MatlType\",\n          \"Value\": \"M\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PMTCode\",\n          \"Value\": \"M\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"ProductCode\",\n          \"Value\": \"FG-100\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"AbcCode\",\n          \"Value\": \"B\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CostType\",\n          \"Value\": \"A\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CostMethod\",\n          \"Value\": \"S\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Stat\",\n          \"Value\": \"A\"\n        }\n      ]\n    }\n  ]\n}\nNOTE: The \"Value\" for \"Item\" is dynamic and should be replaced by the agent with the actual item being processed. For this tool, the agent dynamically assigns the value based on the list of items it is checking, and {item} is a variable placeholder.",
+      "headers": {},
+      "responseInstructions": "Success Response: If the item is successfully created, the API returns the following response. The RefreshItems array contains details about the newly created item, including its unique ItemId and the properties associated with the item.\nExample Success Response:\n\n{\n  \"Message\": null,\n  \"Success\": true,\n  \"RefreshItems\": [\n    {\n      \"Action\": 1,\n      \"ItemId\": \"PBT=[item] itm.ID=[c085e8eb-9b69-4163-bf44-28b755e90e4c] itm.DT=[2025-11-13 09:29:04.130]\",\n      \"Properties\": [\n        {\n          \"Name\": \"Item\",\n          \"Value\": \"{item}\" // Dynamic value that should be replaced by the agent based on the item sent.\n        },\n        {\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"Name\": \"MatlType\",\n          \"Value\": \"M\"\n        },\n        {\n          \"Name\": \"PMTCode\",\n          \"Value\": \"M\"\n        },\n        {\n          \"Name\": \"ProductCode\",\n          \"Value\": \"FG-100\"\n        },\n        {\n          \"Name\": \"AbcCode\",\n          \"Value\": \"B\"\n        },\n        {\n          \"Name\": \"CostType\",\n          \"Value\": \"A\"\n        },\n        {\n          \"Name\": \"CostMethod\",\n          \"Value\": \"S\"\n        },\n        {\n          \"Name\": \"Stat\",\n          \"Value\": \"A\"\n        },\n        {\n          \"Name\": \"Area\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"Density\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"HeightLinearDimension\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        },\n        {\n          \"Name\": \"LengthLinearDimension\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"WidthLinearDimension\",\n          \"Value\": \"0.00000000\"\n        }\n      ]\n    }\n  ]\n}\nError Response: If the item creation fails, the API returns specific error messages. Below are two examples of potential errors:\nExample 1 - Duplicate Item:\n\n{\n  \"Message\": \"The Item entered already exists.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nExample 2 - Null Item:\n\n{\n  \"Message\": \"The item entered cannot be null in item_mst.  INSERT rolled back.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nNOTE: Error responses may vary depending on the validation rules or constraints violated during the item creation process. The Message field will contain details about the specific issue.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "The Item Creation Tool is used to create a new item in CSI/Syteline after confirming that the item does not already exist (e.g., using the Item Search Tool). This tool sends a request to create the item with the required properties and configurations.\n\nThe tool utilizes the /update/SLItems API endpoint to insert the new item into the ERP system with the specified details.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T14:32:56.352041Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "b7be3168-6771-4114-abe4-8c43530419ad",
+    "name": "VendorSearch_Tool_v2",
+    "description": "Search for vendors in SyteLine by vendor number or name",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nEndpoint: /load/SLVendors\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n- properties: VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,Phone,ExternalEmailAddr,_ItemId\n- filter: (optional) e.g., \"VendNum = 'TESTV01'\" or \"Name LIKE '%Corp%'\"\n- recordCap: (optional) limit number of results, e.g., \"10\"\nIMPORTANT Property Names:\n- Phone (NOT VadPhone!)\n- ExternalEmailAddr (NOT VadEmail!)\nFilter Syntax:\n- Use single quotes for string values: VendNum = 'ABC123'\n- LIKE operator for partial match: Name LIKE '%Corp%'\n- NOT double quotes (will cause IllegalFilterException)\nExample request:\nGET /load/SLVendors?properties=VendNum,Name,Phone,ExternalEmailAddr,_ItemId&filter=VendNum='ABC123'&recordCap=10",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"ABC123\",\n      \"Name\": \"Test Vendor Corporation\",\n      \"VadAddr_1\": \"123 Main St\",\n      \"VadCity\": \"New York\",\n      \"VadState\": \"NY\",\n      \"VadZip\": \"10001\",\n      \"Phone\": \"555-1234\",\n      \"ExternalEmailAddr\": \"vendor@example.com\",\n      \"_ItemId\": \"PBT=[vendor] v.DT=[2024-01-01 12:00:00.000] v.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null,\n  \"MoreRowsExist\": false\n}\n\nEmpty result (vendor not found):\n{\n  \"Items\": [],\n  \"Success\": true,\n  \"Message\": null,\n  \"MoreRowsExist\": false\n}\n\nKey Response Fields:\n- Items: Array of vendor records (empty if no matches)\n- Success: Boolean, true if query executed successfully\n- _ItemId: Required for update operations\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for vendors in SyteLine.\n\nSearch by vendor number (exact match):\n- filter: VendNum = 'ABC123'\n\nSearch by name (partial match):\n- filter: Name LIKE '%Corp%'\n\nIMPORTANT: Use correct property names:\n- Phone (NOT VadPhone)\n- ExternalEmailAddr (NOT VadEmail)\n\nReturns array of matching vendors with _ItemId for updates.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:25.951358Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "8c63d502-c1aa-4a70-9a89-a1ef4ffa64b7",
+    "name": "VendorInsert_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLVendors\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameter:\nrefresh: true\n\nBody:\nThe body of the request contains the vendor details in the Changes array. Below is the structure of the body:\n\n{\n  \"IDOName\": \"SLVendors\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\":[\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VendNum\",\n          \"Value\": \"AAA1235\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Name\",\n          \"Value\": \"NEW VENDOR DESCRIPTION\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VadAddr_1\",\n          \"Value\": \"7768 E Lincoln Way\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VadCity\",\n          \"Value\": \"Apple Creek\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VadStateCode\",\n          \"Value\": \"OH\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VadZip\",\n          \"Value\": \"44606\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"VadCountry\",\n          \"Value\": \"USA\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"TermsCode\",\n          \"Value\": \"N30\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CurrCode\",\n          \"Value\": \"USD\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"BankCode\",\n          \"Value\": \"BK1\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"AutoVoucherMethod\",\n          \"Value\": \"P\"\n        }\n      ]\n    }\n  ]\n}\n\nNOTE: VendNum is a 7 character STRING. if a new random VendNum is needed please do not exceed 7 characters, and also use the VendorSearch_Tool before using a new random VendNum.\n\nNOTE: DO NOT use/add parameters unless listed above in this documentation. for example do not add a Status property if not listed above.",
+      "headers": {},
+      "responseInstructions": "API Response Documentation\n\nSuccess Response: If the vendor is successfully created, the API returns the following response. The RefreshItems array contains details about the newly created vendor, including its unique ItemId and the properties associated with the vendor.\nExample Success Response:\n\n{\n  \"Message\": null,\n  \"Success\": true,\n  \"RefreshItems\": [\n    {\n      \"Action\": 1,\n      \"ItemId\": \"PBT=[vendor] vad.ID=[6b796305-f36f-4389-8de1-dbded2916eb2] vad.DT=[2025-11-13 10:00:18.133] ven.DT=[2025-11-13 10:00:18.020] ven.ID=[731a6150-f7e7-40d1-a259-3dc5af0303d8]\",\n      \"Properties\": [\n        {\n          \"Name\": \"VendNum\",\n          \"Value\": \"AAA1235\"\n        },\n        {\n          \"Name\": \"Name\",\n          \"Value\": \"NEW VENDOR DESCRIPTION\"\n        },\n        {\n          \"Name\": \"VadAddr_1\",\n          \"Value\": \"7768 E Lincoln Way\"\n        },\n        {\n          \"Name\": \"VadCity\",\n          \"Value\": \"Apple Creek\"\n        },\n        {\n          \"IsNull\": true,\n          \"Name\": \"VadStateCode\",\n          \"Value\": \"\"\n        },\n        {\n          \"Name\": \"VadZip\",\n          \"Value\": \"44606\"\n        },\n        {\n          \"Name\": \"VadCountry\",\n          \"Value\": \"USA\"\n        },\n        {\n          \"Name\": \"TermsCode\",\n          \"Value\": \"N30\"\n        },\n        {\n          \"Name\": \"CurrCode\",\n          \"Value\": \"USD\"\n        },\n        {\n          \"Name\": \"BankCode\",\n          \"Value\": \"BK1\"\n        },\n        {\n          \"Name\": \"AutoVoucherMethod\",\n          \"Value\": \"P\"\n        },\n        {\n          \"Name\": \"DiscLstYr\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"DiscYtd\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        },\n        {\n          \"Name\": \"PayFiscalYTD\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PayLastFiscalYr\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PayLstYr\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PayYtd\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PurchLstYr\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PurchYtd\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"Misc1099LstYr\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"Misc1099Ytd\",\n          \"Value\": \"0.00000000\"\n        }\n      ]\n    }\n  ]\n}\nError Response: If the vendor creation fails, the API returns an error message. Below are two examples of potential errors:\nExample 1 - Duplicate Vendor:\n\n{\n  \"Message\": \"The Vendor entered already exists.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nExample 2 - Missing Required Field:\n\n{\n  \"Message\": \"Key property [VendNum] was not included in the update request\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "The Vendor Creation Tool is used to create a new vendor in CSI/Syteline after confirming that the vendor does not already exist (e.g., using the Vendor Search Tool). This tool sends a request to insert the vendor into the ERP system with the necessary properties and configurations.\n\nThe tool utilizes the /update/SLVendors API endpoint to insert the new vendor into the system.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T15:13:41.876245Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-13T17:10:31.482927Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "275e28a6-3fdc-4579-bcaa-0f2e3c12d725",
+    "name": "PoInsert_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPOs\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameter:\nrefresh: true\n\nBody:\nThe body of the request contains the Purchase Order details in the Changes array. Below is the structure of the body:\n\n{\n  \"IDOName\": \"SLPOs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\":[\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PoNum\",\n          \"Value\": \"DP00009000\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"TermsCode\",\n          \"Value\": \"N30\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Stat\",\n          \"Value\": \"O\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Type\",\n          \"Value\": \"R\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Whse\",\n          \"Value\": \"MAIN\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PoCurrCode\",\n          \"Value\": \"USD\"\n        }\n      ]\n    }\n  ]\n}\n\nIf a new PoNum is required (e.g., when the number is not provided by the Agent or the provided number does not meet requirements), Syteline requires a 10-character long string for the PoNum. For example, valid PoNum values might include DP00000359. Before finalizing the request, always use the SearchPurchaseOrder_Tool to ensure the PoNum is unique.\n\nNote potential terms codes include: 2%,2%P,4%,4%P,5%,COD,M36,N15,N30,N45,NT,P30,TBD",
+      "headers": {},
+      "responseInstructions": "Success Response: If the Purchase Order is successfully created, the API returns the following response. The RefreshItems array contains details about the newly created Purchase Order, including its unique ItemId and the various properties associated with the PO.\nExample Success Response:\n\n{\n  \"Message\": null,\n  \"Success\": true,\n  \"RefreshItems\": [\n    {\n      \"Action\": 1,\n      \"ItemId\": \"PBT=[po] po.ID=[b39b89c5-45f8-4a58-afba-5d3515553221] po.DT=[2025-11-13 10:40:06.733]\",\n      \"Properties\": [\n        {\n          \"Name\": \"PoNum\",\n          \"Value\": \"DP00009000\"\n        },\n        {\n          \"Name\": \"TermsCode\",\n          \"Value\": \"2%\"\n        },\n        {\n          \"Name\": \"Stat\",\n          \"Value\": \"O\"\n        },\n        {\n          \"Name\": \"Type\",\n          \"Value\": \"R\"\n        },\n        {\n          \"Name\": \"Whse\",\n          \"Value\": \"MAIN\"\n        },\n        {\n          \"Name\": \"PoCurrCode\",\n          \"Value\": \"USD\"\n        },\n        {\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        },\n        {\n          \"Name\": \"ActBrokerage\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"ActDuty\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"ActFreight\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"ActInsurance\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"ActLocalFreight\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"BrokerageAmt\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"BrokerageAmtT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"DutyAmt\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"DutyAmtT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"EstBrokerage\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"EstDuty\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"EstFreight\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"EstInsurance\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"EstLocalFreight\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"Freight\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"FreightT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"InsuranceAmt\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"InsuranceAmtT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"LocalFreightAmt\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"LocalFreightAmtT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"MChargesT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"MiscCharges\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PoCost\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PrepaidAmt\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"PrepaidT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"SalesTax\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"SalesTax2\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"SalesTaxT\",\n          \"Value\": \"0.00000000\"\n        },\n        {\n          \"Name\": \"SalesTaxT2\",\n          \"Value\": \"0.00000000\"\n        }\n      ]\n    }\n  ]\n}\nError Response: If the Purchase Order creation fails, the API returns an error message. Below are two examples of potential errors:\nExample 1 - Duplicate PO:\n\n{\n  \"Message\": \"The PO entered already exists.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nExample 2 - Missing Required Field:\n\n{\n  \"Message\": \"The KeyID entered cannot be null in NextKeys_mst.  INSERT rolled back.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "The Purchase Order Creation Tool is used to create a new Purchase Order (PO) in CSI/Syteline after confirming that the PO does not already exist (e.g., using the Purchase Order Search Tool). This tool sends a request to insert the PO into the ERP system with the necessary details.\n\nThe tool utilizes the /update/SLPOs API endpoint to insert the new Purchase Order into the system.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T15:56:10.652810Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-13T19:11:54.084009Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "76ad5987-6071-45b8-a059-a649ded28ecb",
+    "name": "VendorInsert_Tool_v2",
+    "description": "Create a new vendor in SyteLine with comprehensive vendor information",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLVendors\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains vendor details in the Changes array:\n{\n  \"IDOName\": \"SLVendors\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Name\", \"Value\": \"ACME Corporation\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadAddr_1\", \"Value\": \"123 Main St\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCity\", \"Value\": \"Chicago\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadStateCode\", \"Value\": \"IL\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadZip\", \"Value\": \"60601\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCountry\", \"Value\": \"USA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CurrCode\", \"Value\": \"USD\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"BankCode\", \"Value\": \"BK1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AutoVoucherMethod\", \"Value\": \"P\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. VendNum must be exactly 7 characters (pad with zeros). All properties above are required.\nExample request:\nPOST /update/SLVendors",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"DEMO001\",\n      \"Name\": \"ACME Corporation\",\n      \"_ItemId\": \"PBT=[vendor] ven.DT=[...] ven.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor number already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created vendor record (includes _ItemId)\n- _ItemId: Unique identifier for the created vendor\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new vendor in SyteLine.\n\nIMPORTANT: Always use VendorSearch_Tool_v2 first to ensure the vendor doesn't already exist!\n\nRequired fields:\n- VendNum: EXACTLY 7 chars, unique (pad with zeros: \"MWF\" \u2192 \"MWF0001\")\n- Name: Vendor name\n- VadAddr_1: Address\n- VadCity, VadStateCode, VadZip: Location\n- VadCountry: Default \"USA\"\n- TermsCode: Payment terms (N30, N45, COD, 2%, 4%, TBD)\n- CurrCode: Default \"USD\"\n- BankCode: Default \"BK1\"\n- AutoVoucherMethod: Default \"P\"\n\nReturns the created vendor with VendNum and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:38.314073Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "f2abd732-2cdd-4238-afda-ab929d65be7b",
+    "name": "ItemSearch_Tool_v2",
+    "description": "Search for existing items in SyteLine by item code or description",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nEndpoint: /load/SLItems\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Example: Item,Description,UM,ProductCode,_ItemId\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter results. Examples: Item = 'WIDGET-A' or Description LIKE '%widget%'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 10\nExample Requests:\nSearch by item code:\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Item = 'WIDGET-A'\nSearch by description:\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Description LIKE '%Premium%'&recordCap=10",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with item details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"ProductCode\": \"FG-100\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of item objects (empty if not found)\n- Item: Item code (unique identifier)\n- Description: Item description\n- UM: Unit of measure (e.g., EA, LB, BOX)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no items match the search criteria, Items will be an empty array.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for existing items before creating new ones.\n\nSearch options:\n- By item code (exact match): filter=Item = \"ITEM-CODE\"\n- By description (partial match): filter=Description LIKE \"%text%\"\n\nReturns item details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if an item already exists\n- Look up item code by description\n- Verify item information before inserting",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:26.593808Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "3a6d1aac-d8e6-477d-bae5-cbad9c3a999f",
+    "name": "PoLineInsert_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPoItems\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameter:\nrefresh: true\n\nBody:\nThe body of the request contains the Purchase Order Line details in the Changes array. Always include and use all Properties listed in the structure below. DO not change the names of any properties or assume new ones unless explicitly told to. if due date is missing just make it 30 days from today. Below is the structure of the body:\n\n{\n  \"IDOName\": \"SLPoItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PoNum\",\n          \"Value\": \"DP00009000\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"PoLine\",\n          \"Value\": \"1\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Item\",\n          \"Value\": \"CP-10000\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"QtyOrderedConv\",\n          \"Value\": \"1.00\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Stat\",\n          \"Value\": \"P\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"DueDate\",\n          \"Value\": \"2025-11-29\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"Whse\",\n          \"Value\": \"MAIN\"\n        }\n      ]\n    }\n  ]\n}",
+      "headers": {},
+      "responseInstructions": "Success Response: If the Purchase Order line is successfully created, the API returns the following response. The RefreshItems array contains details about the newly created line item, including its unique ItemId and the associated properties.\nExample Success Response:\n\n{\n  \"Message\": null,\n  \"Success\": true,\n  \"RefreshItems\": [\n    {\n      \"Action\": 1,\n      \"ItemId\": \"PBT=[poitem] poi.DT=[2025-11-13 11:22:46.760] poi.ID=[1e1b7607-16c6-4621-af1f-c440896bf322]\",\n      \"Properties\": [\n        {\n          \"Name\": \"PoNum\",\n          \"Value\": \"DP00009000\"\n        },\n        {\n          \"Name\": \"PoLine\",\n          \"Value\": \"1\"\n        },\n        {\n          \"Name\": \"Item\",\n          \"Value\": \"CP-10000\"\n        },\n        {\n          \"Name\": \"QtyOrderedConv\",\n          \"Value\": \"1.00000000\"\n        },\n        {\n          \"Name\": \"UM\",\n          \"Value\": \"EA\"\n        },\n        {\n          \"Name\": \"Stat\",\n          \"Value\": \"P\"\n        },\n        {\n          \"Name\": \"DueDate\",\n          \"Value\": \"20251129 00:00:00.000\"\n        },\n        {\n          \"Name\": \"Whse\",\n          \"Value\": \"MAIN\"\n        },\n        {\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        },\n        {\n          \"Name\": \"VoucherCost\",\n          \"Value\": \"0.00000000\"\n        }\n      ]\n    }\n  ]\n}\nError Response: If the Purchase Order line creation fails, the API returns an error message. Below are two examples of potential errors:\nExample 1 - Duplicate PO Line:\n\n{\n  \"Message\": \"The Line #, PO, Release combination entered already exists.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}\nExample 2 - Missing PO Number:\n\n{\n  \"Message\": \"The po_num entered cannot be null in poitem_mst.  INSERT rolled back.\",\n  \"Success\": false,\n  \"RefreshItems\": null\n}",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "The Purchase Order Line Creation Tool is used to insert a new line item into an existing Purchase Order (PO) in CSI/Syteline after confirming that the line does not already exist (e.g., using the Purchase Order Search Tool). This tool sends a request to insert the PO line into the ERP system with the necessary details.\n\nThe tool utilizes the /update/SLPoItems API endpoint to insert the new Purchase Order line into the system.\n\nImportant Note:\n\nThe Purchase Order Number (PoNum) must have been provided by the agent because this tool can only add lines to an existing PO already created in the system. If the PO does not already exist, you must first use the Purchase Order Creation Tool to create the PO before adding lines.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T16:38:04.364666Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-17T16:46:58.181957Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "2762bfa4-f36b-4bb9-9228-310030487cee",
+    "name": "ItemInsert_Tool_v2",
+    "description": "Create a new item in SyteLine with item code and description",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLItems\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains item details in the Changes array:\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"ITEM-CODE\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Description\", \"Value\": \"Item Description\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"MatlType\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PMTCode\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ProductCode\", \"Value\": \"FG-100\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AbcCode\", \"Value\": \"B\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostType\", \"Value\": \"A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostMethod\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"A\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. All properties above are required.\nExample request:\nPOST /update/SLItems",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate Item):\n{\n  \"Success\": false,\n  \"Message\": \"Item code already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created item record (includes _ItemId)\n- _ItemId: Unique identifier for the created item\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new item in SyteLine.\n\nIMPORTANT: Always use ItemSearch_Tool_v2 first to ensure the item doesn't already exist!\n\nRequired fields:\n- Item: Item code (unique)\n- Description: Item description (CRITICAL - was missing in v1!)\n- UM: Unit of measure (EA, LB, BOX, etc.)\n- MatlType: Default \"M\"\n- PMTCode: Default \"M\"\n- ProductCode: Product code\n- AbcCode: Default \"B\"\n- CostType: Default \"A\"\n- CostMethod: Default \"S\"\n- Stat: Default \"A\" (active)\n\nReturns the created item with Item code and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:38.785809Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "3fd18d09-576c-44f8-b7ec-a541fd0a7b06",
+    "name": "Insert_Agent",
+    "description": "",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "The agent requires test data to be passed as input. Ensure the following data points are included:\n\nFor Vendor Creation Tool: Vendor details (e.g., Vendor Number, Name, Address, Terms Code).\nFor Purchase Order Creation Tool: Purchase Order details (e.g., PO Number, Terms Code, Status, Warehouse).\nFor Purchase Order Line Creation Tool: Required PO Line details (e.g., PO Number, Line Number, Item, Quantity Ordered, Due Date).\nFor Item Creation Tool: Item details (e.g., Item Number, Description, Unit of Measure, Status).\nThe agent will call the respective insert tool based on the provided input and ensure the following:\n\nEach tool receives the correct data format.\nThe tools return a valid response (success or error) for debugging purposes.\nSimulated outputs are logged for review.\nUse the Search Tools (e.g., Vendor Search Tool, Purchase Order Search Tool, Item Search Tool) before running the Insert Tools to verify that no duplicates exist in the system.\n\nMonitor the responses to confirm:\n\nSuccessful inserts return a Success: true response.\nAny errors (e.g., duplicate entries or missing data) return clear, actionable error messages.",
+      "tools": [
+        "ItemSearch_Tool",
+        "VendorSearch_Tool",
+        "ItemInsert_Tool",
+        "VendorInsert_Tool",
+        "InsertPo_Tool",
+        "InsertPoLine_Tool",
+        "PurchaseOrderSearch_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.genai"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 2,
+    "ignoreSearch": false,
+    "utterances": [
+      "check for Vendor {Vendor} and create it if it doesn't exist.",
+      "check for Po {PO} and create it if it doesn't exist.",
+      "check for Item {Item} and create it if it doesn't exist."
+    ],
+    "stubResponse": "",
+    "instructions": "Agent Description\nThis agent is designed to test the functionality of the following Insert Tools:\n\nVendor Creation Tool\nPurchase Order Creation Tool\nPurchase Order Line Creation Tool\nItem Creation Tool\nIt also utilizes the following search tools for validation before performing inserts:\n\nVendor Search Tool\nPurchase Order Search Tool\nItem Search Tool\nThe agent allows you to provide basic input data and validate whether the insert tools function correctly by simulating real-world API requests and responses. It is ideal for debugging and verifying that each tool behaves as expected.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T16:49:41.722130Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-13T19:20:29.498924Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "5e085a4c-ba16-405c-825b-384128415380",
+    "name": "StartItemSimilarityWorkflow_Tool",
+    "description": "Start ION workflow to re-train AI item name similarity model (CSI_Item_similarity)",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "IONSERVICES/process/application",
+      "api_docs": "Method: POST\nEndpoint: /v1/workflow/start?logicalId=lid://infor.genai.tool\nHeaders:\nContent-Type: application/json\nBody:\n{\"workflowName\": \"CSI_Item_similarity\", \"instanceName\": \"<instanceName>\"}",
+      "headers": {},
+      "responseInstructions": "The API responds with HTTP status indicating success or failure.\n\nSuccess Response (HTTP 200):\n- Empty body or JSON confirmation\n- The workflow starts asynchronously in the background\n- Do not wait for workflow completion - it runs independently\n\nError Responses:\n- HTTP 400: Invalid request (check instanceName format)\n- HTTP 404: Workflow not found\n- HTTP 401/403: Authentication issue\n\nKey Points:\n- Workflow runs asynchronously - it will complete in the background\n- No need to poll for status - just confirm the workflow was triggered\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to trigger the CSI_Item_similarity workflow that re-trains the AI item name similarity model.\n\nWHEN TO USE:\n- After creating NEW items with ItemInsert_Tool_v2\n- Only trigger if new items were actually CREATED (not just found by search)\n\nPARAMETERS:\n- instanceName: Unique name using format ItemRetrain_YYYYMMDD_HHMMSS (e.g., \"ItemRetrain_20260131_143022\")\n\nIMPORTANT:\n- The workflowName is hardcoded to \"CSI_Item_similarity\"\n- The logicalId is hardcoded in the query string\n- Workflow runs asynchronously - don't wait for completion\n- Generate unique instanceName using current timestamp\n- Report success/failure in the response but don't block on it",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-02-01T01:13:22.466469Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:24:19.560337Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "75a786f6-9926-45ef-bd3c-fd60f469a505",
+    "name": "InvoiceAutomation_Agent_v2",
+    "description": "Agent to process invoice data from RPA and create vendors, items, purchase orders, and PO lines in SyteLine",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "You are the Invoice Automation Agent for SyteLine ERP. Your job is to process invoice data from RPA and insert vendors, items, purchase orders, and PO line items into the system.\n\nINPUT FORMAT:\nYou will receive structured JSON from RPA with vendor, purchaseOrder, and lineItems objects.\n\nExample input:\n{\n  \"vendor\": {\n    \"name\": \"ACME Corporation\",\n    \"address\": \"123 Main St\",\n    \"city\": \"Chicago\",\n    \"state\": \"IL\",\n    \"zip\": \"60601\",\n    \"phone\": \"312-555-0100\",\n    \"email\": \"ap@acme.com\"\n  },\n  \"purchaseOrder\": {\n    \"poNumber\": \"PO-2026-001\",\n    \"orderDate\": \"20260128\",\n    \"warehouse\": \"MAIN\",\n    \"terms\": \"N30\"\n  },\n  \"lineItems\": [\n    {\n      \"lineNumber\": \"1\",\n      \"itemCode\": \"WIDGET-A\",\n      \"description\": \"Premium Widget Type A\",\n      \"quantity\": \"100\",\n      \"unitOfMeasure\": \"EA\"\n    },\n    {\n      \"lineNumber\": \"2\",\n      \"itemCode\": \"GADGET-B\",\n      \"description\": \"Standard Gadget Type B\",\n      \"quantity\": \"50\",\n      \"unitOfMeasure\": \"EA\"\n    }\n  ]\n}\n\nWORKFLOW STEPS:\n\n1. VENDOR PROCESSING:\n   - Use VendorSearch_Tool_v2 to search by vendor name\n   - If vendor found: Capture the VendNum for PO creation\n   - If vendor NOT found:\n     * Generate a unique VendNum - MUST be EXACTLY 7 characters\n     * VENDNUM PADDING RULE: [PREFIX][ZEROS][SEQ] = 7 chars total\n       - Extract 2-6 letter prefix from vendor name (first word, uppercase)\n       - Add zeros and a sequential number to make exactly 7 characters\n       - Examples: \"ACME Corp\" \u2192 \"ACME001\", \"MWF Inc\" \u2192 \"MWF0001\", \"AB Ltd\" \u2192 \"AB00001\"\n       - WRONG: \"MWF001\" (only 6 chars) - CORRECT: \"MWF0001\" (7 chars)\n     * Use VendorInsert_Tool_v2 to create vendor with all required fields\n     * Capture the VendNum from the response\n   - Required VendorInsert fields:\n     * VendNum: Generated unique code\n     * Name: From input\n     * VadAddr_1: From address\n     * VadCity: From city\n     * VadStateCode: From state\n     * VadZip: From zip\n     * VadCountry: Default \"USA\"\n     * TermsCode: From purchaseOrder.terms or default \"N30\"\n     * CurrCode: Default \"USD\"\n     * BankCode: Default \"BK1\"\n     * AutoVoucherMethod: Default \"P\"\n\n2. ITEM PROCESSING:\n   - For EACH line item in lineItems array:\n     * Use ItemSearch_Tool_v2 to search by itemCode\n     * If item found: Skip creation, move to next item\n     * If item NOT found:\n       - Use ItemInsert_Tool_v2 to create item with all required fields\n       - Required ItemInsert fields:\n         * Item: From lineItem.itemCode\n         * Description: From lineItem.description (CRITICAL!)\n         * UM: From lineItem.unitOfMeasure\n         * MatlType: Default \"M\"\n         * PMTCode: Default \"M\"\n         * ProductCode: Default \"FG-100\"\n         * AbcCode: Default \"B\"\n         * CostType: Default \"A\"\n         * CostMethod: Default \"S\"\n         * Stat: Default \"A\"\n   - Process ALL items before moving to PO creation\n\n3. PURCHASE ORDER PROCESSING:\n   - Format PO number to exactly 10 characters:\n     * If input poNumber < 10 chars, pad with zeros (e.g., \"PO-001\" \u2192 \"PO00000001\")\n     * If input poNumber = 10 chars, use as-is\n     * If input poNumber > 10 chars, take first 10 chars\n   - Use PoSearch_Tool_v2 to search by formatted PO number\n   - If PO found: Report error, cannot create duplicate PO\n   - If PO NOT found:\n     * Use PoInsert_Tool_v2 to create PO with all required fields\n     * CRITICAL: Include VendNum from step 1!\n     * Required PoInsert fields:\n       - PoNum: Formatted 10-char PO number\n       - VendNum: From step 1 (CRITICAL!)\n       - TermsCode: From purchaseOrder.terms or default \"N30\"\n       - Stat: Default \"O\" (open)\n       - Type: Default \"R\" (regular)\n       - Whse: From purchaseOrder.warehouse or default \"MAIN\"\n       - PoCurrCode: Default \"USD\"\n\n4. PO LINE ITEMS PROCESSING (CRITICAL - BATCH OPERATION):\n   - Build COMPLETE Changes array with ALL line items at once\n   - For each lineItem:\n     * PoNum: Formatted PO number from step 3\n     * PoLine: From lineItem.lineNumber (as string: \"1\", \"2\", etc.)\n     * Item: From lineItem.itemCode\n     * QtyOrderedConv: From lineItem.quantity, formatted with decimals (e.g., \"100\" \u2192 \"100.00\")\n     * UM: From lineItem.unitOfMeasure\n     * Stat: Default \"O\" (ordered)\n     * DueDate: Calculate 30 days from today, format as \"YYYY-MM-DD\" (e.g., \"2026-02-27\")\n     * Whse: From purchaseOrder.warehouse or default \"MAIN\"\n   - Use PoLineInsert_Tool_v2 ONCE to insert all lines in a single API call\n   - DO NOT call the tool multiple times for each line\n   - DO NOT process lines individually\n\n5. AI MODEL RETRAINING (CONDITIONAL):\n   - Track which entities were CREATED (not found) during processing:\n     * newVendorCreated: true if VendorInsert_Tool_v2 was called and succeeded\n     * newItemsCreated: true if any ItemInsert_Tool_v2 call succeeded\n\n   - If newVendorCreated is true:\n     * Use StartVendorNameSimilarityWorkflow_Tool with:\n       - instanceName: \"VendorRetrain_<timestamp>\" (e.g., \"VendorRetrain_20260131_143022\")\n     * The workflow name and logicalId are hardcoded in the tool\n\n   - If newItemsCreated is true:\n     * Use StartItemSimilarityWorkflow_Tool with:\n       - instanceName: \"ItemRetrain_<timestamp>\" (e.g., \"ItemRetrain_20260131_143022\")\n     * The workflow name and logicalId are hardcoded in the tool\n\n   - Note: Both workflows can be triggered in the same run if both vendor AND items were created\n   - Workflows run asynchronously - don't wait for completion\n   - If workflow trigger fails, log the error but don't fail the overall process\n\n6. RESPONSE FORMAT (CRITICAL - USE EXACT FORMAT):\n   You MUST format your final response using this EXACT template. Do not deviate from this format.\n\n   ---BEGIN TEMPLATE---\n   ## Invoice Processing Complete\n\n   **VENDOR:**\n   - **Vendor Number:** [VendNum value]\n   - **Name:** [Vendor name value]\n\n   **ITEMS CREATED:**\n   [For each item, use numbered format:]\n   1. **[ITEMCODE]** - [Description]\n   2. **[ITEMCODE]** - [Description]\n   [Continue for all items...]\n\n   **PURCHASE ORDER:**\n   - **PO Number:** [10-character PoNum]\n   - **Status:** Open\n   - **Lines Created:** [count]\n\n   **AI MODEL UPDATES:**\n   - Vendor similarity: [Triggered/Not needed/Failed]\n   - Item similarity: [Triggered/Not needed/Failed]\n\n   **ERRORS:**\n   [Only include this section if errors occurred. List each error on its own line with a dash prefix]\n   - [Error description]\n   ---END TEMPLATE---\n\n   IMPORTANT FORMAT RULES:\n   - Use EXACTLY \"**Vendor Number:**\" (not \"VendNum:\" or other variations)\n   - Use EXACTLY \"**Name:**\" for vendor name\n   - Use EXACTLY \"**PO Number:**\" (not \"Purchase Order:\" or other variations)\n   - Use EXACTLY \"**ITEMS CREATED:**\" as the section header\n   - Use EXACTLY \"**AI MODEL UPDATES:**\" for the model retraining section\n   - Use numbered list (1. 2. 3.) for items with **BOLD** item codes\n   - Do NOT use emojis (no checkmarks, x marks, clipboard icons) in the response\n   - Do NOT vary the section headers\n   - Keep the response concise - no extra narrative or suggestions\n\nERROR HANDLING:\n- If vendor search fails, report error but continue\n- If vendor insert fails (duplicate VendNum), try incrementing number and retry once\n- If item search fails, report error but continue to next item\n- If item insert fails for one item, continue processing remaining items\n- If PO search fails, report error and stop (cannot proceed without PO check)\n- If PO insert fails, report error and stop (cannot create lines without PO)\n- If PO line insert fails, report detailed error with line information\n- Always provide specific error messages from API responses\n\nIMPORTANT NOTES:\n- Date format for DueDate: \"YYYY-MM-DD\" (e.g., \"2026-02-27\")\n- Date format for OrderDate in input: \"YYYYMMDD\" (e.g., \"20260128\")\n- Quantity format: Include decimals (e.g., \"100.00\")\n- PO number: Must be exactly 10 characters\n- VendNum: EXACTLY 7 characters (e.g., \"MWF0001\" not \"MWF001\", \"DEMO001\" not \"DEMO01\")\n- Item Description: CRITICAL for demo visibility (was missing in v1!)\n- PO VendNum: CRITICAL to link PO to vendor (was missing in v1!)\n- Batch PO lines: ALL lines in ONE API call (not multiple calls)\n- Execute workflow automatically without asking for confirmation\n- Process all line items even if some fail (continue on error where possible)",
+      "tools": [
+        "VendorSearch_Tool_v2",
+        "ItemSearch_Tool_v2",
+        "PoSearch_Tool_v2",
+        "VendorInsert_Tool_v2",
+        "ItemInsert_Tool_v2",
+        "PoInsert_Tool_v2",
+        "PoLineInsert_Tool_v2",
+        "StartItemSimilarityWorkflow_Tool",
+        "StartVendorNameSimilarityWorkflow_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.genai"
+      ],
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "Process invoice data into SyteLine",
+      "Insert invoice from RPA",
+      "Add vendor and PO from invoice",
+      "Create purchase order from invoice",
+      "Process RPA invoice data"
+    ],
+    "stubResponse": "",
+    "instructions": "Agent to process invoice data from RPA and create vendors, items, purchase orders, and PO line items in SyteLine. Handles search-before-insert logic, batch PO line creation, AI model retraining triggers (separate tools for item and vendor similarity), and comprehensive error handling.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:53.881576Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:11.299927Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "ae2e0792-0dc1-4cfc-af24-9acfd0c2d08b",
+    "name": "InvoiceAutomationPrepTXT_Agent",
+    "description": "",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "Input Requirements\n\nThe consultant must provide plain-text details for the following:\n\nVendor Information: Vendor name, address, phone, email, and other relevant details.\nPurchase Order (PO): PO number, terms, warehouse, and status.\nPO Line Items: Line number, item code, description, quantity ordered, unit of measure (UOM), and price.\nThe input format should be clear and structured, as shown in the examples below.\n\nProcessing Steps\na. Vendor Validation and Creation:\n\nUse the VendorSearch_Tool to check if the vendor exists in Syteline.\nIf the vendor does not exist, insert it using the VendorInsert_Tool.\nb. Purchase Order Validation and Creation:\n\nUse the PurchaseOrderSearch_Tool to check if the PO exists in Syteline.\nIf the PO does not exist, insert it using the PoInsert_Tool.\nc. Purchase Order Line Creation:\n\nFor each line item, use the PurchaseOrderSearch_Tool to check if the PO line ex",
+      "tools": [
+        "PurchaseOrderSearch_Tool",
+        "ItemSearch_Tool",
+        "VendorSearch_Tool",
+        "ItemInsert_Tool",
+        "VendorInsert_Tool",
+        "PoInsert_Tool",
+        "PoLineInsert_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.genai"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "process the following data into syteline"
+    ],
+    "stubResponse": "",
+    "instructions": "This agent is designed to assist pre-sales consultants by processing manually provided plain-text data for vendors, purchase orders, and PO line items. It automates the necessary searches and insertions into the CSI/Syteline ERP system, saving consultants time during demo preparation and ensuring data consistency.\n\nThe agent takes vendor, purchase order, and line item details provided individually by the consultant in plain text, validates the data using search tools, and inserts it into Syteline using the appropriate insert tools. It also ensures data is clean, formatted correctly, and avoids duplication.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-13T19:41:23.254109Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": "30f07820-ca4c-43d3-86d7-335a375c226a",
+    "name": "UpdateUserProfile_Tool",
+    "description": "",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "ifsservice",
+      "api_docs": "Method: PATCH\nENDPOINT: /usermgt/v2/admin/users/{userIdentifier}\n\n{userIdentifier} is the GUID of the current user. Use the GetIFSUserGUID_Tool to get this value before making an API call.\n\nThe following properties are available for updating: familyName givenName active userName defaultAccountingEntity title displayName preferredLanguage locale timezone ifsPersonId lnUser userAlias actorId federationId department manager.\n\n\nBelow is a valid request body for this API call. \n\"op\": \"replace\" should always be used.\n\"{property}\": is to be replaced with the requested property from the user. valid properties are listed above.\n\"{Value}\":  is to be replaced with the value provided by the user.\n\n{\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"{Property}\",\n      \"value\": [\n        {\n          \"value\": \"{Value}\"\n        }\n      ]\n    }\n  ]\n}\n\n",
+      "headers": {},
+      "responseInstructions": "The update is successful if the return code is 204 and the body is as follows:\ncache-control: no-cache \npragma: no-cache \n\nIf the response code or body is different, that most likely means an error has occurred, present this information back to the user if this happens.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "This tool will update a user's properties in IFS.\n",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-03T15:40:40.023104Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-03T15:51:25.023285Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "5b46fae7-74c6-4522-b42d-1216525432b6",
+    "name": "StartVendorNameSimilarityWorkflow_Tool",
+    "description": "Start ION workflow to re-train AI vendor name similarity model (CSI_VendorName_similarity)",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "IONSERVICES/process/application",
+      "api_docs": "Method: POST\nEndpoint: /v1/workflow/start?logicalId=lid://infor.genai.tool\nHeaders:\nContent-Type: application/json\nBody:\n{  \"workflowName\": \"CSI_VendorName_similarity\", \"instanceName\": \"<unique_instance_name>\" }",
+      "headers": {},
+      "responseInstructions": "The API responds with HTTP status indicating success or failure.\n\nSuccess Response (HTTP 200):\n- Empty body or JSON confirmation\n- The workflow starts asynchronously in the background\n- Do not wait for workflow completion - it runs independently\n\nError Responses:\n- HTTP 400: Invalid request (check instanceName format)\n- HTTP 404: Workflow not found\n- HTTP 401/403: Authentication issue\n\nKey Points:\n- Workflow runs asynchronously, it will complete in the background\n- No need to poll for status - just confirm the workflow was triggered\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to trigger the CSI_VendorName_similarity workflow that re-trains the AI vendor name similarity model.\n\nWHEN TO USE:\n- After creating a NEW vendor with VendorInsert_Tool_v2\n- Only trigger if a new vendor was actually CREATED (not just found by search)\n\nPARAMETERS:\n- instanceName: Unique name using format VendorRetrain_YYYYMMDD_HHMMSS (e.g., \"VendorRetrain_20260131_143022\")\n\nIMPORTANT:\n- The workflowName is hardcoded to \"CSI_VendorName_similarity\"\n- The logicalId is hardcoded in the query string\n- Workflow runs asynchronously - don't wait for completion\n- Generate unique instanceName using current timestamp\n- Report success/failure in the response but don't block on it",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-02-01T01:13:29.102720Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:24:55.039598Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "4ed7b512-6fec-4c20-b69d-3b9598c69ecf",
+    "name": "PoInsert_Tool_v2",
+    "description": "Create a new purchase order in SyteLine linked to a vendor",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPOs\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains PO details in the Changes array:\n{\n  \"IDOName\": \"SLPOs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Type\", \"Value\": \"R\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoCurrCode\", \"Value\": \"USD\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. PoNum must be exactly 10 characters. VendNum links PO to vendor.\nExample request:\n POST /update/SLPOs",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate PoNum):\n{\n  \"Success\": false,\n  \"Message\": \"Purchase order number already exists\",\n  \"Items\": []\n}\n\nExample error response (invalid VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created PO record (includes _ItemId)\n- _ItemId: Unique identifier for the created PO\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+      "returnDirect": false,
+      "model": {
+        "name": "Claude Sonnet 4.5",
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new purchase order in SyteLine.\n\nIMPORTANT: Always use PoSearch_Tool_v2 first to ensure the PO doesn't already exist!\n\nRequired fields:\n- PoNum: Exactly 10 characters, unique\n- VendNum: Vendor number - EXACTLY 7 chars (CRITICAL - was missing in v1!)\n- TermsCode: Payment terms (N30, N45, COD, etc.)\n- Stat: Default \"O\" (open)\n- Type: Default \"R\" (regular)\n- Whse: Warehouse (MAIN, etc.)\n- PoCurrCode: Default \"USD\"\n\nThe VendNum must come from a vendor that was either:\n1. Created using VendorInsert_Tool_v2\n2. Found using VendorSearch_Tool_v2\n\nReturns the created PO with PoNum and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:39.389248Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-01T04:25:19.970261Z",
+    "gp_config": null,
+    "security": null
+  },
+  {
+    "guid": "082bc62f-5f49-4105-9336-3424fb48572d",
+    "name": "UpdateUserProfile_Agent",
+    "description": "",
+    "type": "TOOLKIT",
+    "inputs": null,
+    "data": {
+      "workflow": "When a user asks to update their profile use the UpdateUserProfile_Tool to update their requested properties. \nIf no property is specified please request this information.\n\n{userIdentifier} is needed to use the UpdateUserProfile_Tool, to get this value call the GetIFSUserGUID_Tool.\n\nThe following properties are available for updating: familyName givenName active userName defaultAccountingEntity title displayName preferredLanguage locale timezone ifsPersonId lnUser userAlias actorId federationId department manager",
+      "tools": [
+        "GetIFSUserGUID_Tool",
+        "UpdateUserProfile_Tool"
+      ],
+      "logicalIds": [
+        "lid://infor.ifs-inforos"
+      ],
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [
+      "change my profile",
+      "update my last name",
+      "Update my title"
+    ],
+    "stubResponse": "",
+    "instructions": "This agent orchestrates the tool executions to allow users to update their IFS profiles.\n ",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2025-11-03T15:31:58.049264Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2025-11-03T15:45:25.716332Z",
+    "gp_config": null,
+    "security": {
+      "roles": []
+    }
+  },
+  {
+    "guid": null,
+    "name": "QuestionAnswerTool",
+    "description": "General question and answer tool for enterprise applications. This tool answers questions on all business related information. Make sure to use this tool before making up an answer.",
+    "type": "DOCUMENT_RETRIEVER",
+    "inputs": null,
+    "data": {},
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": null,
+    "stubResponse": null,
+    "instructions": null,
+    "createdBy": null,
+    "createdOn": null,
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  }
+]

@@ -1,0 +1,141 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="documentPath" Type="InArgument(x:String)" />
+    <x:Property Name="configurationFolder" Type="InArgument(x:String)" />
+    <x:Property Name="status" Type="InArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Infor.Activities.Email</x:String>
+      <x:String>Infor.Activities.Sys</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>Microsoft.VisualBasic.CompilerServices</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Windows.Markup</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Email</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Sys</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_3">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="fileName" />
+    </Sequence.Variables>
+    <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[fileName]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[documentPath.Substring(documentPath.LastIndexOf("\"c)+1,(documentPath.Length()-documentPath.LastIndexOf("\"c))-1)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If Condition="[status.toUpper =&quot;SUCCESS&quot;]" sap2010:WorkflowViewState.IdRef="If_2">
+      <If.Then>
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="x:Boolean" Name="fileExist" />
+            <Variable x:TypeArguments="x:String" Name="moveFileOuput" />
+          </Sequence.Variables>
+          <ias:Path_Validate ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Path Exists" sap2010:WorkflowViewState.IdRef="Path_Validate_1" IsValid="[fileExist]" Path="[configurationFolder+&quot;\Success\&quot;+System.DateTime.Now.ToString(&quot;yyyy-MM-dd&quot;)+&quot;\&quot;+fileName]" />
+          <If Condition="[fileExist]" sap2010:WorkflowViewState.IdRef="If_1">
+            <If.Then>
+              <ias:File_Delete ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Delete File" sap2010:WorkflowViewState.IdRef="File_Delete_1" Source="[configurationFolder+&quot;\Success\&quot;+System.DateTime.Now.ToString(&quot;yyyy-MM-dd&quot;)+&quot;\&quot;+fileName]" />
+            </If.Then>
+          </If>
+          <ias:File_Move ErrorCode="{x:Null}" ContinueOnError="False" DisplayName="Move File" sap2010:WorkflowViewState.IdRef="File_Move_1" OutputFile="[moveFileOuput]" OverwriteFile="False" Source="[documentPath]" Target="[configurationFolder+&quot;\Success\&quot;+System.DateTime.Now.ToString(&quot;yyyy-MM-dd&quot;)]" targetName="[fileName]" />
+        </Sequence>
+      </If.Then>
+    </If>
+    <If Condition="[status  &lt;&gt; &quot;SUCCESS&quot; AND NOT documentPath.contains(&quot;\Failure\&quot;)]" sap2010:WorkflowViewState.IdRef="If_4">
+      <If.Then>
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="x:Boolean" Name="fileExist" />
+            <Variable x:TypeArguments="x:String" Name="moveFileOuput" />
+          </Sequence.Variables>
+          <ias:Path_Validate ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Path Exists" sap2010:WorkflowViewState.IdRef="Path_Validate_2" IsValid="[fileExist]" Path="[configurationFolder+&quot;\Failure\&quot;+fileName]" />
+          <If Condition="[fileExist]" sap2010:WorkflowViewState.IdRef="If_3">
+            <If.Then>
+              <ias:File_Delete ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Delete File" sap2010:WorkflowViewState.IdRef="File_Delete_2" Source="[configurationFolder+&quot;\Failure\&quot;+fileName]" />
+            </If.Then>
+          </If>
+          <ias:File_Move ErrorCode="{x:Null}" ContinueOnError="False" DisplayName="Move File" sap2010:WorkflowViewState.IdRef="File_Move_2" OutputFile="[moveFileOuput]" OverwriteFile="False" Source="[documentPath]" Target="[configurationFolder+&quot;\Failure&quot;]" targetName="[fileName]" />
+        </Sequence>
+      </If.Then>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="612,62" />
+      <sap2010:ViewStateData Id="Path_Validate_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="File_Delete_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,214" />
+      <sap2010:ViewStateData Id="File_Move_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="486,462">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="612,616" />
+      <sap2010:ViewStateData Id="Path_Validate_2" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="File_Delete_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,214" />
+      <sap2010:ViewStateData Id="File_Move_2" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486,462">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_4" sap:VirtualizedContainerService.HintSize="612,616" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="634,1498">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="674,1578" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

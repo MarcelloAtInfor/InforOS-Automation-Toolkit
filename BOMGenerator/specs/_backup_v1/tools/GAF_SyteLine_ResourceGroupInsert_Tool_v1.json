@@ -1,0 +1,23 @@
+{
+  "guid": "3414da63-d060-43a2-8430-a913c59933ce",
+  "name": "GAF_SyteLine_ResourceGroupInsert_Tool_v1",
+  "description": "Add resource group records to routing operations on a standard job in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLJrtResourceGroups\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nBatch insert resource group records for multiple operations in one call:\n{\n  \"IDOName\": \"SLJrtResourceGroups\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Job\", \"Value\": \"     90001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"OperNum\", \"Value\": \"10\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Rgid\", \"Value\": \"FA-400-LRG\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyResources\", \"Value\": \"1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Resactn\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Sequence\", \"Value\": \"1\"}\n      ]\n    },\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Job\", \"Value\": \"     90001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"OperNum\", \"Value\": \"20\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Rgid\", \"Value\": \"INS-20-LRG\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyResources\", \"Value\": \"1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Resactn\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Sequence\", \"Value\": \"1\"}\n      ]\n    }\n  ]\n}\nCRITICAL: ONLY use these 7 properties: Job, Suffix, OperNum, Rgid, QtyResources, Resactn, Sequence. Do NOT add others.\nAction 1 = insert. Include ALL operations in a single Changes array.\nJob number must be left-padded with spaces to 10 chars.\nRgid MUST be a valid resource group from SLWcResourceGroups. Invalid Rgid returns error.\nRgid is CASE-SENSITIVE — use exact casing (e.g., 'Cut-10-MRG' not 'CUT-10-MRG').\nNaming convention: <Wc>-LRG (Labor), <Wc>-MRG (Machine).\nResactn: 'S' = Allocate and Free (standard default).\nQtyResources: number of resources needed (typically 1).\nSequence: resource sequence within operation (typically 1).\nRouting operations MUST exist before inserting resource groups.\nExample Request:\nPOST /update/SLJrtResourceGroups\nAdd resource groups to job 90001: LRG for op 10 (assembly), LRG for op 20 (inspection):",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if all inserts succeeded\n- Message: Error message if Success is false\n- Items: Array of created resource group records\nEach record should show Job, OperNum, Rgid, QtyResources.\nCommon errors:\n- 'The Group entered is not valid': Rgid does not exist in SLWcResourceGroups (check casing)\n- Duplicate: resource group already exists for this Job+OperNum+Sequence\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Add resource group records to routing operations. BATCH: ALL operations in one Changes array.\nFields: Job (10-char padded), Suffix='0', OperNum, Rgid (case-sensitive), QtyResources='1', Resactn='S', Sequence='1'.\nRgid naming: <Wc>-LRG (Labor), <Wc>-MRG (Machine). Must be valid from SLWcResourceGroups.\nRouting must exist before inserting resource groups.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

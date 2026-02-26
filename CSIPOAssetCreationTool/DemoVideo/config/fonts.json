@@ -1,0 +1,42 @@
+{
+  "title": {
+    "family": "C:/Windows/Fonts/calibrib.ttf",
+    "size": 64
+  },
+  "subtitle": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 36
+  },
+  "body": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 28
+  },
+  "caption": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 24
+  },
+  "metric_value": {
+    "family": "C:/Windows/Fonts/calibrib.ttf",
+    "size": 72
+  },
+  "metric_label": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 22
+  },
+  "box_label": {
+    "family": "C:/Windows/Fonts/calibrib.ttf",
+    "size": 22
+  },
+  "box_sublabel": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 16
+  },
+  "footer": {
+    "family": "C:/Windows/Fonts/calibri.ttf",
+    "size": 20
+  },
+  "diagram_arrow": {
+    "family": "C:/Windows/Fonts/segoeuib.ttf",
+    "size": 28
+  }
+}

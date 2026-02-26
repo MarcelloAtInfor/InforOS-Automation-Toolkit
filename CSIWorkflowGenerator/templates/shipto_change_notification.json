@@ -1,0 +1,50 @@
+{
+  "name": "CS_ShipTo_Change_Notification",
+  "description": "Notification-only workflow: alerts when a customer order's ship-to address sequence is changed.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCos",
+    "monitored_field": "CustSeq",
+    "workflow_inputs": {
+      "CoNum": "CoNum",
+      "CustNum": "CustNum",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.CustomerOrders",
+    "access_as": "ue_",
+    "handler_sequence": 231,
+    "handler_description": "ue_ShipToChangeNotification"
+  },
+  "variables": [
+    {"name": "CoNum", "type": "STRING", "input": true},
+    {"name": "CustNum", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true}
+  ],
+  "views": [
+    {
+      "name": "OrderDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "CustomerOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "notification",
+      "name": "Ship-To Change Alert",
+      "message": "Customer Order [CoNum] for Customer [CustNum] has had its ship-to address changed.",
+      "distribution": "user1",
+      "send_email": true,
+      "params": [
+        {"label": "Order Number", "variable": "CoNum"},
+        {"label": "Customer", "variable": "CustNum"},
+        {"label": "Order Details", "view": "OrderDrillBack"}
+      ]
+    }
+  ]
+}

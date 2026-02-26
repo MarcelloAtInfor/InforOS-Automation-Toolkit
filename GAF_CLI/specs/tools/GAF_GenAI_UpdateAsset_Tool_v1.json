@@ -1,0 +1,20 @@
+{
+  "guid": "ec602e13-2e94-41d4-8fe1-47b155ee522e",
+  "name": "GAF_GenAI_UpdateAsset_Tool_v1",
+  "description": "Update an existing Tool or Agent in Infor OS GenAI.",
+  "instructions": "Update an existing asset. FULL REPLACEMENT - provide complete specification. Steps: 1. Fetch current spec with GetAsset. 2. Modify needed fields. 3. Call this tool with complete spec. Required: guid (EXISTING asset GUID), name, instructions, type (API_DOCS for tools, TOOLKIT for agents), data. WARNING: Missing fields will be cleared. Returns: guid, name, type.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "Method: PUT\nEndpoint: /api/v1/tools\nHeaders: Content-Type: application/json\nBody: JSON object (single tool/agent) with the complete updated specification. Required fields: guid (string, REQUIRED for update - identifies asset to update), name (string), instructions (string), type (string), data (object). IMPORTANT: This is full replacement semantics. All fields must be provided; missing fields will be cleared.\nExample request:\nPUT /api/v1/tools\nBody: {\"guid\":\"existing-guid\",\"name\":\"GAF_Product_Capability_Tool_v1\",\"instructions\":\"Updated instructions\",\"type\":\"API_DOCS\",\"data\":{}}",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "responseInstructions": "The API responds with the updated tool/agent object. Example success response: {\"guid\":\"existing-guid\",\"name\":\"Updated_Tool_Name\",\"type\":\"API_DOCS\"}. HTTP 404 indicates asset not found. HTTP 422 indicates validation failure.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

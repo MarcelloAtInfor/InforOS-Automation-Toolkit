@@ -1,0 +1,584 @@
+{
+  "variables": [
+    {
+      "name": "ApproveReject",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "OldCreditLimit",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "CustNum",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "RowPointer",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Filter",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "CustName",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "NewCreditLimit",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "MGConfig",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "UpdatePropertyValue",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "ItemID",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [
+    {
+      "name": "CustomerDrillBack",
+      "viewSetName": "infor.syteline (SyteLineViews)",
+      "viewName": "CustomerView",
+      "viewParameters": [
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        },
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.syteline.csi/dals"
+        },
+        {
+          "variable": "CustNum",
+          "name": "ID1"
+        }
+      ]
+    }
+  ],
+  "trees": [],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "usertask",
+        "sequenceNumber": 3,
+        "name": "Notify",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "Customer -  [CustName] -  Newly requested Credit Limit of [NewCreditLimit] has been [ApproveReject].",
+        "taskActionType": "StandardAction",
+        "userTaskType": "NOTIFICATION",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": true,
+        "parameters": [
+          {
+            "view": "CustomerDrillBack",
+            "label": "Customer Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 4,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "NewCreditLimit",
+            "label": "New Credit Limit",
+            "readOnly": true,
+            "sequenceNumber": 2,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "ApproveReject",
+            "label": "Status",
+            "readOnly": true,
+            "sequenceNumber": 3,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CustNum",
+            "label": "ID",
+            "readOnly": true,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CustName",
+            "label": "Name",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<User Name>",
+            "sendEmail": false
+          },
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": false
+          },
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<User Name>",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": []
+      },
+      {
+        "_type": "subworkflow",
+        "sequenceNumber": 2,
+        "subFlow": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 3,
+              "name": "Get Record",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.syteline\",\"operationProxyPath\":\"CSI/IDORequestService/ido\",\"operationRestPath\":\"/load/{ido}\",\"productName\":\"Infor SyteLine\",\"operationPath\":\"CSI/IDORequestService/ido/load/{ido}\",\"summary\":\"LoadCollection\",\"httpMethod\":\"GET\",\"availableOutputContentTypes\":[\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"Authorization\",\"description\":\"Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"MGConfig\",\"literalValue\":null,\"name\":\"X-Infor-MongooseConfig\",\"description\":\"Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":null,\"literalValue\":\"SLCustomers\",\"name\":\"ido\",\"description\":\"IDO name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"Name,CustNum,CreditLimit,CustSeq,RowPointer\",\"name\":\"properties\",\"description\":\"A comma-delimited property list. Provide�*� to include all, except subcollection properties.\",\"swaggerDatatype\":\"array(string)\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":\"Filter\",\"literalValue\":null,\"name\":\"filter\",\"description\":\"SQL filter string\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"orderBy\",\"description\":\"SQL ORDER BY value\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"recordCap\",\"description\":\"Sets row cap: -1 = default in Mongoose; 0 = unlimited.\",\"swaggerDatatype\":\"integer\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"distinct\",\"description\":\"SQL DISTINCT keyword\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"clm\",\"description\":\"Custom Load Method name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"clmParam\",\"description\":\"Comma-separated Custom Load Method parameters\",\"swaggerDatatype\":\"array(null)\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"loadType\",\"description\":\"Load type, one of FIRST | NEXT | PREVIOUS | LAST\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"bookmark\",\"description\":\"Designate bookmark ID\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"pqc\",\"description\":\"Post Query Command name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"readOnly\",\"description\":\"Read Only flag; if set to 'true', no ItemId is returned with query\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"ItemID\",\"type\":\"BODY\",\"path\":\"$.Items[0]._ItemId\",\"optional\":false}],\"inputBody\":{\"name\":null,\"description\":null,\"required\":false,\"availableInputContentTypes\":[],\"inputContentType\":null,\"body\":\" \",\"ignore\":true,\"variableNamesFromBody\":[],\"structureNamesFromBody\":[]}}",
+              "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+              "isCustom": true,
+              "ionApiMethod": {
+                "productLogicalId": "infor.syteline",
+                "operationProxyPath": "CSI/IDORequestService/ido",
+                "operationRestPath": "/load/{ido}",
+                "productName": "Infor SyteLine",
+                "operationPath": "CSI/IDORequestService/ido/load/{ido}",
+                "summary": "LoadCollection",
+                "httpMethod": "GET",
+                "availableOutputContentTypes": [
+                  "JSON"
+                ],
+                "outputContentType": "JSON",
+                "input": [
+                  {
+                    "name": "Authorization",
+                    "description": "Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "MGConfig",
+                    "name": "X-Infor-MongooseConfig",
+                    "description": "Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "literalValue": "SLCustomers",
+                    "name": "ido",
+                    "description": "IDO name",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "Name,CustNum,CreditLimit,CustSeq,RowPointer",
+                    "name": "properties",
+                    "description": "A comma-delimited property list. Provide�*� to include all, except subcollection properties.",
+                    "swaggerDatatype": "array(string)",
+                    "required": true,
+                    "type": "QUERY"
+                  },
+                  {
+                    "wfVariableName": "Filter",
+                    "name": "filter",
+                    "description": "SQL filter string",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "orderBy",
+                    "description": "SQL ORDER BY value",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "recordCap",
+                    "description": "Sets row cap: -1 = default in Mongoose; 0 = unlimited.",
+                    "swaggerDatatype": "integer",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "distinct",
+                    "description": "SQL DISTINCT keyword",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "clm",
+                    "description": "Custom Load Method name",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "clmParam",
+                    "description": "Comma-separated Custom Load Method parameters",
+                    "swaggerDatatype": "array(null)",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "loadType",
+                    "description": "Load type, one of FIRST | NEXT | PREVIOUS | LAST",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "bookmark",
+                    "description": "Designate bookmark ID",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "pqc",
+                    "description": "Post Query Command name",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "readOnly",
+                    "description": "Read Only flag; if set to 'true', no ItemId is returned with query",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [
+                  {
+                    "wfVariableName": "ItemID",
+                    "type": "BODY",
+                    "path": "$.Items[0]._ItemId",
+                    "optional": false
+                  }
+                ],
+                "inputBody": {
+                  "required": false,
+                  "availableInputContentTypes": [],
+                  "body": " ",
+                  "ignore": true,
+                  "structureNamesFromBody": [],
+                  "variableNamesFromBody": []
+                }
+              }
+            },
+            {
+              "_type": "assignment",
+              "sequenceNumber": 1,
+              "name": "SetupFilter",
+              "assignmentType": "NoAssignment",
+              "serializedAssignments": "[{\"assignmentType\":\"EXPRESSION_ASSIGNMENT\",\"expression\":\"\\\"RowPointer='\\\" & [RowPointer] & \\\"'\\\"\",\"treePath\":null,\"variableName\":\"Filter\",\"personFullName\":null}]",
+              "listOfAllAssignments": [
+                {
+                  "assignmentType": "EXPRESSION_ASSIGNMENT",
+                  "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+                  "variableName": "Filter"
+                }
+              ]
+            },
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 4,
+              "name": "Update Record",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.syteline\",\"operationProxyPath\":\"CSI/IDORequestService/ido\",\"operationRestPath\":\"/update/{ido}\",\"productName\":\"Infor SyteLine\",\"operationPath\":\"CSI/IDORequestService/ido/update/{ido}\",\"summary\":\"UpdateCollection\",\"httpMethod\":\"POST\",\"availableOutputContentTypes\":[\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"Authorization\",\"description\":\"Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":\"MGConfig\",\"literalValue\":null,\"name\":\"X-Infor-MongooseConfig\",\"description\":\"Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"HEADER\"},{\"wfVariableName\":null,\"literalValue\":\"SLCustomers\",\"name\":\"ido\",\"description\":\"IDO name\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"true\",\"name\":\"refresh\",\"description\":\"Refresh after update flag\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"ItemID\",\"type\":\"BODY\",\"path\":\"$.RefreshItems[0].ItemId\",\"optional\":false}],\"inputBody\":{\"name\":\"body\",\"description\":\"IDOUpdateItem structure\",\"required\":true,\"availableInputContentTypes\":[\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n  \\\"IDOName\\\": \\\"SLCustomers\\\",\\n  \\\"RefreshAfterSave\\\": true,\\n  \\\"Changes\\\": [\\n    {\\n      \\\"Action\\\": 2,\\n      \\\"ItemId\\\": \\\"$value(ItemID)\\\",\\n      \\\"Properties\\\": [\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"CreditLimit\\\",\\n          \\\"Value\\\": \\\"$value(UpdatePropertyValue)\\\"\\n        },\\n        {\\n          \\\"IsNull\\\": false,\\n          \\\"Modified\\\": true,\\n          \\\"Name\\\": \\\"InWorkflow\\\",\\n          \\\"Value\\\": \\\"0\\\"\\n        }\\n      ]\\n    }\\n  ]\\n}\",\"ignore\":false,\"variableNamesFromBody\":[\"UpdatePropertyValue\",\"ItemID\"],\"structureNamesFromBody\":[]}}",
+              "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+              "isCustom": true,
+              "ionApiMethod": {
+                "productLogicalId": "infor.syteline",
+                "operationProxyPath": "CSI/IDORequestService/ido",
+                "operationRestPath": "/update/{ido}",
+                "productName": "Infor SyteLine",
+                "operationPath": "CSI/IDORequestService/ido/update/{ido}",
+                "summary": "UpdateCollection",
+                "httpMethod": "POST",
+                "availableOutputContentTypes": [
+                  "JSON"
+                ],
+                "outputContentType": "JSON",
+                "input": [
+                  {
+                    "name": "Authorization",
+                    "description": "Token obtained through a call to SecurityToken, or if using the service through ION API, a valid OAuth 2.0 Bearer token (filled in automatically by Swagger UI).",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "wfVariableName": "MGConfig",
+                    "name": "X-Infor-MongooseConfig",
+                    "description": "Mongoose configuration to log into; required when using the service through ION API, not needed otherwise.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "HEADER"
+                  },
+                  {
+                    "literalValue": "SLCustomers",
+                    "name": "ido",
+                    "description": "IDO name",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "true",
+                    "name": "refresh",
+                    "description": "Refresh after update flag",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [
+                  {
+                    "wfVariableName": "ItemID",
+                    "type": "BODY",
+                    "path": "$.RefreshItems[0].ItemId",
+                    "optional": false
+                  }
+                ],
+                "inputBody": {
+                  "name": "body",
+                  "description": "IDOUpdateItem structure",
+                  "required": true,
+                  "availableInputContentTypes": [
+                    "JSON"
+                  ],
+                  "inputContentType": "JSON",
+                  "body": "{\n  \"IDOName\": \"SLCustomers\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"ItemId\": \"$value(ItemID)\",\n      \"Properties\": [\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"CreditLimit\",\n          \"Value\": \"$value(UpdatePropertyValue)\"\n        },\n        {\n          \"IsNull\": false,\n          \"Modified\": true,\n          \"Name\": \"InWorkflow\",\n          \"Value\": \"0\"\n        }\n      ]\n    }\n  ]\n}",
+                  "ignore": false,
+                  "structureNamesFromBody": [],
+                  "variableNamesFromBody": [
+                    "UpdatePropertyValue",
+                    "ItemID"
+                  ]
+                }
+              }
+            },
+            {
+              "_type": "ifthenelse",
+              "sequenceNumber": 2,
+              "trueBranch": {
+                "sequenceNumber": 0,
+                "flowParts": [
+                  {
+                    "_type": "assignment",
+                    "sequenceNumber": 1,
+                    "name": "SetLimitNew",
+                    "assignmentType": "NoAssignment",
+                    "serializedAssignments": "[{\"assignmentType\":\"VARIABLE_ASSIGNMENT\",\"expression\":\"NewCreditLimit\",\"treePath\":null,\"variableName\":\"UpdatePropertyValue\",\"personFullName\":null}]",
+                    "listOfAllAssignments": [
+                      {
+                        "assignmentType": "VARIABLE_ASSIGNMENT",
+                        "expression": "NewCreditLimit",
+                        "variableName": "UpdatePropertyValue"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "falseBranch": {
+                "sequenceNumber": 0,
+                "flowParts": [
+                  {
+                    "_type": "assignment",
+                    "sequenceNumber": 1,
+                    "name": "SetLimitOld",
+                    "assignmentType": "NoAssignment",
+                    "serializedAssignments": "[{\"assignmentType\":\"VARIABLE_ASSIGNMENT\",\"expression\":\"OldCreditLimit\",\"treePath\":null,\"variableName\":\"UpdatePropertyValue\",\"personFullName\":null}]",
+                    "listOfAllAssignments": [
+                      {
+                        "assignmentType": "VARIABLE_ASSIGNMENT",
+                        "expression": "OldCreditLimit",
+                        "variableName": "UpdatePropertyValue"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>IsApproved</UsedSubcondition><Subconditions><Subcondition><Name>IsApproved</Name><Type>AttributeValueComparison</Type><AttributeName>ApproveReject</AttributeName><ComparisonOperator>Equal</ComparisonOperator><Value>Approved</Value></Subcondition></Subconditions></Condition>"
+            }
+          ]
+        },
+        "state": 1,
+        "name": "Update Record"
+      },
+      {
+        "_type": "usertask",
+        "sequenceNumber": 1,
+        "name": "Review",
+        "actionButtonVariable": "ApproveReject",
+        "parallel": false,
+        "priority": "High",
+        "taskMessage": "Customer -  [CustName] - Credit Limit has changed and is requesting approval",
+        "taskActionType": "CustomActions",
+        "userTaskType": "USER_TASK",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "dueDateJson": "{\"type\":\"SINCE_CREATION_VALUE\",\"variableName\":null,\"sinceValue\":1,\"sinceTimeUnit\":\"HOURS\"}",
+        "parameters": [
+          {
+            "variable": "NewCreditLimit",
+            "label": "New Limit",
+            "readOnly": false,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "view": "CustomerDrillBack",
+            "label": "Customer Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 4,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CustName",
+            "label": "Name",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "OldCreditLimit",
+            "label": "Old Limit",
+            "readOnly": true,
+            "sequenceNumber": 3,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CustNum",
+            "label": "ID",
+            "readOnly": true,
+            "sequenceNumber": 2,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": true
+          },
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<User Name>",
+            "sendEmail": true
+          },
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<User Name>",
+            "sendEmail": true
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [
+          {
+            "label": "Reject",
+            "value": "Rejected",
+            "sequenceNumber": 1,
+            "actionButtonLabels": []
+          },
+          {
+            "label": "Approve",
+            "value": "Approved",
+            "sequenceNumber": 0,
+            "actionButtonLabels": []
+          }
+        ],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": [],
+        "dueDate": {
+          "type": "SINCE_CREATION_VALUE",
+          "sinceValue": 1,
+          "sinceTimeUnit": "HOURS"
+        }
+      }
+    ]
+  },
+  "name": "CS_Credit_Approval_API",
+  "description": "CSI Credit Approval",
+  "lastUpdatedBy": "<USER_NAME>",
+  "lastUpdatedOn": "2026-01-07T21:36:30.820Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2026-01-07T21:36:32.397Z",
+  "archived": false,
+  "sendToDataLake": true
+}

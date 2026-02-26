@@ -1,0 +1,38 @@
+{
+  "Items": [
+    {
+      "CoNum": "DC00000106",
+      "CoLine": "1",
+      "CustNum": null,
+      "Item": "FA-10000",
+      "DueDate": "20161205 00:00:00.000",
+      "QtyOrderedConv": "100.00000000",
+      "Stat": "C",
+      "_ItemId": "PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[8b03ec75-871e-4207-b700-caefc63ba779]"
+    },
+    {
+      "CoNum": "DC00000106",
+      "CoLine": "2",
+      "CustNum": null,
+      "Item": "TA-50000",
+      "DueDate": "20161205 00:00:00.000",
+      "QtyOrderedConv": "100.00000000",
+      "Stat": "C",
+      "_ItemId": "PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[41038e82-8212-4aa4-8a5e-e87c52592e1f]"
+    },
+    {
+      "CoNum": "DC00000106",
+      "CoLine": "3",
+      "CustNum": null,
+      "Item": "TA-60000",
+      "DueDate": "20161205 00:00:00.000",
+      "QtyOrderedConv": "200.00000000",
+      "Stat": "C",
+      "_ItemId": "PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[eebede65-1344-438c-b985-1d13b205a4d4]"
+    }
+  ],
+  "Bookmark": "<B><P><p>CoNum</p><p>CoLine</p><p>CoRelease</p></P><D><f>false</f><f>false</f><f>false</f></D><F><v>DC00000106</v><v>1</v><v>0</v></F><L><v>DC00000106</v><v>3</v><v>0</v></L></B>",
+  "MoreRowsExist": true,
+  "Success": true,
+  "Message": null
+}

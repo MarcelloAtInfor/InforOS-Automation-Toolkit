@@ -1,0 +1,214 @@
+{
+  "libraries": [],
+  "name": "DemoInvoiceLoader_V3",
+  "description": "Demo data loader - reads invoices from folder, extracts via OCR, sends to InvoiceAutomation_Agent_v2 to create vendors, items, and POs in SyteLine",
+  "main": "MainPage.xaml",
+  "dependencies": {
+    "mscorlib": "[4.0.0.0]",
+    "PresentationFramework": "[4.0.0.0]",
+    "System.Xaml": "[4.0.0.0]",
+    "System": "[4.0.0.0]",
+    "System.Activities": "[4.0.0.0]",
+    "System.Activities.Presentation": "[4.0.0.0]",
+    "YDock": "[1.0.0.0]",
+    "System.Windows.Forms": "[4.0.0.0]",
+    "WindowsBase": "[4.0.0.0]",
+    "NLog": "[4.0.0.0]",
+    "PresentationCore": "[4.0.0.0]",
+    "Newtonsoft.Json": "[13.0.0.0]",
+    "System.Drawing": "[4.0.0.0]",
+    "System.Workflow.Activities": "[4.0.0.0]",
+    "System.Core": "[4.0.0.0]",
+    "UiRecorder": "[1.0.0.0]",
+    "System.IO.Compression": "[4.2.0.0]",
+    "Microsoft.WindowsAPICodePack.Shell": "[1.1.0.0]",
+    "Microsoft.Web.WebView2.Core": "[1.0.818.41]",
+    "Microsoft.Web.WebView2.WinForms": "[1.0.818.41]",
+    "System.Net.Http": "[4.2.0.0]",
+    "System.Configuration": "[4.0.0.0]",
+    "System.Activities.Core.Presentation": "[4.0.0.0]",
+    "Microsoft.CSharp": "[4.0.0.0]",
+    "System.Xml": "[4.0.0.0]",
+    "System.Workflow.ComponentModel": "[4.0.0.0]",
+    "System.Xml.Linq": "[4.0.0.0]",
+    "System.IO.Compression.FileSystem": "[4.0.0.0]",
+    "RestSharp": "[106.12.0.0]"
+  },
+  "packages": {
+    "Infor.RPA.Utilities": "[1.0.0.0]",
+    "Infor.RPA.Utility.Editor": "[1.0.0.0]",
+    "Infor.Activities.Web": "[1.0.0.0]",
+    "Infor.Activities.Desktop": "[1.0.0.0]",
+    "Infor.Activities.Debug": "[1.0.0.0]",
+    "Infor.Activities.Email": "[1.0.0.0]",
+    "Infor.Activities.Excel": "[1.0.0.0]",
+    "Infor.Activities.ExcelOnline": "[1.0.0.0]",
+    "Infor.Activities.HTTPRequests": "[1.0.0.0]",
+    "Infor.Activities.IONAPI": "[1.0.0.0]",
+    "Infor.Activities.OCR": "[1.0.0.0]",
+    "Infor.RPA.OCR": "[1.0.0.0]",
+    "Infor.Activities.OneDrive": "[1.0.0.0]",
+    "Infor.Activities.Sys": "[1.0.0.0]",
+    "Infor.Activities.Datatable": "[1.0.0.0]",
+    "Infor.Activities.SharePointList": "[1.0.0.0]",
+    "Infor.Activities.Workflow": "[1.0.0.0]",
+    "Infor.RPA.Security": "[1.0.0.0]",
+    "Infor.RPA.Commons": "[1.0.0.0]"
+  },
+  "schemaVersion": "1.0",
+  "studioVersion": "2026.01.0\r\n.796",
+  "sourceFiles": [
+    {
+      "fileName": "CreateDirectories.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "ExtractOCRData.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "FormatDataForGenAI.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_25_unique_invoices.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoices.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_01.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_02.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_03.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_04.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_05.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_06.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_07.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_08.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_09.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_batch_invoice_10.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_sample_invoice_1.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_sample_invoice_2.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_sample_invoice_3.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_sample_invoice_4.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v2.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v3.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v4.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v5.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v6.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "generate_test_invoice_v7.py",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "MainPage.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "MoveFileToSuccessFailure.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "ParseAgentResponse.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "SendNotificationWorkflow.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "SendRPAErrorNotification.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "SendToGenAIAgent.xaml",
+      "filePath": "<YOUR_PROJECT_PATH>"
+    },
+    {
+      "fileName": "FlowBasedFields_ToFilter.json",
+      "filePath": "<YOUR_PROJECT_PATH>\\Documents\\5039de7e-ad53-47db-ba1a-1fa199a22fb5\\FlowBasedDocument"
+    },
+    {
+      "fileName": "FlowBasedFields_ToFilter.json",
+      "filePath": "<YOUR_PROJECT_PATH>\\Documents\\deb4c894-d63e-40a5-ad82-82c17cf1bbbe\\FlowBasedDocument"
+    }
+  ],
+  "resources": [],
+  "projectType": "standard",
+  "ProcessType": "Process",
+  "expressionLanguage": "VBscript",
+  "backgroundProcess": false,
+  "attended": true,
+  "tenantMetadata": [
+    {
+      "tenantId": "<YOUR_TENANT>",
+      "processId": "749BE6A9-2FF9-4099-AA6B-00E49C94C8B0",
+      "projectVersion": "1.0.2",
+      "globalPackageNamespace": null,
+      "iprRegistered": false
+    }
+  ],
+  "IdpFlowDependencies": []
+}

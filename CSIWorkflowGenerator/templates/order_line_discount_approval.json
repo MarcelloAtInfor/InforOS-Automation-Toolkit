@@ -1,0 +1,184 @@
+{
+  "name": "CS_OrderLineDiscount_Approval",
+  "description": "Approval workflow for customer order line item discounts exceeding 15%. Includes 2-day timeout with auto-rejection.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCoItems",
+    "monitored_field": "Disc",
+    "workflow_inputs": {
+      "CoNum": "CoNum",
+      "CoLine": "CoLine",
+      "Discount": "Disc",
+      "OldDiscount": "ROUND(E(OldDisc), 2)",
+      "RowPointer": "RowPointer",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.CustomerOrderLines",
+    "access_as": "ue_",
+    "handler_sequence": 201
+  },
+  "variables": [
+    {"name": "CoNum", "type": "STRING", "input": true},
+    {"name": "CoLine", "type": "STRING", "input": true},
+    {"name": "Discount", "type": "DECIMAL", "input": true},
+    {"name": "OldDiscount", "type": "DECIMAL", "input": true},
+    {"name": "RowPointer", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true},
+    {"name": "Timeout", "type": "STRING", "initial_value": "0"}
+  ],
+  "views": [
+    {
+      "name": "OrderDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "SalesOrderView",
+      "params": {
+        "ID1": "$CoNum",
+        "LogicalId": "",
+        "AccountingEntity": "",
+        "Location": ""
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "parallel",
+      "join_type": "ONE_IN",
+      "branches": [
+        [
+          {
+            "type": "approval_task",
+            "name": "Review Discount",
+            "message": "Order [CoNum] line [CoLine] discount of [Discount]% requires approval. Previous discount: [OldDiscount]%.",
+            "distribution": ["user5", "user1_email_full", "user4", "user3"],
+            "buttons": [
+              {"label": "Approve", "value": "Approve"},
+              {"label": "Reject", "value": "Reject"}
+            ],
+            "button_variable": "ApproveReject",
+            "params": [
+              {"label": "Order", "variable": "CoNum", "read_only": true},
+              {"label": "Line", "variable": "CoLine", "read_only": true},
+              {"label": "New Discount %", "variable": "Discount", "read_only": true},
+              {"label": "Old Discount %", "variable": "OldDiscount", "read_only": true},
+              {"label": "Order Details", "view": "OrderDrillBack"}
+            ],
+            "send_email": true,
+            "priority": "High",
+            "due_date": {"value": 48, "unit": "HOURS"}
+          }
+        ],
+        [
+          {
+            "type": "wait",
+            "name": "Timeout Wait",
+            "duration": 2,
+            "unit": "DAYS"
+          },
+          {
+            "type": "assignment",
+            "name": "Set Timeout",
+            "assignments": [
+              {"variable": "Timeout", "expression": "1"},
+              {"variable": "ApproveReject", "expression": "Reject"}
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "type": "subworkflow",
+      "name": "Update Record",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "Build Filter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "Check Approval",
+            "variable": "ApproveReject",
+            "operator": "Equal",
+            "value": "Approve"
+          },
+          "true_assignment": {
+            "name": "Set Approved Value",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "Discount"
+          },
+          "false_assignment": {
+            "name": "Set Rejected Value",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldDiscount"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Load Order Line",
+          "ido": "SLCoItems",
+          "properties": "Disc,InWorkflow",
+          "filter_var": "Filter",
+          "config_var": "MGConfig",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"},
+          "description": "Load order line item for update"
+        },
+        {
+          "type": "ido_update",
+          "name": "Update Discount",
+          "ido": "SLCoItems",
+          "changes": [
+            {"property": "Disc", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "config_var": "MGConfig",
+          "description": "Update discount and clear InWorkflow flag"
+        }
+      ]
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "Check Result",
+        "variable": "ApproveReject",
+        "operator": "Equal",
+        "value": "Approve"
+      },
+      "true_steps": [
+        {
+          "type": "notification",
+          "name": "Approved Notification",
+          "message": "Discount of [Discount]% on order [CoNum] line [CoLine] has been approved.",
+          "distribution": ["user4", "user5", "user1_email", "user3"],
+          "params": [
+            {"label": "Order", "variable": "CoNum"},
+            {"label": "Line", "variable": "CoLine"},
+            {"label": "Discount %", "variable": "Discount"}
+          ]
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "notification",
+          "name": "Rejected Notification",
+          "message": "Discount of [Discount]% on order [CoNum] line [CoLine] has been rejected. Previous discount of [OldDiscount]% restored.",
+          "distribution": ["user4", "user5", "user1_email", "user3"],
+          "params": [
+            {"label": "Order", "variable": "CoNum"},
+            {"label": "Line", "variable": "CoLine"},
+            {"label": "Requested Discount %", "variable": "Discount"},
+            {"label": "Restored Discount %", "variable": "OldDiscount"}
+          ],
+          "send_email": true
+        }
+      ]
+    }
+  ]
+}

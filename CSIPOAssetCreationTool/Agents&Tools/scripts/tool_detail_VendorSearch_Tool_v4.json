@@ -1,0 +1,29 @@
+{
+  "guid": "a0beb310-5a4a-4373-af26-489ad512f396",
+  "name": "VendorSearch_Tool_v4",
+  "description": "Search for existing vendors in SyteLine by vendor name or vendor number",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLVendors\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n- properties: VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,Phone,ExternalEmailAddr,_ItemId\n- filter: SQL WHERE clause (e.g., Name LIKE '%ACME%' or VendNum = 'DEMO001')\n- recordCap: Maximum records (default 10)",
+    "headers": {},
+    "responseInstructions": "JSON response with:\n- Success: true/false\n- Items: Array of vendor objects (empty if no matches)\n- Each vendor has VendNum, Name, and _ItemId",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Search for vendors. Use single quotes in filter.\nReturns vendor details if found, empty Items array if not.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-02-01T02:46:11.380456Z",
+  "updatedBy": null,
+  "updatedOn": null,
+  "gp_config": null,
+  "security": null
+}

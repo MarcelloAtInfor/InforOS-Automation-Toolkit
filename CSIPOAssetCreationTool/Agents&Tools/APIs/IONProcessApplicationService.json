@@ -1,0 +1,1350 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This interface can be used to access ION Process functionality for application to application integration. All datetime strings are in ISO 8601 format, Serialization of properties with null values is suppressed. This API has the throttling feature enabled, it may return error 429 when the quota (10 calls per 10 seconds) is exceeded. Some fields in the request body are restricted by length, it may return error 400 when length exceeds the limit. These length validations are similar as in the user interface and are described in the Infor ION Desk User Guide.",
+    "version": "2026.01, build 9",
+    "title": "ION Process Application Rest API"
+  },
+  "basePath": "/<YOUR_TENANT>/IONSERVICES/process/application",
+  "tags": [
+    {
+      "name": "Generic"
+    },
+    {
+      "name": "Pulse"
+    },
+    {
+      "name": "Workflow"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "tags": [
+          "Generic"
+        ],
+        "summary": "Ping the REST interface.",
+        "description": "Can be used as Status/health method to validate the connection.",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/pulse/alert/cancel": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Cancels an Alert",
+        "description": "Method to cancel a Pulse Alert with source type API and source name as the specified application logicalId",
+        "operationId": "cancelAlert",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "activityCancelJSONBody",
+            "description": "Details for the alert to be cancelled represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ActivityCancel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item Cancelled",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/alert/create": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Creates a new Alert",
+        "description": "Creates a new Pulse Alert with source type API and source name as the specified application logicalId",
+        "operationId": "createAlert",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "alertJSONBody",
+            "description": "The Alert details and distribution list represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Alert"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item created",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/alert/redistribute": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Redistribute an Alert",
+        "description": "Method to redistribute a Pulse Alert to a new distribution list. You can specify action REPLACE if the new distribution list should replace the current list, or action ADD if the new distribution list should be added to the current list. If not specified, the REPLACE action is executed.",
+        "operationId": "redistributeAlert",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "redistributeJSONBody",
+            "description": "Details for the alert to be redistributed represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Redistribution"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item redistributed",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/notification/cancel": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Cancels a Pulse Notification",
+        "description": "Method to cancel a Pulse Notification with source type API and source name as the specified application logicalId",
+        "operationId": "cancelNotification",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "activityCancelJSONBody",
+            "description": "Details for the Notification to be cancelled represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ActivityCancel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item Cancelled",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/notification/create": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Creates a new Pulse Notification",
+        "description": "Creates a new Pulse Notification with source type API and source name as the specified application logicalId",
+        "operationId": "createNotification",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "notificationJSONBody",
+            "description": "The Pulse Notification details and distribution list represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item created",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/task/cancel": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Cancels a Task",
+        "description": "Method to cancel a Pulse Task with source type API and source name as the specified application logicalId",
+        "operationId": "cancelUserTask",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "activityCancelJSONBody",
+            "description": "Details for the task to be cancelled represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ActivityCancel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item Cancelled",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/task/create": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Creates a new Task",
+        "description": "Creates a new Pulse Task with source type API and source name as the specified application logicalId",
+        "operationId": "createUserTask",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "taskJSONBody",
+            "description": "The Task details and distribution list represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserTask"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item created",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/pulse/task/redistribute": {
+      "post": {
+        "tags": [
+          "Pulse"
+        ],
+        "summary": "Redistribute a Task",
+        "description": "Method to redistribute a Pulse Task to a new distribution list. You can specify action REPLACE if the new distribution list should replace the current list, or action ADD if the new distribution list should be added to the current list. If not specified, the REPLACE action is executed.",
+        "operationId": "redistributeUserTask",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "redistributeJSONBody",
+            "description": "Details for the task to be redistributed represented as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Redistribution"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item redistributed",
+            "schema": {
+              "$ref": "#/definitions/Activity"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/workflow/cancel": {
+      "post": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Cancel a Workflow instance.",
+        "description": "Request to cancel a Workflow instance.",
+        "operationId": "cancelWorkflow",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "workflowCancelJSONBody",
+            "description": "The Workflow cancel request as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkflowCancel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow Cancelled"
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Status conflict"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "503": {
+            "description": "Server or tenant not ready yet, may be retried"
+          }
+        }
+      }
+    },
+    "/v1/workflow/interface": {
+      "get": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Returns a list of active workflows and their interface information.",
+        "description": "Returns a JSON structure with the list of all active workflows with information about their defined input and output variables and structures.",
+        "operationId": "getWorkflowInterfaces",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The workflow definition name (optional)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WorkflowInterface"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/v1/workflow/start": {
+      "post": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Start a new Workflow instance.",
+        "description": "Request to create and start a new workflow instance with the given input variables and structures.",
+        "operationId": "startWorkflowInstance",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "logicalId",
+            "in": "query",
+            "description": "The application logicalId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "StartWorkflowJSONBody",
+            "description": "The Workflow start request as JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StartWorkflowRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow created",
+            "schema": {
+              "$ref": "#/definitions/StartWorkflowResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing or invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ActionButton": {
+      "type": "object",
+      "required": [
+        "label",
+        "value"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Action button label"
+        },
+        "value": {
+          "type": "string",
+          "description": "Action button variable value"
+        }
+      }
+    },
+    "Activity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Id of the created or handeled Pulse Item"
+        }
+      }
+    },
+    "ActivityCancel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Id of the item to cancel"
+        }
+      }
+    },
+    "Alert": {
+      "type": "object",
+      "required": [
+        "distribution",
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Alert message"
+        },
+        "category": {
+          "type": "string",
+          "description": "Can be used to set the Alert category"
+        },
+        "alertDateTime": {
+          "type": "string",
+          "example": "2017-03-22T12:03:19Z",
+          "description": "Timestamp when the Alert occurred in ISO8601 date&time format (UTC)"
+        },
+        "dueDate": {
+          "type": "string",
+          "example": "2017-03-22T12:03:19Z",
+          "description": "Alert due date in ISO8601 date&time format (UTC)"
+        },
+        "details": {
+          "description": "The Alert detail tree",
+          "$ref": "#/definitions/TreeLevel"
+        },
+        "views": {
+          "type": "array",
+          "description": "List of drillback views",
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "distribution": {
+          "type": "array",
+          "description": "List of distributions formed of user identifiers or group names",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          }
+        },
+        "translations": {
+          "type": "object",
+          "description": "Mapping of language code to translation, language code is in (ISO 639-ISO 3166) format, some examples: 'en-US' for English (United States) and 'nl-NL' for Dutch (Netherlands). See also RFC 5646.",
+          "additionalProperties": {
+            "$ref": "#/definitions/AlertTranslation"
+          }
+        }
+      }
+    },
+    "AlertTranslation": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "translated message"
+        },
+        "viewLabels": {
+          "type": "object",
+          "description": "Mapping of view name to label translations",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "description": "translated category"
+        }
+      }
+    },
+    "CustomActions": {
+      "type": "object",
+      "properties": {
+        "parameterName": {
+          "type": "string",
+          "description": "The name of the parameter that will contain the selected action button"
+        },
+        "buttons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActionButton"
+          }
+        }
+      }
+    },
+    "Distribution": {
+      "type": "object",
+      "required": [
+        "identifier",
+        "type"
+      ],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "description": "The identifier of a user or group. A user is identified by the IFS Identity2. A group is identified by an IFS Distribution Group name."
+        },
+        "type": {
+          "type": "string",
+          "description": "The Distribution type",
+          "enum": [
+            "USER",
+            "GROUP"
+          ]
+        },
+        "sendMail": {
+          "type": "boolean",
+          "description": "Indicator if an email notification should be sent to this Distribution"
+        }
+      }
+    },
+    "Notification": {
+      "type": "object",
+      "required": [
+        "distribution",
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Notification message"
+        },
+        "category": {
+          "type": "string",
+          "description": "Can be used to set the Notification category"
+        },
+        "contextId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The Notification context identifier (for instance, the workflow instance id)"
+        },
+        "subContextId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The Notification subcontext identifier (for instance, the workflow step id)"
+        },
+        "retention": {
+          "type": "integer",
+          "format": "int32",
+          "example": 30,
+          "description": "The Notification retention time in days (30, 60 or 90 days)"
+        },
+        "parameters": {
+          "type": "array",
+          "description": "The Notification parameters",
+          "items": {
+            "$ref": "#/definitions/Parameter"
+          }
+        },
+        "views": {
+          "type": "array",
+          "description": "List of drillback views",
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "distribution": {
+          "type": "array",
+          "description": "List of distributions formed of user identifiers or group names",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          }
+        },
+        "translations": {
+          "type": "object",
+          "description": "Mapping of language code to translation, language code is in (ISO 639-ISO 3166) format, some examples: 'en-US' for English (United States) and 'nl-NL' for Dutch (Netherlands). See also RFC 5646.",
+          "additionalProperties": {
+            "$ref": "#/definitions/Translation"
+          }
+        }
+      }
+    },
+    "Parameter": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "dataType": {
+          "type": "string",
+          "description": "The datatype of this Parameter",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of this Parameter"
+        },
+        "value": {
+          "type": "string",
+          "description": "Value as a String based on the Datatype"
+        },
+        "label": {
+          "type": "string",
+          "description": "Label for the parameter. If a label is not set, the parameter name is used"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "Indicator if the value is read-only. If not specified the value is true. It is ignored for Pulse Notification as all Parameters are read-only"
+        }
+      }
+    },
+    "Redistribution": {
+      "type": "object",
+      "required": [
+        "distribution"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Id of the Pulse Item to redistribute"
+        },
+        "action": {
+          "type": "string",
+          "description": "The optional action, values can be REPLACE or ADD, if not specified the action is REPLACE",
+          "enum": [
+            "REPLACE",
+            "ADD"
+          ]
+        },
+        "distribution": {
+          "type": "array",
+          "description": "List of distributions formed of user identifiers or group names",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          }
+        }
+      }
+    },
+    "StartWorkflowRequest": {
+      "type": "object",
+      "required": [
+        "instanceName",
+        "workflowName"
+      ],
+      "properties": {
+        "workflowName": {
+          "type": "string",
+          "description": "The name of the Workflow to start"
+        },
+        "instanceName": {
+          "type": "string",
+          "description": "The name/description for this specific Workflow instance"
+        },
+        "inputVariables": {
+          "type": "array",
+          "description": "The set of variables to use as input for the new Workflow instance",
+          "items": {
+            "$ref": "#/definitions/WorkflowVariable"
+          }
+        },
+        "inputStructures": {
+          "type": "array",
+          "description": "The set of structures to use as input for the new Workflow instance",
+          "items": {
+            "$ref": "#/definitions/Structure"
+          }
+        }
+      }
+    },
+    "StartWorkflowResult": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The identifier of the started Workflow instance"
+        }
+      }
+    },
+    "Structure": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this structure"
+        },
+        "fields": {
+          "type": "array",
+          "description": "List of fields",
+          "items": {
+            "$ref": "#/definitions/StructureField"
+          }
+        },
+        "subStructures": {
+          "type": "array",
+          "description": "List of sub structures",
+          "items": {
+            "$ref": "#/definitions/Structure"
+          }
+        }
+      }
+    },
+    "StructureField": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this structure field"
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The datatype of this structure field",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Serialized value (as a String) based on the Datatype"
+        }
+      }
+    },
+    "StructureFieldMeta": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this structure field"
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The datatype of this structure field",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        }
+      }
+    },
+    "StructureMeta": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this structure"
+        },
+        "fields": {
+          "type": "array",
+          "description": "List of structure fields",
+          "items": {
+            "$ref": "#/definitions/StructureFieldMeta"
+          }
+        },
+        "subStructures": {
+          "type": "array",
+          "description": "List of sub structures",
+          "items": {
+            "$ref": "#/definitions/StructureMeta"
+          }
+        }
+      }
+    },
+    "Translation": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "translated message"
+        },
+        "viewLabels": {
+          "type": "object",
+          "description": "Mapping of view name to label translations",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "description": "translated category"
+        },
+        "parameterLabels": {
+          "type": "object",
+          "description": "Mapping of parameter name to label translations",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TreeLevel": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this level"
+        },
+        "properties": {
+          "type": "array",
+          "description": "The list of properties of this tree level",
+          "items": {
+            "$ref": "#/definitions/TreeLevelProperty"
+          }
+        },
+        "subLevels": {
+          "type": "array",
+          "description": "The list of sub levels",
+          "items": {
+            "$ref": "#/definitions/TreeLevel"
+          }
+        }
+      }
+    },
+    "TreeLevelProperty": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this Property"
+        },
+        "value": {
+          "type": "string",
+          "description": "Value as a String based on the Datatype"
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The Datatype of this Property",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        }
+      }
+    },
+    "UserTask": {
+      "type": "object",
+      "required": [
+        "distribution",
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Task message"
+        },
+        "category": {
+          "type": "string",
+          "description": "Can be used to set the Task category"
+        },
+        "dueDate": {
+          "type": "string",
+          "example": "2017-03-22T12:03:19Z",
+          "description": "Task due date in ISO8601 date&time format (UTC)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "The Task priority (HIGH, MEDIUM, LOW)",
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "contextId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The Task context identifier (for instance,  the workflow instance id)"
+        },
+        "subContextId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The Task subcontext identifier (for instance, the workflow step id)"
+        },
+        "parameters": {
+          "type": "array",
+          "description": "The Task parameters",
+          "items": {
+            "$ref": "#/definitions/Parameter"
+          }
+        },
+        "customActions": {
+          "description": "The Custom Actions (buttons)",
+          "$ref": "#/definitions/CustomActions"
+        },
+        "externalFormView": {
+          "description": "The view drillback pointing to the custom form which will replace the Task details standard display",
+          "$ref": "#/definitions/View"
+        },
+        "views": {
+          "type": "array",
+          "description": "List of drillback views",
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "distribution": {
+          "type": "array",
+          "description": "List of distributions formed of user identifiers or group names",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          }
+        },
+        "translations": {
+          "type": "object",
+          "description": "Mapping of language code to translation, language code is in (ISO 639-ISO 3166) format, some examples: 'en-US' for English (United States) and 'nl-NL' for Dutch (Netherlands). See also RFC 5646.",
+          "additionalProperties": {
+            "$ref": "#/definitions/Translation"
+          }
+        }
+      }
+    },
+    "View": {
+      "type": "object",
+      "required": [
+        "label",
+        "name",
+        "properties"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the (Mingle) View"
+        },
+        "label": {
+          "type": "string",
+          "description": "Label for the drillback"
+        },
+        "properties": {
+          "type": "array",
+          "description": "View properties",
+          "items": {
+            "$ref": "#/definitions/ViewProperty"
+          }
+        }
+      }
+    },
+    "ViewProperty": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "View property name"
+        },
+        "value": {
+          "type": "string",
+          "description": "View property value"
+        }
+      }
+    },
+    "WorkflowCancel": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Identifier of the Workflow instance to cancel"
+        },
+        "cancelNotifications": {
+          "type": "boolean",
+          "description": "Indicates if all notifications should also be cancelled (default=true)"
+        }
+      }
+    },
+    "WorkflowInterface": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "activationDate": {
+          "type": "string",
+          "example": "2017-03-226T12:03:19.643Z",
+          "description": "ISO8601 date&time format (utc)"
+        },
+        "majorVersion": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The major version of the Workflow"
+        },
+        "minorVersion": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The minor version of the Workflow"
+        },
+        "inputVariables": {
+          "type": "array",
+          "description": "The input variables for the Workflow, these are required to start a Workflow instance",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/WorkflowInterfaceVariable"
+          }
+        },
+        "outputVariables": {
+          "type": "array",
+          "description": "The output variables for the Workflow",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/WorkflowInterfaceVariable"
+          }
+        },
+        "structures": {
+          "type": "array",
+          "description": "The structures defined in the Workflow, these are required to start a Workflow instance",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/StructureMeta"
+          }
+        }
+      }
+    },
+    "WorkflowInterfaceVariable": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the Workflow variable"
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The datatype of the variable",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE",
+            "USER",
+            "USERGROUP"
+          ]
+        },
+        "additionalTypeInfo": {
+          "type": "string",
+          "description": "The additional datatype information of the variable"
+        },
+        "initialSerializedValue": {
+          "type": "string",
+          "description": "Initial/default value of the variable, a serialized value (as a String) based on the datatype"
+        }
+      }
+    },
+    "WorkflowVariable": {
+      "type": "object",
+      "required": [
+        "dataType",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of this Workflow variable"
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The datatype of this Workflow variable",
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "DECIMAL",
+            "BOOLEAN",
+            "DATETIME",
+            "DATE"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Serialized value (as a String) based on the datatype"
+        }
+      }
+    }
+  }
+}

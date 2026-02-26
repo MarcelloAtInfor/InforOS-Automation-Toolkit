@@ -1,0 +1,30 @@
+{
+  "guid": "901ce71a-5e5f-4802-9142-5b4a98ab1945",
+  "name": "PoLineInsert_Tool_v2",
+  "description": "Create purchase order line items in SyteLine (supports batch insert of multiple lines)",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLPoItems\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nBody:\nThe body contains PO line details in the Changes array. Use multiple objects in Changes for batch insert:\n{\n  \"IDOName\": \"SLPoItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoLine\", \"Value\": \"1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"WIDGET-A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyOrderedConv\", \"Value\": \"10.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"DueDate\", \"Value\": \"2026-02-27\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. DueDate format is YYYY-MM-DD. QtyOrderedConv must include decimals. All properties above are required for each line.\nExample request:\nPOST /update/SLPOs",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response (batch insert):\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"1\",\n      \"Item\": \"WIDGET-A\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid1]\"\n    },\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"2\",\n      \"Item\": \"GADGET-B\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid2]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response:\n{\n  \"Success\": false,\n  \"Message\": \"Item not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with all created PO line records (includes _ItemId for each)\n- _ItemId: Unique identifier for each created line\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create PO line items in SyteLine.\n\nCRITICAL: Insert ALL line items for a PO in a SINGLE API call!\nBuild the complete Changes array with all lines before calling this tool.\n\nRequired fields (for each line):\n- PoNum: PO number (from PoInsert_Tool_v2)\n- PoLine: Line number as string (\"1\", \"2\", etc.)\n- Item: Item code (from ItemInsert_Tool_v2 or ItemSearch_Tool_v2)\n- QtyOrderedConv: Quantity with decimals (e.g., \"10.00\")\n- UM: Unit of measure (must match item's UM)\n- Stat: Default \"O\" (Ordered)\n- DueDate: Format \"YYYY-MM-DD\" (e.g., \"2026-02-27\")\n- Whse: Warehouse (must match PO's warehouse)\n\nIf DueDate not provided, default to 30 days from today.\n\nReturns array of created line items with _ItemId for each.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:40.237758Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}

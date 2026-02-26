@@ -1,0 +1,29 @@
+{
+  "guid": "e4513d7a-45a9-4813-bc7d-9f79c89d416e",
+  "name": "ItemSearch_Tool",
+  "description": "",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nENDPOINT: /load/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of item properties to return. Example: Item, Description\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: Filter expression for exact match.\n\nIf Item is provided: Example: Item='ITEM0001'\nIf Description is provided instead: Example: Description='Bicycle, Model-30, 26\"'\nExample Requests:\n\nTo check existence of item number ITEM0001:\n/load/SLItems?properties=Item,Description&filter=Item='ITEM0001'\n\nTo check existence of an item by description Bicycle, Model-30, 26\":\n/load/SLItems?properties=Item,Description&filter=Description='Bicycle, Model-30, 26\"'",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\nIf the item exists, the Items array contains one or more objects with the requested properties (e.g., Item, Description).\nExample existing item response:\n{\n\"Items\": [\n{\n\"Item\": \"ITEM0001\",\n\"Description\": \"Bicycle, Model-30, 26\"\",\n\"_ItemId\": \"PBT=[item] item.ID=[a1b2c3d4-5678-9101-1121-314151617181]\"\n}\n],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nIf the item does not exist, the Items array is empty.\nExample non-existing item response:\n{\n\"Items\": [],\n\"MoreRowsExist\": false,\n\"Success\": true,\n\"Message\": null\n}\n\nHTTP Status Code:\n200 OK indicates a successful API call regardless of whether the item was found.\nNo separate error codes are expected specifically for non-existing items.",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to verify if a specific item exists in CSI/Syteline.\n\nThis tool performs an exact match search on the item (Item) using the /load/SLItems API. If the item number is missing from the input, the tool searches for the item based on the description (Description) instead.\n\nIf the item exists, the tool returns details including the item number, description, and any other requested properties.\n\nIf the item does not exist, the tool returns an empty result, indicating no matching item found.\n\nThis check applies across all items regardless of status or warehouse.\n\nUse this tool when the prompt requires validation of an item number, or when the description is the only available input.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2025-11-12T18:18:41.740912Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2025-11-12T18:28:10.923664Z",
+  "gp_config": null,
+  "security": null
+}

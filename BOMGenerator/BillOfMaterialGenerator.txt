@@ -1,0 +1,42 @@
+Summary — Bill of Material (BOM) project (agent-driven in Infor CSI/Syteline)
+
+One-sentence summary
+
+Build a GenAI agent (Infor GenAI Platform) that, from natural-language prompts (and later images), creates multi-level BOMs and all linked transactional/test data directly in Infor CSI/Syteline, plus can run validation steps (planning, job/PO suggestion) and optionally produce workflow/config artifacts for reuse.
+Key goals / features
+
+Natural-language BOM creation in-system
+User prompts like “Build me a BOM with 3 levels and 20 materials for ” cause the agent to create the BOM and parts inside CSI/Syteline.
+Interactive refinement: user can extend, modify, or request variants and the agent updates CSI records.
+Linked transactional/test-data generation
+Agent creates related records in CSI/Syteline: sales/customer orders with varied dates, service orders (showing part replacement), unit configuration records, etc., ensuring correct cross-links.
+In-system validation and automation
+Agent can run planning (MRP) and other CSI processes, check for suggested jobs/POs, capture errors or missing links, and report remediation steps.
+Workflow automation and reproducibility
+Agent can execute end-to-end flows in the platform. Optionally, it can emit workflow/config definitions (e.g., JSON templates) for reuse or handoff — but the primary action is making changes directly in CSI/Syteline using Infor tools.
+Future capability
+Image-to-BOM: accept an image, infer structure, and have the agent create a multi-level BOM (text-only initial scope, image later).
+Example prompts for the Infor GenAI agent
+
+Simple:
+Create a 3-level BOM with 20 materials for Product X in CSI/Syteline.
+Medium:
+Create a 3-level BOM for HVAC Unit A with 20 materials, set primary supplier and lead times for each purchased part, and create part master records as needed.
+Complex (create + validate):
+Create a 3-level BOM for Product X, create 3 customer orders spread over the next 30 days with varied ship dates, add a service order showing replacement of subassembly P-0002 on unit UNIT-001, then run planning and verify that suggested jobs/POs are generated. If planning fails to suggest expected jobs/POs, report missing links and try automatic fixes where safe.
+Example agent actions (conceptual)
+
+Create part masters and item records
+Create BOM header and structure (levels, quantities, UoM)
+Create unit configuration and link replaced parts via service order
+Create customer/sales orders with different ship dates
+Trigger planning/MRP and capture results
+Validate links and surface errors with suggested fixes
+Optionally export a reusable workflow/config definition for automation
+Acceptance criteria / test checklist
+
+Creation: BOM and part/item records exist in CSI/Syteline with required fields populated and no schema errors.
+Linkage: Orders, service records, and unit configurations correctly reference BOM items and assemblies.
+Planning run: After creating a sales order, running planning produces expected suggested jobs/POs. If not, agent provides root cause and remediation steps.
+Traceability: Agent logs actions and produces an audit summary (created records, timestamps, any failures/fixes).
+Rollback/safety: Where feasible, agent supports dry-run/preview and safe rollback for destructive changes.

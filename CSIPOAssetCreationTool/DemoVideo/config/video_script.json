@@ -1,0 +1,107 @@
+{
+  "video": {
+    "resolution": [1920, 1080],
+    "fps": 24,
+    "crossfade_duration": 0.5,
+    "output_file": "output/CSI_Invoice_Automation_Demo.mp4"
+  },
+  "tts": {
+    "model": "eleven_multilingual_v2",
+    "voice": "Rachel",
+    "voice_id": "21m00Tcm4TlvDq8ikWAM"
+  },
+  "sections": [
+    {
+      "id": "opening_hook",
+      "type": "title_card",
+      "duration": 15,
+      "title": "Invoice Automation Enhancement",
+      "subtitle": "AI-Powered Demo Data Seeding for Infor SyteLine",
+      "footer": "Infor OS  |  The Velocity Suite  |  GenAI + RPA + IDP + ION",
+      "narration": "Preparing demo data for a Value Plus invoice processing demo means manually creating vendors, items, and purchase orders in SyteLine. What if an AI-powered pipeline could read a sample invoice and seed all that data automatically? That's exactly what this tool does, using In-fohr O S and The Velocity Suite's advanced technologies working together."
+    },
+    {
+      "id": "architecture_overview",
+      "type": "architecture_diagram",
+      "duration": 20,
+      "title": "End-to-End Pipeline Architecture",
+      "boxes": [
+        {"label": "Invoice PDF", "sublabel": "Sample Input", "color_key": "box_pdf"},
+        {"label": "Infor RPA", "sublabel": "Folder Watch", "color_key": "box_rpa"},
+        {"label": "Infor IDP", "sublabel": "AI Extraction", "color_key": "box_idp"},
+        {"label": "GenAI Agent", "sublabel": "9 API Tools", "color_key": "box_genai"},
+        {"label": "SyteLine ERP", "sublabel": "Vendor/Item/PO", "color_key": "box_erp"},
+        {"label": "Pulse Alert", "sublabel": "Notification", "color_key": "box_pulse"}
+      ],
+      "highlights": [
+        {"boxes": [],     "duration": 5.5},
+        {"boxes": [0],    "duration": 4.0},
+        {"boxes": [1],    "duration": 5.0},
+        {"boxes": [2],    "duration": 6.0},
+        {"boxes": [3, 4], "duration": 10.0},
+        {"boxes": [5],    "duration": 4.0}
+      ],
+      "narration": "Here's how the pipeline works, powered by In-fohr, O S and The Velocity Suite. A sample invoice PDF is dropped into a watched folder. In-fohr, Robotic Process Automation detects it and triggers Document Processor, which uses Generative AI to extract vendor details, line items, quantities, and prices. The extracted data flows to a Generative AI agent that orchestrates nine specialized tools, creating vendors, items, and purchase orders in SyteLine. Finally, a Pulse notification confirms everything was created."
+    },
+    {
+      "id": "demo_step1_invoice",
+      "type": "screenshot_frame",
+      "duration": 13,
+      "title": "Step 1: Invoice Detected by RPA",
+      "caption": "RPA folder watch triggers within seconds of file arrival",
+      "screenshot": "assets/screenshots/rpa_watch.png",
+      "narration": "The process begins when a sample invoice PDF lands in the watched folder. Inn-for, Robotic Process Automation, detects the new file within seconds and kicks off the processing pipeline automatically."
+    },
+    {
+      "id": "demo_step2_extraction",
+      "type": "screenshot_frame",
+      "duration": 13,
+      "title": "Step 2: AI-Powered Data Extraction",
+      "caption": "IDP extracts vendor info, line items, quantities, and prices as structured JSON",
+      "screenshot": "assets/screenshots/idp_extract.png",
+      "narration": "Document Processor uses Generative AI to extract vendor name, address, line items, quantities, and unit prices from the invoice, all structured as clean JSON. No templates or manual field mapping required."
+    },
+    {
+      "id": "demo_step3_agent",
+      "type": "screenshot_frame",
+      "duration": 13,
+      "title": "Step 3: GenAI Agent Orchestration",
+      "caption": "The agent coordinates 9 tools: search, create, and link vendor/items/PO",
+      "screenshot": "assets/screenshots/genai_agent.png",
+      "narration": "The Generative AI agent receives the extracted data and orchestrates nine specialized tools. It searches for existing vendors and items to avoid duplicates, creates anything that's missing, and builds a complete purchase order with all line items and pricing."
+    },
+    {
+      "id": "demo_step4_results",
+      "type": "screenshot_frame",
+      "duration": 13,
+      "title": "Step 4: SyteLine Records Created",
+      "caption": "Vendor, items with pricing, and complete PO — all matching the invoice",
+      "screenshot": "assets/screenshots/syteline_po.png",
+      "narration": "SyteLine now has the matching vendor, items with correct pricing, and a complete purchase order, all corresponding exactly to the sample invoice. The Value Plus demo is ready to run flawlessly."
+    },
+    {
+      "id": "demo_step5_notification",
+      "type": "screenshot_frame",
+      "duration": 13,
+      "title": "Step 5: Pulse Notification",
+      "caption": "Confirmation alert with drill-back links into SyteLine",
+      "screenshot": "assets/screenshots/pulse_alert.png",
+      "narration": "A Pulse notification confirms what was created, including the vendor name, item count, and purchase order number, with drill-back links directly into SyteLine for quick verification."
+    },
+    {
+      "id": "closing",
+      "type": "closing_card",
+      "duration": 20,
+      "title": "Results",
+      "metrics": [
+        {"value": "< 5 min", "label": "Processing Time"},
+        {"value": "Zero", "label": "Manual Entry"},
+        {"value": "100%", "label": "Velocity Suite"},
+        {"value": "Safe", "label": "Duplicate Detection"}
+      ],
+      "tagline": "Infor OS + The Velocity Suite — one platform, endless possibilities.",
+      "footer": "Infor OS  |  The Velocity Suite  |  CloudSuite Industrial",
+      "narration": "The entire pipeline runs in under five minutes with zero manual data entry. It's duplicate-safe and built entirely on In-fohr, O S and The Velocity Suite. This is just one example of what Generative AI, Robotic Process Automation, Document Processor, and Ion can do when they work together on the In-fohr, platform."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "guid": "9350da81-020f-4755-accf-95bfd1efb151",
+  "name": "GAF_SyteLine_ItemInsert_Tool_v1",
+  "description": "Create a new item in SyteLine with item code, description, and standard defaults",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLItems\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nThe body creates a new item in SLItems:\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"ITEM-CODE\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Description\", \"Value\": \"Item Description\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"MatlType\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PMTCode\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ProductCode\", \"Value\": \"FG-100\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AbcCode\", \"Value\": \"B\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostType\", \"Value\": \"A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostMethod\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"A\"}\n      ]\n    }\n  ]\n}\nCRITICAL: ONLY use the exact property Names listed above (Item, Description, UM, MatlType, PMTCode, ProductCode, AbcCode, CostType, CostMethod, Stat). Do NOT add any other properties. The IDO will reject unknown properties.\nPMTCode valid values: M (Manufactured), P (Purchased), T (Transferred). No other values are accepted.\nProductCode must be a valid code from the system. Safe default: FG-100. Do NOT use RM-100 (invalid).\nNOTE: Action 1 = insert. All 10 properties above are required.\nExample Request:\nPOST /update/SLItems\nCreate item WD-10001 with description Oak Plank:",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created item record (includes Item code and _ItemId)\n- _ItemId: Unique record identifier for the created item\nIf Success is false, check the Message field for the error reason (e.g., duplicate item code, invalid property).\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create a new item in SyteLine.\nIMPORTANT: Always use GAF_SyteLine_ItemSearch_Tool_v1 first to ensure the item does not already exist!\nIMPORTANT: ONLY use the 10 properties listed in api_docs. Do NOT add any extra properties.\nPMTCode: M=Manufactured, P=Purchased, T=Transferred. NO other values.\nProductCode: Use FG-100 as safe default. Do NOT use RM-100.\nReturns the created item with Item code and _ItemId.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

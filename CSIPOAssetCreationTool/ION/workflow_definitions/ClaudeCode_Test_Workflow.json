@@ -1,0 +1,187 @@
+{
+  "variables": [
+    {
+      "name": "SenderName",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "InputMessage",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "PO_Number",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "Vendor_Number",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [
+    {
+      "name": "PO_DrillBack",
+      "viewSetName": "infor.syteline (SyteLineViewsCustom)",
+      "viewName": "PurchaseOrderView",
+      "viewParameters": [
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        },
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "variable": "PO_Number",
+          "name": "ID1"
+        },
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.syteline.csi"
+        }
+      ]
+    },
+    {
+      "name": "Vendor_DrillBack",
+      "viewSetName": "infor.syteline (SyteLineViewsCustom)",
+      "viewName": "SupplierView",
+      "viewParameters": [
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        },
+        {
+          "variable": "Vendor_Number",
+          "name": "ID1"
+        },
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.syteline.csi"
+        }
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "_type": "tree",
+      "name": "TEST",
+      "label": "TEST",
+      "sequence": 0,
+      "treeLabels": [],
+      "treeElementChildren": [
+        {
+          "_type": "field",
+          "name": "TEST_FIELD",
+          "label": "TEST_FIELD",
+          "sequence": 0,
+          "treeLabels": [],
+          "dataType": "STRING"
+        },
+        {
+          "_type": "node",
+          "name": "TEST_LEVEL",
+          "label": "TEST_LEVEL",
+          "sequence": 1,
+          "treeLabels": [],
+          "treeElementChildren": [
+            {
+              "_type": "field",
+              "name": "TEST_SUB_LEVEL",
+              "label": "TEST_SUB_LEVEL",
+              "sequence": 0,
+              "treeLabels": [],
+              "dataType": "STRING"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "usertask",
+        "sequenceNumber": 1,
+        "name": "SendNotification",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "Message from [SenderName]: [InputMessage]",
+        "taskActionType": "StandardAction",
+        "userTaskType": "NOTIFICATION",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "parameters": [
+          {
+            "variable": "InputMessage",
+            "label": "Message",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "view": "Vendor_DrillBack",
+            "label": "Vendor Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 3,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "SenderName",
+            "label": "Sender",
+            "readOnly": true,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "view": "PO_DrillBack",
+            "label": "PO Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 2,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "Test User",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": []
+      }
+    ]
+  },
+  "name": "ClaudeCode_Test_Workflow",
+  "description": "Test workflow created via Claude Code REST API. Sends a notification with a custom message.",
+  "lastUpdatedBy": "<USER_NAME>",
+  "lastUpdatedOn": "2026-01-30T03:00:21.643Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2026-01-29T22:52:19.093Z",
+  "archived": false
+}

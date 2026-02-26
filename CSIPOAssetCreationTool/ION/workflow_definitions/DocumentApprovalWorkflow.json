@@ -1,0 +1,418 @@
+{
+  "variables": [
+    {
+      "name": "ApproveReject",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "PID",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [
+    {
+      "name": "DocumentDrillBack",
+      "viewSetName": "infor.daf (infor.daf)",
+      "viewName": "ContentDocumentView",
+      "viewParameters": [
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.daf.daf"
+        },
+        {
+          "variable": "PID",
+          "name": "$pid"
+        },
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        },
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "name": "$query",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "trees": [],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "usertask",
+        "sequenceNumber": 3,
+        "name": "Production Review",
+        "actionButtonVariable": "ApproveReject",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "(Production Review) Please review this new Document",
+        "taskActionType": "CustomActions",
+        "userTaskType": "USER_TASK",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "dueDateJson": "{\"type\":\"SINCE_CREATION_VALUE\",\"variableName\":null,\"sinceValue\":2,\"sinceTimeUnit\":\"DAYS\"}",
+        "parameters": [
+          {
+            "view": "DocumentDrillBack",
+            "label": "Document Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [
+          {
+            "label": "Rejected",
+            "value": "Rejected",
+            "sequenceNumber": 1,
+            "actionButtonLabels": []
+          },
+          {
+            "label": "Approve",
+            "value": "Approved",
+            "sequenceNumber": 0,
+            "actionButtonLabels": []
+          }
+        ],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": [],
+        "dueDate": {
+          "type": "SINCE_CREATION_VALUE",
+          "sinceValue": 2,
+          "sinceTimeUnit": "DAYS"
+        }
+      },
+      {
+        "_type": "ifthenelse",
+        "sequenceNumber": 4,
+        "trueBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 1,
+              "name": "Update Approval",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.daf\",\"operationProxyPath\":\"IDM/api\",\"operationRestPath\":\"/items/{pid}\",\"productName\":\"Document Management\",\"operationPath\":\"IDM/api/items/{pid}\",\"summary\":\"Update an item\",\"httpMethod\":\"PUT\",\"availableOutputContentTypes\":[\"XML\",\"JSON\"],\"outputContentType\":null,\"input\":[{\"wfVariableName\":\"PID\",\"literalValue\":null,\"name\":\"pid\",\"description\":\"The item's unique identifier.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$checkout\",\"description\":\"Valid values are \\\"true\\\" or \\\"false\\\".\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$checkin\",\"description\":\"Valid values are \\\"true\\\" or \\\"false\\\".\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$merge\",\"description\":\"If specified then a merge will be used which means that only the attributes sent in will be updated in the item. The other attributes will keep their existing values.\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"$language\",\"description\":\"Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[],\"inputBody\":{\"name\":\"body\",\"description\":\"Input document.\",\"required\":true,\"availableInputContentTypes\":[\"XML\",\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n  \\\"item\\\": {\\n    \\\"attrs\\\": {\\n      \\\"attr\\\": [\\n        {\\n          \\\"name\\\": \\\"Status\\\",\\n          \\\"value\\\": \\\"$value(ApproveReject)\\\"\\n        }\\n      ]\\n    }\\n  }\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"ApproveReject\"]}}",
+              "isCustom": false,
+              "ionApiMethod": {
+                "productLogicalId": "infor.daf",
+                "operationProxyPath": "IDM/api",
+                "operationRestPath": "/items/{pid}",
+                "productName": "Document Management",
+                "operationPath": "IDM/api/items/{pid}",
+                "summary": "Update an item",
+                "httpMethod": "PUT",
+                "availableOutputContentTypes": [
+                  "XML",
+                  "JSON"
+                ],
+                "input": [
+                  {
+                    "wfVariableName": "PID",
+                    "name": "pid",
+                    "description": "The item's unique identifier.",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$checkout",
+                    "description": "Valid values are \"true\" or \"false\".",
+                    "swaggerDatatype": "boolean",
+                    "required": true,
+                    "type": "QUERY"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$checkin",
+                    "description": "Valid values are \"true\" or \"false\".",
+                    "swaggerDatatype": "boolean",
+                    "required": true,
+                    "type": "QUERY"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$merge",
+                    "description": "If specified then a merge will be used which means that only the attributes sent in will be updated in the item. The other attributes will keep their existing values.",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "$language",
+                    "description": "Language parameter, for example 'en' or 'en-US'. Enables localized error messages.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [],
+                "inputBody": {
+                  "name": "body",
+                  "description": "Input document.",
+                  "required": true,
+                  "availableInputContentTypes": [
+                    "XML",
+                    "JSON"
+                  ],
+                  "inputContentType": "JSON",
+                  "body": "{\n  \"item\": {\n    \"attrs\": {\n      \"attr\": [\n        {\n          \"name\": \"Status\",\n          \"value\": \"$value(ApproveReject)\"\n        }\n      ]\n    }\n  }\n}",
+                  "ignore": false,
+                  "variableNamesFromBody": [
+                    "ApproveReject"
+                  ],
+                  "structureNamesFromBody": []
+                }
+              }
+            }
+          ]
+        },
+        "falseBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ionapi",
+              "sequenceNumber": 1,
+              "name": "Update Rejected",
+              "timeOut": 600,
+              "retryTime": 600,
+              "ignoreErrors": false,
+              "method": "{\"productLogicalId\":\"infor.daf\",\"operationProxyPath\":\"IDM/api\",\"operationRestPath\":\"/items/{pid}\",\"productName\":\"Document Management\",\"operationPath\":\"IDM/api/items/{pid}\",\"summary\":\"Update an item\",\"httpMethod\":\"PUT\",\"availableOutputContentTypes\":[\"XML\",\"JSON\"],\"outputContentType\":null,\"input\":[{\"wfVariableName\":\"PID\",\"literalValue\":null,\"name\":\"pid\",\"description\":\"The item's unique identifier.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"PATH\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$checkout\",\"description\":\"Valid values are \\\"true\\\" or \\\"false\\\".\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$checkin\",\"description\":\"Valid values are \\\"true\\\" or \\\"false\\\".\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"True\",\"name\":\"$merge\",\"description\":\"If specified then a merge will be used which means that only the attributes sent in will be updated in the item. The other attributes will keep their existing values.\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":null,\"name\":\"$language\",\"description\":\"Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[],\"inputBody\":{\"name\":\"body\",\"description\":\"Input document.\",\"required\":true,\"availableInputContentTypes\":[\"XML\",\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n  \\\"item\\\": {\\n    \\\"attrs\\\": {\\n      \\\"attr\\\": [\\n        {\\n          \\\"name\\\": \\\"Status\\\",\\n          \\\"value\\\": \\\"$value(ApproveReject)\\\"\\n        }\\n      ]\\n    }\\n  }\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"ApproveReject\"]}}",
+              "isCustom": false,
+              "ionApiMethod": {
+                "productLogicalId": "infor.daf",
+                "operationProxyPath": "IDM/api",
+                "operationRestPath": "/items/{pid}",
+                "productName": "Document Management",
+                "operationPath": "IDM/api/items/{pid}",
+                "summary": "Update an item",
+                "httpMethod": "PUT",
+                "availableOutputContentTypes": [
+                  "XML",
+                  "JSON"
+                ],
+                "input": [
+                  {
+                    "wfVariableName": "PID",
+                    "name": "pid",
+                    "description": "The item's unique identifier.",
+                    "swaggerDatatype": "string",
+                    "required": true,
+                    "type": "PATH"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$checkout",
+                    "description": "Valid values are \"true\" or \"false\".",
+                    "swaggerDatatype": "boolean",
+                    "required": true,
+                    "type": "QUERY"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$checkin",
+                    "description": "Valid values are \"true\" or \"false\".",
+                    "swaggerDatatype": "boolean",
+                    "required": true,
+                    "type": "QUERY"
+                  },
+                  {
+                    "literalValue": "True",
+                    "name": "$merge",
+                    "description": "If specified then a merge will be used which means that only the attributes sent in will be updated in the item. The other attributes will keep their existing values.",
+                    "swaggerDatatype": "boolean",
+                    "required": false,
+                    "type": "QUERY"
+                  },
+                  {
+                    "name": "$language",
+                    "description": "Language parameter, for example 'en' or 'en-US'. Enables localized error messages.",
+                    "swaggerDatatype": "string",
+                    "required": false,
+                    "type": "QUERY"
+                  }
+                ],
+                "output": [],
+                "inputBody": {
+                  "name": "body",
+                  "description": "Input document.",
+                  "required": true,
+                  "availableInputContentTypes": [
+                    "XML",
+                    "JSON"
+                  ],
+                  "inputContentType": "JSON",
+                  "body": "{\n  \"item\": {\n    \"attrs\": {\n      \"attr\": [\n        {\n          \"name\": \"Status\",\n          \"value\": \"$value(ApproveReject)\"\n        }\n      ]\n    }\n  }\n}",
+                  "ignore": false,
+                  "variableNamesFromBody": [
+                    "ApproveReject"
+                  ],
+                  "structureNamesFromBody": []
+                }
+              }
+            }
+          ]
+        },
+        "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>IsApproved</UsedSubcondition><Subconditions><Subcondition><Name>IsApproved</Name><Type>AttributeValueComparison</Type><AttributeName>ApproveReject</AttributeName><ComparisonOperator>Equal</ComparisonOperator><Value>Approved</Value></Subcondition></Subconditions></Condition>"
+      },
+      {
+        "_type": "usertask",
+        "sequenceNumber": 1,
+        "name": "Engineering Review",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "(Engineering Review) Please review this new Document",
+        "taskActionType": "StandardAction",
+        "userTaskType": "USER_TASK",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "dueDateJson": "{\"type\":\"SINCE_CREATION_VALUE\",\"variableName\":null,\"sinceValue\":2,\"sinceTimeUnit\":\"DAYS\"}",
+        "parameters": [
+          {
+            "view": "DocumentDrillBack",
+            "label": "Document Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": [],
+        "dueDate": {
+          "type": "SINCE_CREATION_VALUE",
+          "sinceValue": 2,
+          "sinceTimeUnit": "DAYS"
+        }
+      },
+      {
+        "_type": "usertask",
+        "sequenceNumber": 5,
+        "name": "Document Update",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "New document has been [ApproveReject]!",
+        "taskActionType": "StandardAction",
+        "userTaskType": "NOTIFICATION",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": true,
+        "parameters": [
+          {
+            "view": "DocumentDrillBack",
+            "label": "Document Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "ApproveReject",
+            "label": "Approve Reject",
+            "readOnly": true,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": []
+      },
+      {
+        "_type": "usertask",
+        "sequenceNumber": 2,
+        "name": "Accounting Review",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "(Accounting Review) Please review this new Document",
+        "taskActionType": "StandardAction",
+        "userTaskType": "USER_TASK",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "dueDateJson": "{\"type\":\"SINCE_CREATION_VALUE\",\"variableName\":null,\"sinceValue\":2,\"sinceTimeUnit\":\"DAYS\"}",
+        "parameters": [
+          {
+            "view": "DocumentDrillBack",
+            "label": "Document Drill Back",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "<USER_GUID>",
+            "distributionType": "USER",
+            "description": "<USER_NAME>",
+            "sendEmail": false
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": [],
+        "dueDate": {
+          "type": "SINCE_CREATION_VALUE",
+          "sinceValue": 2,
+          "sinceTimeUnit": "DAYS"
+        }
+      }
+    ]
+  },
+  "name": "DocumentApprovalWorkflow",
+  "description": "DocumentApprovalWorkflow",
+  "lastUpdatedBy": "<USER_NAME>",
+  "lastUpdatedOn": "2025-07-11T16:47:27.997Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2025-07-11T16:47:29.540Z",
+  "archived": false,
+  "serviceAccount": "<YOUR_SERVICE_ACCOUNT>"
+}

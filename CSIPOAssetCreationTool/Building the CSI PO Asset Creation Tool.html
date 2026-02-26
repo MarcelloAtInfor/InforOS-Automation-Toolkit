@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code &times; Infor OS — Development Retrospective</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    padding: 40px;
+    color: #e0e0e0;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #111827;
+    border-radius: 20px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 50px 60px 40px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: 30%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a78bfa;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #f8fafc;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .header h1 span {
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    font-size: 17px;
+    font-weight: 300;
+    color: #94a3b8;
+    line-height: 1.5;
+    max-width: 700px;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .meta-item strong { color: #cbd5e1; font-weight: 600; }
+
+  /* ── Content ── */
+  .content { padding: 50px 60px; }
+
+  .section { margin-bottom: 50px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #6366f1;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.7;
+    max-width: 900px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Stats Banner ── */
+  .stats-banner {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 50px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); }
+
+  .stat-number {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-purple .stat-number { color: #a78bfa; }
+  .stat-blue .stat-number { color: #60a5fa; }
+  .stat-green .stat-number { color: #34d399; }
+  .stat-orange .stat-number { color: #fb923c; }
+  .stat-pink .stat-number { color: #f472b6; }
+  .stat-cyan .stat-number { color: #22d3ee; }
+
+  /* ── Asset Inventory ── */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .asset-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .asset-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .asset-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .asset-card .count {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+  .asset-card p {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  .asset-card ul {
+    list-style: none;
+    margin-top: 10px;
+  }
+
+  .asset-card ul li {
+    font-size: 11px;
+    color: #64748b;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .asset-card ul li:last-child { border-bottom: none; }
+
+  .ac-scripts::before { background: linear-gradient(90deg, #a78bfa, #818cf8); }
+  .ac-scripts .count { background: rgba(139,92,246,0.2); color: #a78bfa; }
+
+  .ac-xaml::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .ac-xaml .count { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+  .ac-json::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .ac-json .count { background: rgba(245,158,11,0.2); color: #fbbf24; }
+
+  .ac-docs::before { background: linear-gradient(90deg, #10b981, #34d399); }
+  .ac-docs .count { background: rgba(16,185,129,0.2); color: #34d399; }
+
+  .ac-deployed::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .ac-deployed .count { background: rgba(239,68,68,0.2); color: #f87171; }
+
+  .ac-shared::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+  .ac-shared .count { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #6366f1, #a78bfa, #60a5fa, #34d399);
+    border-radius: 2px;
+  }
+
+  .tl-item {
+    position: relative;
+    padding-bottom: 28px;
+  }
+
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-dot {
+    position: absolute;
+    left: -33px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #6366f1;
+    background: #111827;
+    z-index: 2;
+  }
+
+  .tl-item.milestone .tl-dot {
+    width: 16px;
+    height: 16px;
+    left: -35px;
+    background: #6366f1;
+    box-shadow: 0 0 12px rgba(99,102,241,0.4);
+  }
+
+  .tl-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6366f1;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .tl-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .tl-desc {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  .tl-detail {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #64748b;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 10px 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Process Flow ── */
+  .process-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .process-step {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px 20px;
+    position: relative;
+  }
+
+  .process-step::after {
+    content: '\2192';
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #4b5563;
+  }
+
+  .process-step:last-child::after { display: none; }
+
+  .process-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99,102,241,0.2);
+    color: #818cf8;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .process-step h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+  }
+
+  .process-step p {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ── Strengths / Challenges ── */
+  .sw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .sw-column {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .sw-column h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sw-column h3 .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .strengths h3 { color: #34d399; }
+  .strengths h3 .tag { background: rgba(52,211,153,0.15); color: #34d399; }
+
+  .challenges h3 { color: #fb923c; }
+  .challenges h3 .tag { background: rgba(251,146,60,0.15); color: #fb923c; }
+
+  .sw-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .sw-item:last-child { border-bottom: none; }
+
+  .sw-item h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .sw-item p {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ── Iteration Callout ── */
+  .callout {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px;
+    padding: 28px;
+    margin-top: 30px;
+  }
+
+  .callout h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #a78bfa;
+    margin-bottom: 12px;
+  }
+
+  .callout-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .callout-item {
+    text-align: center;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+  }
+
+  .callout-item .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #c4b5fd;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .callout-item .label {
+    font-size: 11px;
+    color: #8b8bb8;
+    line-height: 1.3;
+  }
+
+  /* ── Key Insight Box ── */
+  .insight-box {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 30px;
+    margin-top: 30px;
+  }
+
+  .insight-box h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 16px;
+  }
+
+  .insight-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .insight-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .insight-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99,102,241,0.15);
+    color: #818cf8;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .insight-item h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 2px;
+  }
+
+  .insight-item p {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  /* ── Summary Box ── */
+  .summary-box {
+    background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.05) 100%);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px;
+    padding: 36px;
+    text-align: center;
+  }
+
+  .summary-box h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 12px;
+  }
+
+  .summary-box p {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .summary-box p strong { color: #c4b5fd; font-weight: 600; }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 24px 60px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #475569;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 0; background: white; color: #1a1a2e; }
+    .page { box-shadow: none; border-radius: 0; background: white; border: none; }
+    .header { background: #1e293b; }
+    .stat-card, .asset-card, .process-step, .sw-column, .callout, .insight-box, .summary-box {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+    .section-title, .tl-title, .asset-card h4, .process-step h4, .sw-item h4, .insight-item h4 { color: #1e293b; }
+    .section-desc, .tl-desc, .asset-card p, .process-step p, .sw-item p, .insight-item p { color: #475569; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ════════════════════════════ HEADER ════════════════════════════ -->
+  <div class="header">
+    <div class="header-badge">DEVELOPMENT RETROSPECTIVE</div>
+    <h1>Building the CSI PO Asset Creation Tool<br>with <span>Claude Code</span></h1>
+    <div class="subtitle">
+      How an AI coding assistant was used to design, build, test, and ship a multi-service Infor OS automation pipeline &mdash; from first API call to production V1.0.
+    </div>
+    <div class="header-meta">
+      <div class="meta-item"><strong>Platform:</strong>&nbsp;Infor OS (CloudSuite Industrial)</div>
+      <div class="meta-item"><strong>Duration:</strong>&nbsp;~8 working days</div>
+      <div class="meta-item"><strong>Milestone:</strong>&nbsp;V1.0 Shipped Feb 3, 2026</div>
+      <div class="meta-item"><strong>AI Tool:</strong>&nbsp;Claude Code (Anthropic CLI)</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════ STATS ════════════════════════════ -->
+    <div class="stats-banner">
+      <div class="stat-card stat-purple">
+        <div class="stat-number">237+</div>
+        <div class="stat-label">Files Created</div>
+      </div>
+      <div class="stat-card stat-blue">
+        <div class="stat-number">81</div>
+        <div class="stat-label">Python Scripts</div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-number">15</div>
+        <div class="stat-label">Deployed Assets</div>
+      </div>
+      <div class="stat-card stat-orange">
+        <div class="stat-number">6</div>
+        <div class="stat-label">Infor Services</div>
+      </div>
+      <div class="stat-card stat-pink">
+        <div class="stat-number">9</div>
+        <div class="stat-label">RPA Workflows</div>
+      </div>
+      <div class="stat-card stat-cyan">
+        <div class="stat-number">7</div>
+        <div class="stat-label">Knowledge Bases</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ WHAT WAS BUILT ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">What Claude Code Built</div>
+      <div class="section-title">Complete Asset Inventory</div>
+      <div class="section-desc">
+        Claude Code was the primary development tool for nearly every artifact in this project &mdash; from the first OAuth token script to the final notification workflow. It generated code, wrote documentation, debugged API failures, and iteratively refined every component.
+      </div>
+
+      <div class="asset-grid">
+
+        <div class="asset-card ac-scripts">
+          <h4>Python Scripts <span class="count">81 files</span></h4>
+          <p>API interaction, tool/agent creation, testing, debugging, token management, and test data generation.</p>
+          <ul>
+            <li>40 scripts for GenAI tool &amp; agent management</li>
+            <li>6 scripts for IDP Document Processor Flows</li>
+            <li>9 scripts for ION Workflow &amp; Pulse APIs</li>
+            <li>23 scripts for test invoice PDF generation</li>
+            <li>3 shared authentication/config utilities</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-xaml">
+          <h4>RPA XAML Workflows <span class="count">9 files</span></h4>
+          <p>Complete DemoInvoiceLoader V3 automation &mdash; from folder scan to user notification.</p>
+          <ul>
+            <li>MainPage.xaml &mdash; Orchestrator (12 configurable args)</li>
+            <li>ExtractOCRData &mdash; IDP integration</li>
+            <li>FormatDataForGenAI &mdash; JSON transformation</li>
+            <li>SendToGenAIAgent &mdash; REST + async polling</li>
+            <li>ParseAgentResponse &mdash; Multi-format parser</li>
+            <li>2 notification + 2 file management workflows</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-json">
+          <h4>JSON Configurations <span class="count">80+ files</span></h4>
+          <p>Tool definitions, agent definitions, API specs, DPF exports, workflow definitions, and captured responses.</p>
+          <ul>
+            <li>12 GenAI tool/agent definition files</li>
+            <li>18 multi-tenant (dynamic site) variants</li>
+            <li>8 API/Swagger specification files</li>
+            <li>12 IDP Document Processor Flow configs</li>
+            <li>8 ION Workflow definitions</li>
+            <li>20+ API response captures &amp; debug data</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-docs">
+          <h4>Documentation <span class="count">43+ files</span></h4>
+          <p>Knowledge bases, progress logs, API guides, activity references, planning docs, and test suites.</p>
+          <ul>
+            <li>7 CLAUDE.md knowledge base files</li>
+            <li>6 log.md development narrative files</li>
+            <li>RPA Activities Reference (from 298-page guide)</li>
+            <li>13 planning &amp; architecture documents</li>
+            <li>10+ API documentation &amp; implementation guides</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-deployed">
+          <h4>Production Deployments <span class="count">15 assets</span></h4>
+          <p>Live GenAI tools and agents running on the Infor GenAI platform.</p>
+          <ul>
+            <li>12 GenAI API Tools (Search, Insert, Workflow)</li>
+            <li>3 GenAI Agents (Customer, OrderLine, Invoice)</li>
+            <li>InvoiceAutomation_Agent_v2 = 9 tools orchestrated</li>
+            <li>2 ION Notification Workflows</li>
+            <li>2 AI Similarity Retraining Workflows</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-shared">
+          <h4>Shared Module <span class="count">3 files</span></h4>
+          <p>Centralized auth &amp; config that eliminated code duplication across the entire repository.</p>
+          <ul>
+            <li>auth.py &mdash; OAuth 2.0 token lifecycle</li>
+            <li>config.py &mdash; Service URL construction</li>
+            <li>Replaced 4 duplicate token scripts</li>
+            <li>Consumed by 37+ scripts across 4 projects</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ DEV PROCESS ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">The Development Process</div>
+      <div class="section-title">How Claude Code Works with a Cloud Platform</div>
+      <div class="section-desc">
+        Building on a proprietary cloud platform like Infor OS is fundamentally different from typical local development. There's no "npm install" or "pip install" that gives you a local stack. Every component lives in the cloud, accessed only through REST APIs, and the platform has its own domain-specific concepts, naming conventions, and quirks. Here's how the development loop worked.
+      </div>
+
+      <div class="process-flow">
+        <div class="process-step">
+          <div class="process-num">1</div>
+          <h4>Explore &amp; Discover</h4>
+          <p>Read Swagger specs, call APIs exploratively, discover property names via <code>/info/{ido}</code> endpoints, map out the domain model. Claude Code ingested API specs and built mental models of the platform.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">2</div>
+          <h4>Script &amp; Deploy</h4>
+          <p>Generate Python scripts to create tools/agents via REST API. Each tool definition includes api_docs that another LLM will interpret. Deploy to the Infor GenAI platform. No local runtime &mdash; everything runs in the cloud.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">3</div>
+          <h4>Test via Chat API</h4>
+          <p>Send test prompts through the Chat Service API to invoke the deployed agent. Parse the LLM response. Check if the agent called the right tools with the right parameters. Debug 404s, malformed URLs, missing properties.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">4</div>
+          <h4>Iterate &amp; Document</h4>
+          <p>Fix issues, redeploy, re-test. Write fix scripts. Update CLAUDE.md with discoveries. Update log.md with progress. Each fix informs the next session. The knowledge base compounds.</p>
+        </div>
+      </div>
+
+      <!-- Iteration callout -->
+      <div class="callout">
+        <h3>The Reality of Iteration</h3>
+        <div class="callout-grid">
+          <div class="callout-item">
+            <div class="num">5+</div>
+            <div class="label">Major rewrites of ParseAgentResponse.xaml</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">26</div>
+            <div class="label">Files created then deleted in V3/V4 experiment</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">10+</div>
+            <div class="label">Fix scripts for tool definitions</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">4</div>
+            <div class="label">Iterations on api_docs format alone</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ TIMELINE ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">Development Timeline</div>
+      <div class="section-title">From First API Call to Shipped V1.0</div>
+      <div class="section-desc">
+        The project evolved rapidly through tight feedback loops &mdash; Claude Code would generate code, deploy it to the Infor cloud, test it via API, and iterate based on results &mdash; often multiple cycles per hour.
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item milestone">
+          <div class="tl-dot"></div>
+          <div class="tl-date">January 28, 2026</div>
+          <div class="tl-title">Project Initialization</div>
+          <div class="tl-desc">Repository structure, CLAUDE.md standards established, first 6 XAML workflows created for DemoInvoiceLoader. RPA Activities Reference distilled from 298-page user guide. Multiple bug fix cycles for ContinueOnError patterns.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">January 29, 2026</div>
+          <div class="tl-title">Massive Iteration Day</div>
+          <div class="tl-desc">FormatDataForGenAI complete rewrite. ContinueOnError audit across all 5 workflows. Polling optimization. IDP scripts created. Shared auth module built. Test invoice generation.</div>
+          <div class="tl-detail">This was the highest-velocity day. The shared/ module alone eliminated duplication across 37+ files. The IDP V1/V2 incompatibility was discovered and resolved with a V3 DPF using old prompt structure.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">January 30, 2026</div>
+          <div class="tl-title">Response Parsing &amp; Notifications</div>
+          <div class="tl-desc">ParseAgentResponse rebuilt (800+ lines for multi-pattern extraction). ION Workflow integration for Pulse notifications. Batch invoice generation scripts.</div>
+          <div class="tl-detail">The LLM response format proved highly variable &mdash; vendor numbers appeared in 5+ different formats. This led to the eventual decision to request structured JSON output, reducing the parser from 800+ to ~350 lines.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">January 31, 2026</div>
+          <div class="tl-title">AI Retraining &amp; The V3/V4 Experiment</div>
+          <div class="tl-desc">Similarity workflow tools created. URL malformation debugging led to experimental V3 (JSON-only api_docs) and V4 (multi-agent split) architectures. 26 files created, tested, and deleted. V2 validated with 10/10 test pass.</div>
+          <div class="tl-detail">The most instructive failure: even with identical tool definitions, the LLM on the Infor platform would non-deterministically malform URLs. The root cause was a single blank line in the api_docs field. Neither V3 nor V4 solved it &mdash; the fix was whitespace formatting discipline.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 2, 2026</div>
+          <div class="tl-title">Multi-Tenant &amp; Edge Cases</div>
+          <div class="tl-desc">Dynamic site configuration (&lt;site&gt; placeholder) enabled multi-tenant deployment. Extreme edge case test prompts validated robustness.</div>
+        </div>
+
+        <div class="tl-item milestone">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 3, 2026</div>
+          <div class="tl-title">V1.0 Shipped</div>
+          <div class="tl-desc">Final features: unit price extraction (Source="P"), debug mode with PowerShell log tailing. 18 files modified, 3,391 lines added across 2 phases and 3 plans.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 4, 2026</div>
+          <div class="tl-title">Test Data at Scale</div>
+          <div class="tl-desc">Generated 25 unique invoices with cryptographically random PO numbers, diverse vendors, and randomized item codes for load testing and demo scenarios.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ STRENGTHS & CHALLENGES ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">Analysis</div>
+      <div class="section-title">Strengths &amp; Challenges</div>
+      <div class="section-desc">
+        Using Claude Code to build on a proprietary cloud platform is a fundamentally different experience from local-stack development. These are the observed strengths and challenges from this project.
+      </div>
+
+      <div class="sw-grid">
+
+        <!-- Strengths -->
+        <div class="sw-column strengths">
+          <h3><span class="tag">Strengths</span> Where Claude Code Excelled</h3>
+
+          <div class="sw-item">
+            <h4>API Exploration &amp; Script Generation</h4>
+            <p>Claude Code ingested Swagger specs (3,000+ line JSON files) and immediately generated working API interaction scripts. It could reason about OAuth flows, IDO query patterns, and REST conventions to produce correct API calls on the first attempt in most cases.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>XAML Workflow Creation from Scratch</h4>
+            <p>RPA workflows were generated as raw XAML &mdash; a format that is extremely verbose, with strict requirements for ViewStateData, activity namespaces, and VBScript expressions. Claude Code produced valid, runnable XAML consistently, including complex patterns like nested TryCatch blocks, ForEach loops with JToken parsing, and async polling.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Systematic Debugging</h4>
+            <p>When ContinueOnError was silently masking failures across 5 workflows, Claude Code performed a systematic audit of every activity, identified the pattern, and fixed each occurrence. This kind of exhaustive, methodical analysis across multiple files is where AI assistance truly shines.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Knowledge Accumulation via CLAUDE.md</h4>
+            <p>The CLAUDE.md convention created a compounding knowledge base. Every API quirk (IDO case-sensitivity, VBScript vs .NET, api_docs whitespace) was documented once and available to all future sessions. This turned ephemeral debugging into permanent institutional knowledge.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Rapid Iteration Velocity</h4>
+            <p>The cycle of write script &rarr; deploy to cloud &rarr; test via API &rarr; parse failure &rarr; fix &rarr; redeploy could happen multiple times per hour. Claude Code's ability to generate fix scripts, update definitions, and re-test in a single conversational turn eliminated the friction between iterations.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Cross-Domain Translation</h4>
+            <p>The project required fluency in Python, XAML, JSON schema, REST APIs, OAuth 2.0, ERP domain modeling, and LLM prompt engineering &mdash; all simultaneously. Claude Code context-switched between these domains seamlessly within single sessions.</p>
+          </div>
+
+        </div>
+
+        <!-- Challenges -->
+        <div class="sw-column challenges">
+          <h3><span class="tag">Challenges</span> Where It Got Difficult</h3>
+
+          <div class="sw-item">
+            <h4>No Local Runtime for Validation</h4>
+            <p>Unlike Python or JavaScript where code runs locally and errors are immediate, every Infor OS component lives in the cloud. Claude Code could generate a tool definition, but couldn't validate it without deploying to the GenAI platform and invoking it through the Chat API. The feedback loop was inherently slower than local development.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Proprietary Domain Knowledge Gap</h4>
+            <p>Infor-specific concepts &mdash; IDO naming conventions (SLPOs not SLPos), SyteLine update format (Action=1 for insert), property names (Phone not VadPhone), site codes, logical IDs &mdash; aren't in any public training data. Every discovery required API exploration, trial-and-error, or reading internal documentation. Claude Code couldn't "just know" the platform.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>LLM-to-LLM Indirection</h4>
+            <p>The GenAI tools are interpreted by another LLM (Claude Sonnet on the Infor platform). The api_docs field is essentially a "prompt for the other AI." Formatting it so that the remote LLM consistently generated correct API calls was the hardest problem &mdash; a single blank line caused non-deterministic 404 failures. This meta-level debugging (AI debugging AI-generated prompts for another AI) had no established patterns.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>XAML Without a Visual Designer</h4>
+            <p>RPA Studio has a visual drag-and-drop designer. Claude Code generates raw XAML text. While the output was functional, complex layout adjustments (ViewStateData coordinates, activity sizing) were effectively blind edits. Some workflows needed minor visual cleanup in the designer after generation.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Platform API Instability</h4>
+            <p>The GenAI Chat API changed its response format mid-project (JArray &rarr; JObject, "messages" &rarr; "items" property). IDP had V1/V2 incompatibilities. These platform-side changes required reactive fixes that couldn't be anticipated. Each change triggered a cascade of script and workflow updates.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Abandoned Paths Cost Context</h4>
+            <p>The PO Receiving feature (session-scoped temp tables) and the V3/V4 experimental architectures (26 files) were dead ends. Claude Code faithfully built complete implementations before discovering they were infeasible. Domain expertise upfront could have avoided some of these, but the exploratory nature of the project made some dead ends inevitable.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ KEY INSIGHTS ════════════════════════════ -->
+    <div class="section">
+      <div class="insight-box">
+        <h3>Key Insights: AI-Assisted Development on Cloud Platforms</h3>
+        <div class="insight-list">
+          <div class="insight-item">
+            <div class="insight-num">1</div>
+            <div>
+              <h4>Persistent memory is essential</h4>
+              <p>The CLAUDE.md + log.md convention turned Claude Code from a stateless tool into a knowledge-accumulating development partner. Each session built on the last. Without this, the same IDO casing bug would have been rediscovered repeatedly.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">2</div>
+            <div>
+              <h4>API specs are the source of truth</h4>
+              <p>Feeding Swagger JSON files directly to Claude Code was more effective than any documentation. The AI could reason about endpoints, parameters, and response shapes directly from the spec, generating correct API calls faster than reading docs.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">3</div>
+            <div>
+              <h4>Test-via-API unlocks cloud development</h4>
+              <p>The pattern of deploying tools/agents via script and then testing them through the Chat API created a workable feedback loop even without local runtimes. The test scripts became both verification and documentation.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">4</div>
+            <div>
+              <h4>Dead ends are part of the process</h4>
+              <p>The 26-file V3/V4 experiment wasn't wasted &mdash; it proved that the V2 approach was correct and that the real issue was api_docs formatting, not architecture. AI's ability to rapidly prototype and discard is actually an advantage for exploratory work.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">5</div>
+            <div>
+              <h4>Domain knowledge must be taught, not assumed</h4>
+              <p>Claude Code doesn't know Infor's IDO naming conventions or SyteLine's update format. But once taught (via CLAUDE.md or inline corrections), it applies that knowledge consistently. The initial investment in documenting platform quirks pays off exponentially.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">6</div>
+            <div>
+              <h4>Cross-domain fluency is the killer feature</h4>
+              <p>No single human developer is equally fluent in Python, XAML, REST APIs, OAuth, JSON Schema, ERP modeling, and LLM prompt engineering. Claude Code's ability to operate across all these domains simultaneously &mdash; in a single conversation &mdash; is what made the project's velocity possible.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ SUMMARY ════════════════════════════ -->
+    <div class="section">
+      <div class="summary-box">
+        <h3>The Bottom Line</h3>
+        <p>
+          Claude Code was not just a code generator &mdash; it was the <strong>primary development environment</strong> for a project that touched 6 Infor OS services, produced 237+ files, and shipped a production V1.0 in approximately 8 working days. The biggest challenge was the <strong>gap between local development and cloud-native platforms</strong>: without local runtimes, every validation required a cloud round-trip. The biggest strength was <strong>velocity through iteration</strong>: Claude Code could generate, deploy, test, debug, fix, and redeploy faster than any traditional development workflow &mdash; especially across the multiple languages and technologies this project demanded.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>CSI PO Asset Creation Tool &mdash; Development Retrospective</div>
+    <div>Built with Claude Code (Anthropic) &times; Infor OS Platform</div>
+  </div>
+
+</div>
+
+</body>
+</html>

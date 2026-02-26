@@ -1,0 +1,23 @@
+{
+  "guid": "d8d79954-74f3-4765-bd42-e6290fae8e58",
+  "name": "GAF_SyteLine_RoutingSearch_Tool_v1",
+  "description": "Search for existing routing operations on a standard job in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLJobRoutes\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Use: Job,Suffix,OperNum,Wc,WcDescription,SetupHrsT,RunHrsTLbr,RunHrsTMch,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause to filter. Example: Job = '         2' AND Suffix = 0\nParameter: orderby\nFormat: STRING\nRequired: False\nDescription: Sort order. Use: OperNum ASC\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records to return. Default: 50\nExample Request:\nSearch routing for job 2:\nGET /load/SLJobRoutes?properties=Job,Suffix,OperNum,Wc,WcDescription,SetupHrsT,RunHrsTLbr,RunHrsTMch,_ItemId&filter=Job = '         2' AND Suffix = 0&orderby=OperNum ASC",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with routing operations.\nKey Response Fields:\n- Items: Array of routing operation objects (empty if none found)\n- Job: Job number\n- OperNum: Operation number (10, 20, 30...)\n- Wc: Work center code\n- WcDescription: Work center description\n- SetupHrsT: Setup hours\n- RunHrsTLbr: Run labor hours per unit\n- RunHrsTMch: Run machine hours per unit\n- _ItemId: Record identifier\n- Success: Boolean indicating API success\nNOTE: Job numbers are left-padded with spaces to 10 chars (e.g., '         2').\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing routing operations on a standard job.\nRouting operations define the manufacturing steps (work centers, setup/run times) for producing an item.\nFilter by Job number and Suffix=0 for standard jobs.\nNOTE: Job numbers are left-padded with spaces to 10 characters.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

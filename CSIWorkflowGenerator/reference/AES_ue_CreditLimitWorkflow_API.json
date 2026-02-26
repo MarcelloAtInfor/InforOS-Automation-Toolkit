@@ -1,0 +1,79 @@
+{
+  "eventName": "IdoOnItemUpdate",
+  "sequence": 31,
+  "description": "ue_CreditLimitWorkflow_API",
+  "idoCollections": "SLCustomers",
+  "synchronous": true,
+  "suspend": false,
+  "active": true,
+  "transactional": false,
+  "ignoreFailure": false,
+  "overridable": true,
+  "appliesToInitiators": "Form.Customers",
+  "accessAs": "ue_",
+  "rowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+  "actions": [
+    {
+      "sequence": 10,
+      "actionType": "10",
+      "parameters": "CONDITION(NOT PROPERTYMODIFIED(\"CreditLimit\"))RESULT(\"Credit Limit is not modified\")",
+      "description": "Finish - Credit Limit is not modifired.",
+      "rowPointer": "c885a77e-f702-4f62-a9be-5d663d55bccd",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 20,
+      "actionType": "14",
+      "parameters": "IDO(\"SLCustomers\")\nPROPERTIES(\"CreditLimit, RowPointer\")\nFILTER(SUBSTITUTE(\"RowPointer = '{0}'\", P(\"RowPointer\")))\nSET(RE(OldCreditLimit) = \"CreditLimit\")\n",
+      "description": "Get old credit limit",
+      "rowPointer": "19fbd952-39b9-4b52-a5f6-a0549e19be1a",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 25,
+      "actionType": "12",
+      "parameters": "SETVARVALUES(PARM = SUBSTITUTE(\"{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}\", '[{\"Name\":\"logicalId\",\"Value\":\"<YOUR_LOGICAL_ID>\",\"Type\":\"query\"}, {\"Name\":\"StartWorkflowJSONBody \",\"Value\":\"{\\\"workflowName\\\":\\\"CS_Credit_Approval_API\\\",\\\"inputVariables\\\":[{\\\"name\\\":\\\"CustName\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', P(\"Name\"), '\\\"},{\\\"name\\\":\\\"CustNum\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', P(\"CustNum\"), '\\\"},{\\\"name\\\":\\\"MGConfig\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', CONFIGNAME(), '\\\"},{\\\"name\\\":\\\"NewCreditLimit\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', P(\"CreditLimit\"), '\\\"},{\\\"name\\\":\\\"OldCreditLimit\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', ROUND(E(OldCreditLimit), 2), '\\\"},{\\\"name\\\":\\\"RowPointer\\\",\\\"dataType\\\":\\\"STRING\\\",\\\"value\\\":\\\"', P(\"RowPointer\"), '\\\"}]}\",\"Type\":\"body\"}]'))\n",
+      "description": "Set API PARMS",
+      "rowPointer": "8376d069-2e31-43ef-a817-d7b84d8be19f",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 30,
+      "actionType": "21",
+      "parameters": "IDO(\"IONAPIMethods\")\nMETHOD(\"InvokeIONAPIMethod2\")\nPARMS(\"False\", \"0\", \"IONSERVICES\", \"POST\", \"/process/application/v1/workflow/start\", V(PARM), \"application/json\", \"10000\", \"False\", RV(httpResponseCode), RV(response), RV(responseHeaders), RV(infobar))\n",
+      "description": "Start Workflow API",
+      "rowPointer": "f8a89e36-975d-4afb-9fd1-9f9af5a1a373",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 35,
+      "actionType": "1",
+      "parameters": "TO(\"<USER_EMAIL>\")\nSUBJECT(\"Start Workflow Params\")\nBODY(SUBSTITUTE(\"{0}\", V(PARM)))\nSAVEMESSAGE(FALSE)\n",
+      "rowPointer": "87452412-b297-4683-8218-cffc7ebae40f",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 40,
+      "actionType": "12",
+      "parameters": "SETPROPVALUES(\"InWorkflow\" = \"1\", \"CreditLimit\" = E(OldCreditLimit))",
+      "description": "Lock Record & set credit limit back",
+      "rowPointer": "c6aa5794-dc40-431e-a414-93f9a2e482d3",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    },
+    {
+      "sequence": 50,
+      "actionType": "21",
+      "parameters": "IDO(\"SLObjectNotes\")\nMETHOD(\"CreateRemoteNoteSp\")\nPARMS(\"customer\", P(\"RowPointer\"), \"Approval Workflow Submitted\", SUBSTITUTE(\"Credit Limit approval workflow was submitted by {0}, at {1}.\", USERNAME(), CURDATETIME()), \"1\", RV(infobar))\n",
+      "description": "Log in Notes Workflow Start",
+      "rowPointer": "9cf8e4bd-e0fd-4003-8b2b-ee08d8434ad6",
+      "eventHandlerRowPointer": "cfc7cddf-6cc7-4c20-92f5-5df97f15e14f",
+      "eventName": "IdoOnItemUpdate"
+    }
+  ]
+}

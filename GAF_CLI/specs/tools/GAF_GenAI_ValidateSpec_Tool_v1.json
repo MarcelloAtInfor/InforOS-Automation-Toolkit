@@ -1,0 +1,18 @@
+{
+  "guid": "6c7e0cc0-e91e-4b0e-a54d-ea0f8f625a10",
+  "name": "GAF_GenAI_ValidateSpec_Tool_v1",
+  "description": "Validate a tool or agent specification against naming conventions and portability rules.",
+  "instructions": "Use this tool to validate a specification BEFORE creating or updating an asset. Catches errors early. Validation rules: 1. Naming - Must follow GAF_<Product>_<Capability>_(Tool|Agent)_v<N> format. 2. Portability - No hardcoded tenant URLs or environment identifiers. 3. Required fields - name, instructions, type, data must be present. 4. Type-specific - TOOLKIT type requires utterances array. Parameters: spec (required) - The complete specification object to validate. Returns: valid (true if spec passes all validation), errors (Array of {field, message} objects if validation fails). Always call this before GAF_GenAI_CreateTool_Tool_v1, GAF_GenAI_CreateAgent_Tool_v1, or GAF_GenAI_UpdateAsset_Tool_v1.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "This is a client-side validation tool that checks specifications against Factory conventions. No API call is made - validation is performed locally. Validation checks performed: 1. GAF naming convention: GAF_<Product>_<Capability>_(Tool|Agent)_v<N>. 2. Required fields present: name, instructions, type, data. 3. No hardcoded tenant URLs (inforcloudsuite.com, mingledev.com). 4. No hardcoded tenant IDs. 5. Type-specific requirements (TOOLKIT needs utterances). 6. api_docs must contain Example Request section. 7. responseInstructions must contain debug template.\nExample Request:\nValidate spec object (client-side, no HTTP call made)",
+    "headers": {},
+    "responseInstructions": "Returns a validation result object. Success response: {\"valid\":true,\"errors\":[]}. Failure response: {\"valid\":false,\"errors\":[{\"field\":\"name\",\"message\":\"Invalid name format...\"}]}.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": true,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

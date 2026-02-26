@@ -1,0 +1,202 @@
+{
+  "name": "CustomerOrderDiscountWorkflow",
+  "description": "Customer Order Discount Workflow",
+  "variables": [
+    {"name": "Discount", "type": "DECIMAL", "input": true},
+    {"name": "DiscountAmount", "type": "DECIMAL", "input": true},
+    {"name": "CustNum", "input": true},
+    {"name": "Order", "input": true},
+    {"name": "Timeout", "initial_value": "0"}
+  ],
+  "views": [
+    {
+      "name": "CustomerOrderDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "SalesOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "LogicalId": "",
+        "Location": "",
+        "ID1": "$Order"
+      }
+    }
+  ],
+  "trees": [
+    {
+      "name": "CustomerOrder",
+      "label": "CustomerOrder",
+      "children": [
+        {"name": "Order", "label": "Order", "sequence": 0},
+        {"name": "Status", "label": "Status", "sequence": 1},
+        {"name": "Date", "label": "Date", "sequence": 2, "data_type": "DATE_AND_TIME"},
+        {"name": "ExtendedTotal", "label": "Total Without Discount", "sequence": 3, "data_type": "DECIMAL"},
+        {"name": "Total", "label": "Total With Discount", "sequence": 4, "data_type": "DECIMAL"},
+        {
+          "type": "node",
+          "name": "CoLine",
+          "label": "CoLine",
+          "sequence": 5,
+          "children": [
+            {"name": "Line", "label": "Line", "sequence": 0},
+            {"name": "Item", "label": "Item", "sequence": 1},
+            {"name": "Qty", "label": "Qty", "sequence": 2, "data_type": "DECIMAL"},
+            {"name": "Price", "label": "Price", "sequence": 3, "data_type": "DECIMAL"}
+          ]
+        }
+      ]
+    }
+  ],
+  "flow": [
+    {
+      "type": "parallel",
+      "join_type": "ONE_IN",
+      "branches": [
+        [
+          {
+            "type": "approval_task",
+            "name": "Discount Review",
+            "message": "Please Approve new discount amount of [Discount]% totaling [DiscountAmount] for Customer Order [Order] for Customer [CustNum]",
+            "distribution": ["user5", "user1_email_full", "user4", "user3"],
+            "priority": "High",
+            "buttons": [
+              {"label": "Approve", "value": "Approved"},
+              {"label": "Reject", "value": "Rejected"}
+            ],
+            "button_variable": "ApproveReject",
+            "params": [
+              {"label": "CustomerOrder", "tree": "CustomerOrder"},
+              {"label": "Customer Order Drill Back", "view": "CustomerOrderDrillBack"},
+              {"label": "Order", "variable": "Order"},
+              {"label": "Cust Num", "variable": "CustNum"},
+              {"label": "Discount", "variable": "Discount", "read_only": false},
+              {"label": "Discount Amount", "variable": "DiscountAmount"}
+            ]
+          }
+        ],
+        [
+          {
+            "type": "wait",
+            "name": "Timeout After 1 Day",
+            "duration": 3,
+            "unit": "DAYS"
+          },
+          {
+            "type": "assignment",
+            "name": "Timeout Rejected",
+            "assignments": [
+              {"variable": "ApproveReject", "expression": "Rejected"},
+              {"variable": "Timeout", "expression": "1"}
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "type": "assignment",
+      "name": "SetVariables",
+      "assignments": [
+        {
+          "variable": "Filter",
+          "expression": "\"CoNum='\"&[Order]&\"'\"",
+          "assignment_type": "EXPRESSION_ASSIGNMENT"
+        },
+        {"variable": "MongooseConfig", "expression": "<YOUR_SITE>"},
+        {"variable": "Ido", "expression": "SLCos"},
+        {"variable": "Properties", "expression": "CoNum,UDFDecimal1"}
+      ]
+    },
+    {
+      "type": "ido_load",
+      "name": "GetOldDiscount",
+      "description": "Get Old Discount",
+      "ido_var": "Ido",
+      "properties_var": "Properties",
+      "filter_var": "Filter",
+      "config_var": "MongooseConfig",
+      "auth_literal": "",
+      "outputs": {
+        "OldDiscount": "$.Items[0].UDFDecimal1",
+        "ItemID": "$.Items[0]._ItemId"
+      }
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "ApprovedRejected",
+        "variable": "ApproveReject",
+        "operator": "Equal",
+        "value": "Approved"
+      },
+      "true_steps": [
+        {
+          "type": "ido_update",
+          "name": "UpdateCustomerOrderDiscountApproved",
+          "description": "Set new Discount",
+          "ido_var": "Ido",
+          "changes": [
+            {"property": "Disc", "value_var": "Discount"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "config_var": "MongooseConfig",
+          "outputs": {}
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "ido_update",
+          "name": "UpdateCustomerOrderDiscountRejected",
+          "description": "Set old Discount",
+          "ido_var": "Ido",
+          "changes": [
+            {"property": "Disc", "value_var": "OldDiscount"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "config_var": "MongooseConfig",
+          "outputs": {}
+        }
+      ]
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "Timeout",
+        "variable": "Timeout",
+        "operator": "Equal",
+        "value": "0"
+      },
+      "true_steps": [
+        {
+          "type": "notification",
+          "name": "Notify Results",
+          "message": "Customer Order [Order] with new discount of [Discount]% has been [ApproveReject]",
+          "distribution": ["user4", "user5", "user1_email", "user3"],
+          "propagate_notes": true,
+          "params": [
+            {"label": "Approve Reject", "variable": "ApproveReject"},
+            {"label": "CustomerOrder", "tree": "CustomerOrder"},
+            {"label": "Customer Order Drill Back", "view": "CustomerOrderDrillBack"},
+            {"label": "Discount", "variable": "Discount"},
+            {"label": "Order", "variable": "Order"}
+          ]
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "notification",
+          "name": "Notify Timeout",
+          "message": "Due to lack of activity, Customer Order [Order] with new discount of [Discount]% has been [ApproveReject].",
+          "distribution": ["user1_email", "user4"],
+          "params": [
+            {"label": "Approve Reject", "variable": "ApproveReject"},
+            {"label": "CustomerOrder", "tree": "CustomerOrder"},
+            {"label": "Customer Order Drill Back", "view": "CustomerOrderDrillBack"},
+            {"label": "Discount", "variable": "Discount"},
+            {"label": "Order", "variable": "Order"}
+          ]
+        }
+      ]
+    }
+  ]
+}

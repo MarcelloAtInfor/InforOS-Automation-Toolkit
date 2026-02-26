@@ -1,0 +1,118 @@
+{
+  "VendorInsert_Tool_v2": {
+    "guid": "76ad5987-6071-45b8-a059-a649ded28ecb",
+    "name": "VendorInsert_Tool_v2",
+    "description": "Create a new vendor in SyteLine with comprehensive vendor information",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLVendors\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nBody:\nThe body contains vendor details in the Changes array:\n\n{\n  \"IDOName\": \"SLVendors\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Name\", \"Value\": \"ACME Corporation\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadAddr_1\", \"Value\": \"123 Main St\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCity\", \"Value\": \"Chicago\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadStateCode\", \"Value\": \"IL\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadZip\", \"Value\": \"60601\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCountry\", \"Value\": \"USA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CurrCode\", \"Value\": \"USD\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"BankCode\", \"Value\": \"BK1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AutoVoucherMethod\", \"Value\": \"P\"}\n      ]\n    }\n  ]\n}\n\nNOTE: Action 1 means insert. VendNum must be exactly 7 characters (pad with zeros). All properties above are required.",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"DEMO001\",\n      \"Name\": \"ACME Corporation\",\n      \"_ItemId\": \"PBT=[vendor] ven.DT=[...] ven.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor number already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created vendor record (includes _ItemId)\n- _ItemId: Unique identifier for the created vendor",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new vendor in SyteLine.\n\nIMPORTANT: Always use VendorSearch_Tool_v2 first to ensure the vendor doesn't already exist!\n\nRequired fields:\n- VendNum: EXACTLY 7 chars, unique (pad with zeros: \"MWF\" \u2192 \"MWF0001\")\n- Name: Vendor name\n- VadAddr_1: Address\n- VadCity, VadStateCode, VadZip: Location\n- VadCountry: Default \"USA\"\n- TermsCode: Payment terms (N30, N45, COD, 2%, 4%, TBD)\n- CurrCode: Default \"USD\"\n- BankCode: Default \"BK1\"\n- AutoVoucherMethod: Default \"P\"\n\nReturns the created vendor with VendNum and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:38.314073Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-04T01:33:45.421576Z",
+    "gp_config": null,
+    "security": null
+  },
+  "ItemInsert_Tool_v2": {
+    "guid": "2762bfa4-f36b-4bb9-9228-310030487cee",
+    "name": "ItemInsert_Tool_v2",
+    "description": "Create a new item in SyteLine with item code, description, material cost, and sourcing",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLItems\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nBody:\nThe body contains item details in the Changes array:\n\n{\n  \"IDOName\": \"SLItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"ITEM-CODE\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Description\", \"Value\": \"Item Description\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"MatlType\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PMTCode\", \"Value\": \"M\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ProductCode\", \"Value\": \"FG-100\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AbcCode\", \"Value\": \"B\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostType\", \"Value\": \"A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CostMethod\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Source\", \"Value\": \"P\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CurMatCost\", \"Value\": \"0.00\"}\n      ]\n    }\n  ]\n}\n\nNOTE: Action 1 means insert. Source=\"P\" indicates Purchased item. CurMatCost should be set to the unit price from the invoice.",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"Source\": \"P\",\n      \"CurMatCost\": \"0.00\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate Item):\n{\n  \"Success\": false,\n  \"Message\": \"Item code already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created item record (includes _ItemId)\n- _ItemId: Unique identifier for the created item",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new item in SyteLine.\n\nIMPORTANT: Always use ItemSearch_Tool_v2 first to ensure the item doesn't already exist!\n\nRequired fields:\n- Item: Item code (unique)\n- Description: Item description (CRITICAL - was missing in v1!)\n- UM: Unit of measure (EA, LB, BOX, etc.)\n- MatlType: Default \"M\"\n- PMTCode: Default \"M\"\n- ProductCode: Product code\n- AbcCode: Default \"B\"\n- CostType: Default \"A\"\n- CostMethod: Default \"S\"\n- Stat: Default \"A\" (active)\n- Source: Set to \"P\" (Purchased) for all invoice-created items\n- CurMatCost: Material cost from invoice unit price (e.g., \"125.50\")\n\nReturns the created item with Item code and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:38.785809Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-04T01:33:46.432020Z",
+    "gp_config": null,
+    "security": null
+  },
+  "PoInsert_Tool_v2": {
+    "guid": "4ed7b512-6fec-4c20-b69d-3b9598c69ecf",
+    "name": "PoInsert_Tool_v2",
+    "description": "Create a new purchase order in SyteLine linked to a vendor",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPOs\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nBody:\nThe body contains PO details in the Changes array:\n\n{\n  \"IDOName\": \"SLPOs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Type\", \"Value\": \"R\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoCurrCode\", \"Value\": \"USD\"}\n      ]\n    }\n  ]\n}\n\nNOTE: Action 1 means insert. PoNum must be exactly 10 characters. VendNum links PO to vendor.",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate PoNum):\n{\n  \"Success\": false,\n  \"Message\": \"Purchase order number already exists\",\n  \"Items\": []\n}\n\nExample error response (invalid VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created PO record (includes _ItemId)\n- _ItemId: Unique identifier for the created PO",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create a new purchase order in SyteLine.\n\nIMPORTANT: Always use PoSearch_Tool_v2 first to ensure the PO doesn't already exist!\n\nRequired fields:\n- PoNum: Exactly 10 characters, unique\n- VendNum: Vendor number - EXACTLY 7 chars (CRITICAL - was missing in v1!)\n- TermsCode: Payment terms (N30, N45, COD, etc.)\n- Stat: Default \"O\" (open)\n- Type: Default \"R\" (regular)\n- Whse: Warehouse (MAIN, etc.)\n- PoCurrCode: Default \"USD\"\n\nThe VendNum must come from a vendor that was either:\n1. Created using VendorInsert_Tool_v2\n2. Found using VendorSearch_Tool_v2\n\nReturns the created PO with PoNum and _ItemId.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:39.389248Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-04T01:33:47.319838Z",
+    "gp_config": null,
+    "security": null
+  },
+  "PoLineInsert_Tool_v2": {
+    "guid": "901ce71a-5e5f-4802-9142-5b4a98ab1945",
+    "name": "PoLineInsert_Tool_v2",
+    "description": "Create purchase order line items in SyteLine (supports batch insert of multiple lines)",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nEndpoint: /update/SLPoItems\n\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nBody:\nThe body contains PO line details in the Changes array. Use multiple objects in Changes for batch insert:\n\n{\n  \"IDOName\": \"SLPoItems\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoNum\", \"Value\": \"DP00009000\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"PoLine\", \"Value\": \"1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"WIDGET-A\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyOrderedConv\", \"Value\": \"10.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"UM\", \"Value\": \"EA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"O\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"DueDate\", \"Value\": \"2026-02-27\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"}\n      ]\n    }\n  ]\n}\n\nNOTE: Action 1 means insert. DueDate format is YYYY-MM-DD. QtyOrderedConv must include decimals. All properties above are required for each line.",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response (batch insert):\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"1\",\n      \"Item\": \"WIDGET-A\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid1]\"\n    },\n    {\n      \"PoNum\": \"DP00009000\",\n      \"PoLine\": \"2\",\n      \"Item\": \"GADGET-B\",\n      \"_ItemId\": \"PBT=[poitem] poi.DT=[...] poi.ID=[guid2]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response:\n{\n  \"Success\": false,\n  \"Message\": \"Item not found\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with all created PO line records (includes _ItemId for each)\n- _ItemId: Unique identifier for each created line",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to create PO line items in SyteLine.\n\nCRITICAL: Insert ALL line items for a PO in a SINGLE API call!\nBuild the complete Changes array with all lines before calling this tool.\n\nRequired fields (for each line):\n- PoNum: PO number (from PoInsert_Tool_v2)\n- PoLine: Line number as string (\"1\", \"2\", etc.)\n- Item: Item code (from ItemInsert_Tool_v2 or ItemSearch_Tool_v2)\n- QtyOrderedConv: Quantity with decimals (e.g., \"10.00\")\n- UM: Unit of measure (must match item's UM)\n- Stat: Default \"O\" (ordered)\n- DueDate: Format \"YYYY-MM-DD\" (e.g., \"2026-02-27\")\n- Whse: Warehouse (must match PO's warehouse)\n\nIf DueDate not provided, default to 30 days from today.\n\nReturns array of created line items with _ItemId for each.",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:40.237758Z",
+    "updatedBy": "<USER_GUID_1>",
+    "updatedOn": "2026-02-04T01:33:47.758652Z",
+    "gp_config": null,
+    "security": null
+  }
+}

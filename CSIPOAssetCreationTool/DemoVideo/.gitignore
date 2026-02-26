@@ -1,0 +1,10 @@
+# Secrets
+.env
+
+# Generated assets (reproducible from scripts)
+assets/slides/
+assets/screenshots/
+assets/audio/
+
+# Video output
+output/

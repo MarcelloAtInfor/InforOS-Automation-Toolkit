@@ -1,0 +1,351 @@
+{
+  "variables": [
+    {
+      "name": "Email",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "API_STATUS_THREE",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "API_STATUS_ONE",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "PID",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "API_STATUS_TWO",
+      "dataType": "STRING",
+      "workflowInput": false,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "FollowUps",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [],
+  "trees": [],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "ifthenelse",
+        "sequenceNumber": 2,
+        "trueBranch": {
+          "sequenceNumber": 0,
+          "flowParts": [
+            {
+              "_type": "ifthenelse",
+              "sequenceNumber": 1,
+              "trueBranch": {
+                "sequenceNumber": 0,
+                "flowParts": [
+                  {
+                    "_type": "ionapi",
+                    "sequenceNumber": 2,
+                    "name": "Send Follow ups",
+                    "description": "Send Infor a copy of the Follow ups from the demo",
+                    "timeOut": 600,
+                    "retryTime": 600,
+                    "ignoreErrors": false,
+                    "method": "{\"productLogicalId\":\"infor.daf\",\"operationProxyPath\":\"IDM/api\",\"operationRestPath\":\"/email\",\"productName\":\"Document Management\",\"operationPath\":\"IDM/api/email\",\"summary\":\"Send Email Message\",\"httpMethod\":\"POST\",\"availableOutputContentTypes\":[\"XML\",\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":\"false\",\"name\":\"$useDefaultFromAddress\",\"description\":\"Email parameter, to use default enviroment configured email or logged-in user email. true for default enviroment\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"en-US\",\"name\":\"$language\",\"description\":\"Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"API_STATUS_TWO\",\"type\":\"RESULTCODE\",\"path\":null,\"optional\":false}],\"inputBody\":{\"name\":\"body\",\"description\":\"Model of request body with necessary data for send E-Mail message.\",\"required\":true,\"availableInputContentTypes\":[\"XML\",\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n\\t\\\"emailMessage\\\": {\\n\\t\\t\\\"to\\\": \\\"$value(Email)\\\",\\n\\t\\t\\\"cc\\\": \\\"\\\",\\n\\t\\t\\\"bcc\\\": \\\"\\\",\\n\\t\\t\\\"subject\\\": \\\"TODO From latest Tech Demo!\\\",\\n\\t\\t\\\"body\\\": \\\"$value(FollowUps)\\\",\\n\\t\\t\\\"template\\\": \\\"FOLLOW_UP_EMAIL\\\"\\n\\t}\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"Email\",\"FollowUps\"]}}",
+                    "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+                    "isCustom": true,
+                    "ionApiMethod": {
+                      "productLogicalId": "infor.daf",
+                      "operationProxyPath": "IDM/api",
+                      "operationRestPath": "/email",
+                      "productName": "Document Management",
+                      "operationPath": "IDM/api/email",
+                      "summary": "Send Email Message",
+                      "httpMethod": "POST",
+                      "availableOutputContentTypes": [
+                        "XML",
+                        "JSON"
+                      ],
+                      "outputContentType": "JSON",
+                      "input": [
+                        {
+                          "literalValue": "false",
+                          "name": "$useDefaultFromAddress",
+                          "description": "Email parameter, to use default enviroment configured email or logged-in user email. true for default enviroment",
+                          "swaggerDatatype": "boolean",
+                          "required": false,
+                          "type": "QUERY"
+                        },
+                        {
+                          "literalValue": "en-US",
+                          "name": "$language",
+                          "description": "Language parameter, for example 'en' or 'en-US'. Enables localized error messages.",
+                          "swaggerDatatype": "string",
+                          "required": false,
+                          "type": "QUERY"
+                        }
+                      ],
+                      "output": [
+                        {
+                          "wfVariableName": "API_STATUS_TWO",
+                          "type": "RESULTCODE",
+                          "optional": false
+                        }
+                      ],
+                      "inputBody": {
+                        "name": "body",
+                        "description": "Model of request body with necessary data for send E-Mail message.",
+                        "required": true,
+                        "availableInputContentTypes": [
+                          "XML",
+                          "JSON"
+                        ],
+                        "inputContentType": "JSON",
+                        "body": "{\n\t\"emailMessage\": {\n\t\t\"to\": \"$value(Email)\",\n\t\t\"cc\": \"\",\n\t\t\"bcc\": \"\",\n\t\t\"subject\": \"TODO From latest Tech Demo!\",\n\t\t\"body\": \"$value(FollowUps)\",\n\t\t\"template\": \"FOLLOW_UP_EMAIL\"\n\t}\n}",
+                        "ignore": false,
+                        "structureNamesFromBody": [],
+                        "variableNamesFromBody": [
+                          "Email",
+                          "FollowUps"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "_type": "scripting",
+                    "sequenceNumber": 1,
+                    "name": "Format Follow ups",
+                    "description": "Formats any follow ups to work propertly in IDM email",
+                    "serializedConfiguration": "{\"scriptName\":\"FormatFollowUpString\",\"ignoreErrors\":false,\"errorCodeVariableName\":null,\"errorMessageVariableName\":null,\"input\":[{\"wfVariableName\":\"FollowUps\",\"scriptVariableName\":\"input_var_1\",\"scriptDataType\":\"STRING\",\"literalValue\":null,\"treeName\":null}],\"output\":[{\"wfVariableName\":\"FollowUps\",\"scriptVariableName\":\"output_var_1\",\"scriptDataType\":\"STRING\"}]}",
+                    "scriptExecutionConfiguration": {
+                      "scriptName": "FormatFollowUpString",
+                      "ignoreErrors": false,
+                      "input": [
+                        {
+                          "wfVariableName": "FollowUps",
+                          "scriptVariableName": "input_var_1",
+                          "scriptDataType": "STRING"
+                        }
+                      ],
+                      "output": [
+                        {
+                          "wfVariableName": "FollowUps",
+                          "scriptVariableName": "output_var_1",
+                          "scriptDataType": "STRING"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "falseBranch": {
+                "sequenceNumber": 0,
+                "flowParts": [
+                  {
+                    "_type": "ionapi",
+                    "sequenceNumber": 1,
+                    "name": "Send Email",
+                    "description": "Send prospect/customer a copy of the Tech Presentation",
+                    "timeOut": 600,
+                    "retryTime": 600,
+                    "ignoreErrors": false,
+                    "method": "{\"productLogicalId\":\"infor.daf\",\"operationProxyPath\":\"IDM/api\",\"operationRestPath\":\"/email\",\"productName\":\"Document Management\",\"operationPath\":\"IDM/api/email\",\"summary\":\"Send Email Message\",\"httpMethod\":\"POST\",\"availableOutputContentTypes\":[\"XML\",\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":\"true\",\"name\":\"$useDefaultFromAddress\",\"description\":\"Email parameter, to use default enviroment configured email or logged-in user email. true for default enviroment\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"en-US\",\"name\":\"$language\",\"description\":\"Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"API_STATUS_THREE\",\"type\":\"RESULTCODE\",\"path\":null,\"optional\":false}],\"inputBody\":{\"name\":\"body\",\"description\":\"Model of request body with necessary data for send E-Mail message.\",\"required\":true,\"availableInputContentTypes\":[\"XML\",\"JSON\"],\"inputContentType\":\"JSON\",\"body\":\"{\\n\\t\\\"emailMessage\\\": {\\n\\t\\t\\\"to\\\": \\\"$value(Email)\\\",\\n\\t\\t\\\"cc\\\": \\\"\\\",\\n\\t\\t\\\"bcc\\\": \\\"\\\",\\n\\t\\t\\\"subject\\\": \\\"Thanks for joining Infor's Technical Demo!\\\",\\n\\t\\t\\\"body\\\": \\\"$value(FollowUps)\\\",\\n\\t\\t\\\"template\\\": \\\"OS_EMAIL\\\",\\n\\t\\t\\\"attachments\\\": {\\n\\t\\t\\t\\\"file\\\": [{\\n\\t\\t\\t\\t\\\"pid\\\": \\\"$value(PID)\\\",\\n\\t\\t\\t\\t\\\"filename\\\": \\\"\\\",\\n\\t\\t\\t\\t\\\"mimetype\\\": \\\"\\\",\\n\\t\\t\\t\\t\\\"base64\\\": \\\"\\\",\\n\\t\\t\\t\\t\\\"xquery\\\": \\\"\\\"\\n\\t\\t\\t}]\\n\\t\\t}\\n\\t}\\n}\",\"ignore\":false,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[\"Email\",\"PID\",\"FollowUps\"]}}",
+                    "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+                    "isCustom": true,
+                    "ionApiMethod": {
+                      "productLogicalId": "infor.daf",
+                      "operationProxyPath": "IDM/api",
+                      "operationRestPath": "/email",
+                      "productName": "Document Management",
+                      "operationPath": "IDM/api/email",
+                      "summary": "Send Email Message",
+                      "httpMethod": "POST",
+                      "availableOutputContentTypes": [
+                        "XML",
+                        "JSON"
+                      ],
+                      "outputContentType": "JSON",
+                      "input": [
+                        {
+                          "literalValue": "true",
+                          "name": "$useDefaultFromAddress",
+                          "description": "Email parameter, to use default enviroment configured email or logged-in user email. true for default enviroment",
+                          "swaggerDatatype": "boolean",
+                          "required": false,
+                          "type": "QUERY"
+                        },
+                        {
+                          "literalValue": "en-US",
+                          "name": "$language",
+                          "description": "Language parameter, for example 'en' or 'en-US'. Enables localized error messages.",
+                          "swaggerDatatype": "string",
+                          "required": false,
+                          "type": "QUERY"
+                        }
+                      ],
+                      "output": [
+                        {
+                          "wfVariableName": "API_STATUS_THREE",
+                          "type": "RESULTCODE",
+                          "optional": false
+                        }
+                      ],
+                      "inputBody": {
+                        "name": "body",
+                        "description": "Model of request body with necessary data for send E-Mail message.",
+                        "required": true,
+                        "availableInputContentTypes": [
+                          "XML",
+                          "JSON"
+                        ],
+                        "inputContentType": "JSON",
+                        "body": "{\n\t\"emailMessage\": {\n\t\t\"to\": \"$value(Email)\",\n\t\t\"cc\": \"\",\n\t\t\"bcc\": \"\",\n\t\t\"subject\": \"Thanks for joining Infor's Technical Demo!\",\n\t\t\"body\": \"$value(FollowUps)\",\n\t\t\"template\": \"OS_EMAIL\",\n\t\t\"attachments\": {\n\t\t\t\"file\": [{\n\t\t\t\t\"pid\": \"$value(PID)\",\n\t\t\t\t\"filename\": \"\",\n\t\t\t\t\"mimetype\": \"\",\n\t\t\t\t\"base64\": \"\",\n\t\t\t\t\"xquery\": \"\"\n\t\t\t}]\n\t\t}\n\t}\n}",
+                        "ignore": false,
+                        "structureNamesFromBody": [],
+                        "variableNamesFromBody": [
+                          "Email",
+                          "PID",
+                          "FollowUps"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>HasFollowUps</UsedSubcondition><Subconditions><Subcondition><Name>HasFollowUps</Name><Type>AttributeValueComparison</Type><AttributeName>FollowUps</AttributeName><ComparisonOperator>NotEqual</ComparisonOperator><Value/></Subcondition></Subconditions></Condition>"
+            }
+          ]
+        },
+        "falseBranch": {
+          "sequenceNumber": 0,
+          "flowParts": []
+        },
+        "conditionAsString": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Condition version=\"1.0\"><UsedSubcondition>Previous_API_200</UsedSubcondition><Subconditions><Subcondition><Name>Previous_API_200</Name><Type>AttributeValueComparison</Type><AttributeName>API_STATUS_ONE</AttributeName><ComparisonOperator>Equal</ComparisonOperator><Value>200</Value></Subcondition></Subconditions></Condition>"
+      },
+      {
+        "_type": "ionapi",
+        "sequenceNumber": 1,
+        "name": "Get Latest PID API",
+        "description": "Gets the latest copy of the Infor OS Technical Presentation",
+        "timeOut": 600,
+        "retryTime": 600,
+        "ignoreErrors": false,
+        "method": "{\"productLogicalId\":\"infor.daf\",\"operationProxyPath\":\"IDM/api\",\"operationRestPath\":\"/items/search\",\"productName\":\"Document Management\",\"operationPath\":\"IDM/api/items/search\",\"summary\":\"Search for items (by string)\",\"httpMethod\":\"GET\",\"availableOutputContentTypes\":[\"XML\",\"JSON\"],\"outputContentType\":\"JSON\",\"input\":[{\"wfVariableName\":null,\"literalValue\":\"/INFOR_OS_DEMO\",\"name\":\"$query\",\"description\":\"Query parameter.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"0\",\"name\":\"$offset\",\"description\":\"Start index of the search. Use 0 for the first item.\",\"swaggerDatatype\":\"integer\",\"swaggerFormat\":\"int32\",\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"1\",\"name\":\"$limit\",\"description\":\"The maximum number of returned items. Must be between 0 and 1000.\",\"swaggerDatatype\":\"integer\",\"swaggerFormat\":\"int32\",\"required\":true,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"\",\"name\":\"$includeCount\",\"description\":\"If a search count should be included in the result, including a count may result that the operation takes longer time to execute\",\"swaggerDatatype\":\"boolean\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"\",\"name\":\"$state\",\"description\":\"The document state to search for (0 = Active, 1 = Archived and 2 = Deleted).\",\"swaggerDatatype\":\"integer\",\"swaggerFormat\":\"int32\",\"required\":false,\"type\":\"QUERY\"},{\"wfVariableName\":null,\"literalValue\":\"\",\"name\":\"$language\",\"description\":\"Language parameter, for example 'en' or 'en-US'. Enables localized error messages.\",\"swaggerDatatype\":\"string\",\"swaggerFormat\":null,\"required\":false,\"type\":\"QUERY\"}],\"output\":[{\"wfVariableName\":\"PID\",\"type\":\"BODY\",\"path\":\"$.items.item[0].pid\",\"optional\":false},{\"wfVariableName\":\"API_STATUS_ONE\",\"type\":\"RESULTCODE\",\"path\":null,\"optional\":false}],\"inputBody\":{\"name\":null,\"description\":null,\"required\":false,\"availableInputContentTypes\":[],\"inputContentType\":null,\"body\":\" \",\"ignore\":true,\"structureNamesFromBody\":[],\"variableNamesFromBody\":[]}}",
+        "serviceAccount": "<YOUR_SERVICE_ACCOUNT>",
+        "isCustom": true,
+        "ionApiMethod": {
+          "productLogicalId": "infor.daf",
+          "operationProxyPath": "IDM/api",
+          "operationRestPath": "/items/search",
+          "productName": "Document Management",
+          "operationPath": "IDM/api/items/search",
+          "summary": "Search for items (by string)",
+          "httpMethod": "GET",
+          "availableOutputContentTypes": [
+            "XML",
+            "JSON"
+          ],
+          "outputContentType": "JSON",
+          "input": [
+            {
+              "literalValue": "/INFOR_OS_DEMO",
+              "name": "$query",
+              "description": "Query parameter.",
+              "swaggerDatatype": "string",
+              "required": true,
+              "type": "QUERY"
+            },
+            {
+              "literalValue": "0",
+              "name": "$offset",
+              "description": "Start index of the search. Use 0 for the first item.",
+              "swaggerDatatype": "integer",
+              "swaggerFormat": "int32",
+              "required": true,
+              "type": "QUERY"
+            },
+            {
+              "literalValue": "1",
+              "name": "$limit",
+              "description": "The maximum number of returned items. Must be between 0 and 1000.",
+              "swaggerDatatype": "integer",
+              "swaggerFormat": "int32",
+              "required": true,
+              "type": "QUERY"
+            },
+            {
+              "literalValue": "",
+              "name": "$includeCount",
+              "description": "If a search count should be included in the result, including a count may result that the operation takes longer time to execute",
+              "swaggerDatatype": "boolean",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "literalValue": "",
+              "name": "$state",
+              "description": "The document state to search for (0 = Active, 1 = Archived and 2 = Deleted).",
+              "swaggerDatatype": "integer",
+              "swaggerFormat": "int32",
+              "required": false,
+              "type": "QUERY"
+            },
+            {
+              "literalValue": "",
+              "name": "$language",
+              "description": "Language parameter, for example 'en' or 'en-US'. Enables localized error messages.",
+              "swaggerDatatype": "string",
+              "required": false,
+              "type": "QUERY"
+            }
+          ],
+          "output": [
+            {
+              "wfVariableName": "PID",
+              "type": "BODY",
+              "path": "$.items.item[0].pid",
+              "optional": false
+            },
+            {
+              "wfVariableName": "API_STATUS_ONE",
+              "type": "RESULTCODE",
+              "optional": false
+            }
+          ],
+          "inputBody": {
+            "required": false,
+            "availableInputContentTypes": [],
+            "body": " ",
+            "ignore": true,
+            "structureNamesFromBody": [],
+            "variableNamesFromBody": []
+          }
+        }
+      }
+    ]
+  },
+  "name": "Send_Presentation",
+  "description": "This workflow generates a copy of the Infor OS Technical Presentation, attaches it to an email and sends to the given email address provided.",
+  "lastUpdatedBy": "<USER_NAME>",
+  "lastUpdatedOn": "2024-12-17T16:33:09.120Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2024-12-17T16:33:10.303Z",
+  "archived": false
+}

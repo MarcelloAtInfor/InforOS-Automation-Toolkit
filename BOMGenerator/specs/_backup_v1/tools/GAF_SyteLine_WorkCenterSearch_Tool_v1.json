@@ -1,0 +1,23 @@
+{
+  "guid": "a213d01a-6127-4850-9c6a-78d22479380b",
+  "name": "GAF_SyteLine_WorkCenterSearch_Tool_v1",
+  "description": "Search for work centers in SyteLine by code or description keyword",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLWcs\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: CRITICAL: ONLY use these exact properties: Wc,Description,Dept. Do NOT request any other properties — they do not exist on this IDO. No ResourceGroup, no Rgid, no other fields.\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter work centers. Examples: Description LIKE '%assembly%' OR Wc LIKE 'FA%' OR Wc = 'CUT-10'\nParameter: orderby\nFormat: STRING\nRequired: False\nDescription: Sort order. Use: Wc ASC\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records to return. Default: 100\nExample Request:\nSearch for assembly-related work centers:\nGET /load/SLWcs?properties=Wc,Description,Dept&filter=Description LIKE '%Assembly%'&orderby=Wc ASC",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with work centers.\nKey Response Fields:\n- Items: Array of work center objects (empty if none found)\n- Wc: Work center code (e.g., FA-400, CUT-10, INS-20)\n- Description: Work center description (e.g., Final Assembly Area)\n- Dept: Department code\n- Success: Boolean indicating API success\nRESOURCE GROUP NAMING CONVENTION:\nEach work center has resource groups following this pattern:\n- Labor resource group: <Wc>-LRG (e.g., FA-400-LRG)\n- Machine resource group: <Wc>-MRG (e.g., Cut-10-MRG)\nIMPORTANT: Resource group IDs (Rgid) are CASE-SENSITIVE. Use the exact Wc casing from the response.\nExample: If Wc='Cut-10', then Rgid='Cut-10-MRG' (NOT 'CUT-10-MRG').\nLRG = Labor type (SchedDrv='L'). MRG = Machine type (SchedDrv='M').\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Search SyteLine work centers by code or description keyword.\nONLY request properties: Wc,Description,Dept. Do NOT add ResourceGroup or any other properties.\nResource groups: <Wc>-LRG (Labor), <Wc>-MRG (Machine). Rgid is CASE-SENSITIVE.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

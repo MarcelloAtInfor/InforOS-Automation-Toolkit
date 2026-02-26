@@ -1,0 +1,18 @@
+{
+  "guid": "b5707a26-301b-493d-8000-3cc0b214ee96",
+  "name": "GAF_GenAI_ListAssets_Tool_v1",
+  "description": "List GenAI assets (tools and agents) with optional filtering by name prefix and asset type.",
+  "instructions": "List available GenAI assets. Parameters: prefix (optional) - Filter by name prefix, e.g., 'GAF' for Factory assets. asset_type (optional) - Filter by type: 'API_DOCS' (tools) or 'TOOLKIT' (agents). Returns: Array of {guid, name, type, description} objects. Example: To list Factory tools, call with prefix='GAF' and asset_type='API_DOCS'.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "Method: GET\nEndpoint: /api/v1/tools\nQuery Parameters: None required - returns all tools. The response is filtered client-side by prefix and/or asset_type.\nExample request:\nGET /api/v1/tools",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON array of tool objects. Example response: [{\"guid\":\"uuid-here\",\"name\":\"Tool_Name\",\"description\":\"Tool description\",\"type\":\"API_DOCS\"}]. Filter the results by: prefix - Match names starting with the prefix. asset_type - Match the type field.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

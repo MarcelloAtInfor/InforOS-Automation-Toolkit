@@ -1,0 +1,30 @@
+{
+  "guid": "5b46fae7-74c6-4522-b42d-1216525432b6",
+  "name": "StartVendorNameSimilarityWorkflow_Tool",
+  "description": "Start ION workflow to re-train AI vendor name similarity model (CSI_VendorName_similarity)",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "IONSERVICES/process/application",
+    "api_docs": "Method: POST\nEndpoint: /v1/workflow/start?logicalId=lid://infor.genai.tool\nHeaders:\nContent-Type: application/json\nBody:\n{  \"workflowName\": \"CSI_VendorName_similarity\", \"instanceName\": \"<unique_instance_name>\" }",
+    "headers": {},
+    "responseInstructions": "The API responds with HTTP status indicating success or failure.\n\nSuccess Response (HTTP 200):\n- Empty body or JSON confirmation\n- The workflow starts asynchronously in the background\n- Do not wait for workflow completion - it runs independently\n\nError Responses:\n- HTTP 400: Invalid request (check instanceName format)\n- HTTP 404: Workflow not found\n- HTTP 401/403: Authentication issue\n\nKey Points:\n- Workflow runs asynchronously, it will complete in the background\n- No need to poll for status - just confirm the workflow was triggered\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to trigger the CSI_VendorName_similarity workflow that re-trains the AI vendor name similarity model.\n\nWHEN TO USE:\n- After creating a NEW vendor with VendorInsert_Tool_v2\n- Only trigger if a new vendor was actually CREATED (not just found by search)\n\nPARAMETERS:\n- instanceName: Unique name using format VendorRetrain_YYYYMMDD_HHMMSS (e.g., \"VendorRetrain_20260131_143022\")\n\nIMPORTANT:\n- The workflowName is hardcoded to \"CSI_VendorName_similarity\"\n- The logicalId is hardcoded in the query string\n- Workflow runs asynchronously - don't wait for completion\n- Generate unique instanceName using current timestamp\n- Report success/failure in the response but don't block on it",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-02-01T01:13:29.102720Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:24:55.039598Z",
+  "gp_config": null,
+  "security": null
+}

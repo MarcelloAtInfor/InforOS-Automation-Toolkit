@@ -1,0 +1,30 @@
+{
+  "guid": "bdb42c90-7a2f-40ca-951b-64f1c5f5f3af",
+  "name": "PoSearch_Tool_v2",
+  "description": "Search for existing purchase orders in SyteLine by PO number",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLPOs\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties. Example: PoNum,VendNum,OrderDate,Whse,Stat,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. Example: PoNum = 'DP00009000'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum records. Default: 1\nExample Request:\n/load/SLPOs?properties=PoNum,VendNum,OrderDate,Whse,Stat,_ItemId&filter=PoNum = 'DP00009000'&recordCap=1",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with PO details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"OrderDate\": \"20260128 00:00:00.000\",\n      \"Whse\": \"MAIN\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array with PO object (empty if not found)\n- PoNum: Purchase order number (10 char, unique)\n- VendNum: Vendor number associated with PO\n- OrderDate: PO order date\n- Whse: Warehouse\n- Stat: Status (O=Open, C=Complete, etc.)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no PO matches the search criteria, Items will be an empty array.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing purchase orders before creating new ones.\n\nSearch by PO number (exact match): filter=PoNum = \"PO-NUMBER\"\n\nReturns PO details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if a PO number is already in use\n- Verify PO doesn't exist before creating\n- Look up existing PO information",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:27.266253Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAF_CLI &mdash; GenAI Agent Factory CLI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    min-height: 100vh;
+    padding: 40px;
+    color: #1a1a2e;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #1a365d 100%);
+    color: white;
+    padding: 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .header h1 .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #7dd3fc;
+  }
+
+  .header .subtitle {
+    font-size: 15px;
+    font-weight: 300;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+  }
+
+  .header .badges {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .header .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-lang { background: rgba(53,114,210,0.3); color: #93c5fd; }
+  .badge-ver { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
+  .badge-project { background: rgba(16,185,129,0.25); color: #6ee7b7; }
+
+  .content { padding: 50px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8892a4;
+    margin-bottom: 24px;
+  }
+
+  .flow-section { margin-bottom: 50px; }
+
+  /* ── What It Is ── */
+  .intro-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4a5568;
+    max-width: 900px;
+    margin-bottom: 40px;
+  }
+
+  /* ── Dev Lifecycle Flow ── */
+  .high-level-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    padding: 30px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 150px;
+    position: relative;
+  }
+
+  .flow-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 2;
+  }
+
+  .flow-step .label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .flow-step .desc {
+    font-size: 11px;
+    color: #8892a4;
+    max-width: 140px;
+  }
+
+  .flow-arrow {
+    font-size: 28px;
+    color: #c5cad6;
+    margin: 0 6px;
+    margin-bottom: 30px;
+    font-weight: 300;
+  }
+
+  .bg-author { background: linear-gradient(135deg, #546E7A, #37474F); color: white; }
+  .bg-validate { background: linear-gradient(135deg, #F9A825, #F57F17); color: #000; }
+  .bg-publish { background: linear-gradient(135deg, #1976D2, #0D47A1); color: white; }
+  .bg-platform { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; }
+  .bg-invoke { background: linear-gradient(135deg, #388E3C, #1B5E20); color: white; }
+  .bg-iterate { background: linear-gradient(135deg, #E65100, #BF360C); color: white; }
+
+  /* ── CLI Commands Grid ── */
+  .commands-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .cmd-card {
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cmd-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .cmd-card h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cmd-card h4 .cmd-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .cmd-card .cmd-desc {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .cmd-card .cmd-syntax {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #475569;
+    background: rgba(255,255,255,0.7);
+    padding: 6px 10px;
+    border-radius: 6px;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  .cmd-blue { background: #EFF6FF; border: 1px solid #BFDBFE; }
+  .cmd-blue::before { background: linear-gradient(90deg, #1976D2, #42A5F5); }
+  .cmd-blue h4 .cmd-icon { background: #1976D2; color: white; }
+
+  .cmd-green { background: #F0FDF4; border: 1px solid #BBF7D0; }
+  .cmd-green::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
+  .cmd-green h4 .cmd-icon { background: #16a34a; color: white; }
+
+  .cmd-amber { background: #FFFBEB; border: 1px solid #FDE68A; }
+  .cmd-amber::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+  .cmd-amber h4 .cmd-icon { background: #d97706; color: white; }
+
+  .cmd-purple { background: #FAF5FF; border: 1px solid #E9D5FF; }
+  .cmd-purple::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .cmd-purple h4 .cmd-icon { background: #7c3aed; color: white; }
+
+  .cmd-slate { background: #F8FAFC; border: 1px solid #E2E8F0; }
+  .cmd-slate::before { background: linear-gradient(90deg, #475569, #94a3b8); }
+  .cmd-slate h4 .cmd-icon { background: #475569; color: white; }
+
+  .cmd-teal { background: #F0FDFA; border: 1px solid #99F6E4; }
+  .cmd-teal::before { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+  .cmd-teal h4 .cmd-icon { background: #0d9488; color: white; }
+
+  /* ── BOM Project Usage ── */
+  .usage-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .usage-box {
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .usage-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .usage-box h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .usage-box h3 .icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .usage-box .role {
+    font-size: 11px;
+    color: #8892a4;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+
+  .box-publish { background: #EFF6FF; border: 1px solid #BFDBFE; }
+  .box-publish::before { background: linear-gradient(90deg, #1976D2, #42A5F5); }
+  .box-publish h3 .icon { background: #1976D2; color: white; }
+
+  .box-update { background: #FFF7ED; border: 1px solid #FED7AA; }
+  .box-update::before { background: linear-gradient(90deg, #ea580c, #fb923c); }
+  .box-update h3 .icon { background: #ea580c; color: white; }
+
+  .box-validate { background: #FFFBEB; border: 1px solid #FDE68A; }
+  .box-validate::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+  .box-validate h3 .icon { background: #d97706; color: white; }
+
+  .box-invoke { background: #F0FDF4; border: 1px solid #BBF7D0; }
+  .box-invoke::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
+  .box-invoke h3 .icon { background: #16a34a; color: white; }
+
+  .stat-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .stat-pill {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+  }
+
+  .stat-pill .stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .stat-pill .stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8892a4;
+    font-weight: 500;
+  }
+
+  .stat-blue .stat-num { color: #1e40af; }
+  .stat-green .stat-num { color: #166534; }
+  .stat-orange .stat-num { color: #9a3412; }
+  .stat-purple .stat-num { color: #6b21a8; }
+
+  .usage-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .usage-list li {
+    font-size: 11px;
+    color: #4a5568;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .usage-list li:last-child { border-bottom: none; }
+
+  .usage-list .bullet {
+    color: #94a3b8;
+    flex-shrink: 0;
+    font-size: 8px;
+    margin-top: 3px;
+  }
+
+  /* ── Features Developed ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: #f8f9fb;
+    border: 1px solid #e9ecf0;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .feature-card .feat-tag {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .tag-new { background: #DCFCE7; color: #166534; }
+  .tag-enhanced { background: #DBEAFE; color: #1e40af; }
+  .tag-infra { background: #FEF3C7; color: #92400e; }
+
+  .feature-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+  }
+
+  .feature-card p {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .feature-card .feat-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+    color: #334155;
+    line-height: 1.6;
+  }
+
+  /* ── Architecture ── */
+  .arch-section {
+    background: #f8f9fb;
+    border-radius: 12px;
+    border: 1px solid #e9ecf0;
+    padding: 24px;
+    margin-top: 16px;
+  }
+
+  .arch-section h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+  }
+
+  .arch-layers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .arch-layer {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e9ecf0;
+  }
+
+  .arch-layer h4 {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .arch-layer h4 .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-blue { background: #3b82f6; }
+  .dot-green { background: #22c55e; }
+  .dot-amber { background: #f59e0b; }
+
+  .arch-layer .file-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .arch-layer .file-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #64748b;
+    padding: 2px 0;
+  }
+
+  .arch-layer .file-list li span {
+    color: #94a3b8;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: #e2e8f0;
+  }
+
+  .tl-item {
+    position: relative;
+    padding-bottom: 16px;
+  }
+
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #cbd5e1;
+  }
+
+  .tl-item.tl-blue::before { background: #3b82f6; box-shadow: 0 0 0 2px #93c5fd; }
+  .tl-item.tl-green::before { background: #22c55e; box-shadow: 0 0 0 2px #86efac; }
+  .tl-item.tl-amber::before { background: #f59e0b; box-shadow: 0 0 0 2px #fcd34d; }
+  .tl-item.tl-purple::before { background: #8b5cf6; box-shadow: 0 0 0 2px #c4b5fd; }
+
+  .tl-item .tl-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+  }
+
+  .tl-item .tl-detail {
+    font-size: 10px;
+    color: #8892a4;
+    line-height: 1.4;
+  }
+
+  .tl-item .tl-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 3px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 20px 50px;
+    background: #f8f9fb;
+    border-top: 1px solid #e9ecf0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #8892a4;
+  }
+
+  .footer .tech-stack span {
+    display: inline-block;
+    padding: 3px 10px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 0; background: white; }
+    .page { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1><span class="mono">GAF_CLI</span> &mdash; GenAI Agent Factory CLI</h1>
+    <div class="subtitle">Python CLI toolkit for creating, managing, and invoking Infor OS GenAI tools and agents</div>
+    <div class="badges">
+      <span class="badge badge-lang">PYTHON 3.x</span>
+      <span class="badge badge-ver">6 CLI COMMANDS &bull; 3 CORE MODULES</span>
+      <span class="badge badge-project">MOST RECENT: BOM GENERATOR (16 TOOLS + 1 AGENT)</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Intro -->
+    <div class="flow-section">
+      <div class="intro-text">
+        GAF_CLI is a standalone Python CLI that handles the full lifecycle of Infor OS GenAI assets &mdash; from local spec authoring and validation, through publishing to the GenAI platform, to invoking agents for testing. It provides a scriptable, repeatable alternative to manual UI-based asset management and was the sole deployment pipeline for the BOM Generator project.
+      </div>
+    </div>
+
+    <!-- Dev Lifecycle Flow -->
+    <div class="flow-section">
+      <div class="section-title">Development Lifecycle</div>
+      <div class="high-level-flow">
+        <div class="flow-step">
+          <div class="flow-icon bg-author">&#128221;</div>
+          <div class="label">Author Spec</div>
+          <div class="desc">Write JSON tool or agent specification locally</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-validate">&#9989;</div>
+          <div class="label">validate_spec</div>
+          <div class="desc">Naming, portability, type-specific checks</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-publish">&#128640;</div>
+          <div class="label">publish / update</div>
+          <div class="desc">Push to Infor GenAI platform via REST API</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-platform">&#129504;</div>
+          <div class="label">GenAI Platform</div>
+          <div class="desc">Asset live on Infor OS, ready for invocation</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-invoke">&#9654;</div>
+          <div class="label">invoke_agent</div>
+          <div class="desc">Test via sync or async chat with polling</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-iterate">&#128260;</div>
+          <div class="label">Iterate</div>
+          <div class="desc">Fix spec, re-validate, update, re-test</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLI Commands -->
+    <div class="flow-section">
+      <div class="section-title">CLI Commands</div>
+      <div class="commands-grid">
+
+        <div class="cmd-card cmd-amber">
+          <h4><span class="cmd-icon">&#10003;</span> validate_spec</h4>
+          <div class="cmd-desc">Pre-flight check before publish. Enforces naming convention (<code>GAF_*_Tool/Agent_v*</code>), portability (no hardcoded URLs), type-specific field requirements, and content rules (no auth docs, example request required, debug template required).</div>
+          <div class="cmd-syntax">python -m src.cli.validate_spec specs/tools/MyTool.json</div>
+        </div>
+
+        <div class="cmd-card cmd-blue">
+          <h4><span class="cmd-icon">&#128640;</span> publish_tool</h4>
+          <div class="cmd-desc">Publishes a new tool spec to the GenAI platform. Wraps the spec in an array for <code>POST /api/v1/tools</code>. Returns the platform-assigned GUID on success.</div>
+          <div class="cmd-syntax">python -m src.cli.publish_tool specs/tools/MyTool.json</div>
+        </div>
+
+        <div class="cmd-card cmd-purple">
+          <h4><span class="cmd-icon">&#129302;</span> publish_agent</h4>
+          <div class="cmd-desc">Publishes a new agent spec (type TOOLKIT). Warns if type is not TOOLKIT. Agent's <code>data.tools</code> array references the tools it can orchestrate.</div>
+          <div class="cmd-syntax">python -m src.cli.publish_agent specs/agents/MyAgent.json</div>
+        </div>
+
+        <div class="cmd-card cmd-slate">
+          <h4><span class="cmd-icon">&#128295;</span> update_asset</h4>
+          <div class="cmd-desc">Full-replacement update via <code>PUT /api/v1/tools/{guid}</code>. Spec must contain the <code>guid</code> field from the original publish. Missing fields are removed (not merged).</div>
+          <div class="cmd-syntax">python -m src.cli.update_asset specs/tools/MyTool.json</div>
+        </div>
+
+        <div class="cmd-card cmd-teal">
+          <h4><span class="cmd-icon">&#128270;</span> list_assets</h4>
+          <div class="cmd-desc">Lists tools and agents on the platform. Filters by prefix or type. Separates tools (API_DOCS) from agents (TOOLKIT) in output. Returns name, GUID, and type.</div>
+          <div class="cmd-syntax">python -m src.cli.list_assets --prefix GAF_SyteLine</div>
+        </div>
+
+        <div class="cmd-card cmd-green">
+          <h4><span class="cmd-icon">&#9654;</span> invoke_agent</h4>
+          <div class="cmd-desc">Invokes any agent via the GenAI Chat API. Supports sync (<code>chat_sync</code>) and async (<code>chat</code> + polling) modes, interactive sessions, JSON output, and agent selection via <code>-a</code> flag.</div>
+          <div class="cmd-syntax">python -m src.cli.invoke_agent -a MyAgent --async "prompt"</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOM Generator Usage -->
+    <div class="flow-section">
+      <div class="section-title">Usage in the BOM Generator Project</div>
+      <div class="usage-container">
+
+        <!-- Publishing -->
+        <div class="usage-box box-publish">
+          <h3><span class="icon">&#128640;</span> Asset Publishing</h3>
+          <div class="role">16 tools + 1 agent deployed entirely via CLI</div>
+          <div class="stat-row">
+            <div class="stat-pill stat-blue">
+              <div class="stat-num">16</div>
+              <div class="stat-label">Tools Published</div>
+            </div>
+            <div class="stat-pill stat-purple">
+              <div class="stat-num">1</div>
+              <div class="stat-label">Agent Published</div>
+            </div>
+            <div class="stat-pill stat-blue">
+              <div class="stat-num">17</div>
+              <div class="stat-label">GUIDs Tracked</div>
+            </div>
+          </div>
+          <ul class="usage-list">
+            <li><span class="bullet">&#9679;</span> Each tool spec authored as JSON in <code>BOMGenerator/specs/tools/</code>, then published via <code>publish_tool</code></li>
+            <li><span class="bullet">&#9679;</span> Agent spec references all 16 tools by name in <code>data.tools</code> array</li>
+            <li><span class="bullet">&#9679;</span> Returned GUIDs added back to spec files for future updates</li>
+            <li><span class="bullet">&#9679;</span> Tool count grew from 8 &rarr; 12 &rarr; 14 &rarr; 15 &rarr; 16 across iterations</li>
+          </ul>
+        </div>
+
+        <!-- Iterative Updates -->
+        <div class="usage-box box-update">
+          <h3><span class="icon">&#128260;</span> Iterative Updates</h3>
+          <div class="role">Rapid fix-validate-update-retest cycle</div>
+          <div class="stat-row">
+            <div class="stat-pill stat-orange">
+              <div class="stat-num">10+</div>
+              <div class="stat-label">Agent Updates</div>
+            </div>
+            <div class="stat-pill stat-orange">
+              <div class="stat-num">20+</div>
+              <div class="stat-label">Tool Updates</div>
+            </div>
+          </div>
+          <ul class="usage-list">
+            <li><span class="bullet">&#9679;</span> URL hallucination fix &mdash; added anti-hallucination constraints to all 14 specs, redeployed via <code>update_asset</code></li>
+            <li><span class="bullet">&#9679;</span> Chunking budget: 7 &rarr; 5 tool calls per chunk &mdash; agent workflow updated in place</li>
+            <li><span class="bullet">&#9679;</span> Weighted tool budgeting (LIGHT vs HEAVY calls) &mdash; agent workflow revised</li>
+            <li><span class="bullet">&#9679;</span> JobNumberLookup addition: agent went from 15 &rarr; 16 tools &mdash; single <code>update_asset</code></li>
+          </ul>
+        </div>
+
+        <!-- Validation -->
+        <div class="usage-box box-validate">
+          <h3><span class="icon">&#9888;</span> Spec Validation</h3>
+          <div class="role">Caught errors before they reached the platform</div>
+          <div class="stat-row">
+            <div class="stat-pill stat-orange">
+              <div class="stat-num">12</div>
+              <div class="stat-label">Validation Rules</div>
+            </div>
+            <div class="stat-pill stat-orange">
+              <div class="stat-num">2</div>
+              <div class="stat-label">Asset Types</div>
+            </div>
+          </div>
+          <ul class="usage-list">
+            <li><span class="bullet">&#9679;</span> Every spec validated before publish: naming, portability, field presence, content rules</li>
+            <li><span class="bullet">&#9679;</span> Type-specific routing: API_DOCS tools check api_docs + responseInstructions; TOOLKIT agents check tools array + workflow</li>
+            <li><span class="bullet">&#9679;</span> Debug template enforcement ensures every tool surfaces error details (FULL_URL, FULL_PAYLOAD, FULL_RESPONSE)</li>
+            <li><span class="bullet">&#9679;</span> BOM project drove creation of 5 new validation rules (auth docs, example request, debug template, type consistency, agent fields)</li>
+          </ul>
+        </div>
+
+        <!-- Invocation & Testing -->
+        <div class="usage-box box-invoke">
+          <h3><span class="icon">&#9654;</span> Agent Invocation</h3>
+          <div class="role">Sync and async testing from the command line</div>
+          <div class="stat-row">
+            <div class="stat-pill stat-green">
+              <div class="stat-num">2</div>
+              <div class="stat-label">Chat Modes</div>
+            </div>
+            <div class="stat-pill stat-green">
+              <div class="stat-num">~16m</div>
+              <div class="stat-label">Avg Test Run</div>
+            </div>
+          </div>
+          <ul class="usage-list">
+            <li><span class="bullet">&#9679;</span> <code>-a</code> flag (added for BOM project) selects any deployed agent &mdash; previously hardcoded to Factory Agent</li>
+            <li><span class="bullet">&#9679;</span> <code>--async</code> mode bypasses 240s API gateway timeout &mdash; fire-and-forget POST + polling for results</li>
+            <li><span class="bullet">&#9679;</span> BOM test harness (<code>test_bom_agent.py</code>) built on GAF_CLI's <code>GenAIClient.chat()</code> + <code>poll_for_response()</code></li>
+            <li><span class="bullet">&#9679;</span> Multi-turn sentinel detection: <code>&lt;&lt;CHECKPOINT&gt;&gt;</code> triggers next chunk, <code>&lt;&lt;COMPLETE&gt;&gt;</code> ends the session</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Features Developed During BOM Project -->
+    <div class="flow-section">
+      <div class="section-title">Features Developed During the BOM Generator Project</div>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <span class="feat-tag tag-new">NEW</span>
+          <h4>Async Chat Pattern</h4>
+          <p>Eliminated the 240-second API gateway timeout. <code>POST /chat</code> returns immediately; <code>GET /sessions/{id}/messages</code> polls until the agent finishes. Supports long-running agents that take 15+ minutes across multiple chunks.</p>
+          <div class="feat-code">client.chat(prompt, tools, session)<br>client.poll_for_response(session_id, expected_count, poll_interval, max_polls)</div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feat-tag tag-new">NEW</span>
+          <h4>Agent Selection Flag</h4>
+          <p>Added <code>-a / --agent</code> argument to <code>invoke_agent</code>. Previously hardcoded to the Factory Agent. Now any deployed agent can be invoked without code changes. Default remains backward compatible.</p>
+          <div class="feat-code">python -m src.cli.invoke_agent \<br>&nbsp; -a GAF_SyteLine_BomGenerator_Agent_v1 \<br>&nbsp; "Create a wooden chair BOM"</div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feat-tag tag-enhanced">ENHANCED</span>
+          <h4>Type-Specific Validation</h4>
+          <p>Validation now routes checks by asset type. Tools (API_DOCS) get api_docs content checks; Agents (TOOLKIT) get tools array and workflow checks. Type-name consistency enforced. Invalid types rejected early.</p>
+          <div class="feat-code">_Tool_v* &rarr; type: API_DOCS<br>_Agent_v* &rarr; type: TOOLKIT<br>Mismatch = validation failure</div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feat-tag tag-enhanced">ENHANCED</span>
+          <h4>Debug Template Enforcement</h4>
+          <p>Every tool's <code>responseInstructions</code> must include a standardized debug block. On error, the GenAI model surfaces the exact URL called, payload sent, and response received &mdash; enabling rapid debugging without platform log access.</p>
+          <div class="feat-code">---DEBUG---<br>FULL_URL: [url]<br>FULL_PAYLOAD: [body]<br>FULL_RESPONSE: [response]<br>---END DEBUG---</div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feat-tag tag-infra">INFRA</span>
+          <h4>Session ID Discovery</h4>
+          <p>Discovered that Infor's GenAI platform requires dashless hex session IDs. Dashed UUIDs silently fail (0 messages returned). <code>uuid.uuid4().hex</code> is now the standard. Pagination is 1-based (page 0 returns 422).</p>
+          <div class="feat-code">session = uuid.uuid4().hex<br># "c3effe2f22a94caaa1595314719d00bd"<br># NOT "c3effe2f-22a9-4caa-..."</div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feat-tag tag-infra">INFRA</span>
+          <h4>Response Format Normalization</h4>
+          <p><code>GET /sessions/{id}/messages</code> returns inconsistent formats (list vs paginated dict). <code>get_session_messages()</code> normalizes both into a consistent list, shielding callers from platform quirks.</p>
+          <div class="feat-code">msgs = client.get_session_messages(<br>&nbsp; session_id, page=1, size=50<br>)<br># Always returns list, newest-first</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="flow-section">
+      <div class="arch-section">
+        <h3>Source Architecture</h3>
+        <div class="arch-layers">
+          <div class="arch-layer">
+            <h4><span class="dot dot-blue"></span> CLI Layer &mdash; <code>src/cli/</code></h4>
+            <ul class="file-list">
+              <li>validate_spec.py <span>&mdash; pre-publish checks</span></li>
+              <li>publish_tool.py <span>&mdash; POST new tool</span></li>
+              <li>publish_agent.py <span>&mdash; POST new agent</span></li>
+              <li>update_asset.py <span>&mdash; PUT existing asset</span></li>
+              <li>list_assets.py <span>&mdash; GET &amp; filter</span></li>
+              <li>invoke_agent.py <span>&mdash; sync/async chat</span></li>
+            </ul>
+          </div>
+          <div class="arch-layer">
+            <h4><span class="dot dot-green"></span> API Client &mdash; <code>src/infor_os/</code></h4>
+            <ul class="file-list">
+              <li>genai_client.py <span>&mdash; GenAIClient class</span></li>
+              <li>&nbsp; .create_tools() <span>&mdash; POST array</span></li>
+              <li>&nbsp; .update_tool() <span>&mdash; PUT object</span></li>
+              <li>&nbsp; .chat_sync() <span>&mdash; blocking call</span></li>
+              <li>&nbsp; .chat() <span>&mdash; async fire-and-forget</span></li>
+              <li>&nbsp; .poll_for_response() <span>&mdash; polling loop</span></li>
+              <li>&nbsp; .get_session_messages() <span>&mdash; normalized</span></li>
+            </ul>
+          </div>
+          <div class="arch-layer">
+            <h4><span class="dot dot-amber"></span> Shared &mdash; <code>src/shared/</code></h4>
+            <ul class="file-list">
+              <li>auth.py <span>&mdash; OAuth2 password grant</span></li>
+              <li>config.py <span>&mdash; .ionapi file loader</span></li>
+              <li>http_client.py <span>&mdash; retries + backoff</span></li>
+              <li>validation.py <span>&mdash; 12 validation rules</span></li>
+              <li>errors.py <span>&mdash; static error factory</span></li>
+              <li>logging.py <span>&mdash; credential redaction</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOM Generator Timeline -->
+    <div class="flow-section">
+      <div class="section-title">BOM Generator &mdash; GAF_CLI Usage Timeline</div>
+      <div class="timeline">
+        <div class="tl-item tl-blue">
+          <div class="tl-title">Phase 1&ndash;4: Initial tool &amp; agent publishing (Feb 10)</div>
+          <div class="tl-detail">8 tools + 1 agent published via <code>publish_tool</code> and <code>publish_agent</code>. First BOM attempt exposed LLM hallucination issues.</div>
+          <div class="tl-cmd">publish_tool &times;8 &bull; publish_agent &times;1</div>
+        </div>
+        <div class="tl-item tl-amber">
+          <div class="tl-title">URL hallucination fix &mdash; bulk update (Feb 11)</div>
+          <div class="tl-detail">All tool specs updated with anti-hallucination constraints via <code>update_asset</code>. Agent workflow revised with URL construction rules.</div>
+          <div class="tl-cmd">update_asset &times;9</div>
+        </div>
+        <div class="tl-item tl-blue">
+          <div class="tl-title">Tool split + new tools (Feb 11)</div>
+          <div class="tl-detail">Discovered 1-tool-1-call framework constraint. Split two-step tools into Load + Update pairs. Added WorkCenterSearch, ResourceGroupInsert. 8 &rarr; 14 tools.</div>
+          <div class="tl-cmd">publish_tool &times;6 &bull; update_asset (agent)</div>
+        </div>
+        <div class="tl-item tl-green">
+          <div class="tl-title">BH-10000: first successful BOM (Feb 11)</div>
+          <div class="tl-detail">First end-to-end BOM visible in SyteLine UI. Tested via <code>invoke_agent -a BomGenerator</code>.</div>
+          <div class="tl-cmd">invoke_agent -a GAF_SyteLine_BomGenerator_Agent_v1</div>
+        </div>
+        <div class="tl-item tl-amber">
+          <div class="tl-title">ResourceGroupLookup tool + hard error classification (Feb 11)</div>
+          <div class="tl-detail">New lookup tool replaces unreliable naming-convention guessing. Agent reclassifies RG + ItwhJob failures as hard errors. 14 &rarr; 15 tools.</div>
+          <div class="tl-cmd">publish_tool &times;1 &bull; update_asset (agent)</div>
+        </div>
+        <div class="tl-item tl-purple">
+          <div class="tl-title">Async chat pattern ported to GAF_CLI (Feb 12)</div>
+          <div class="tl-detail">3 new methods added to <code>GenAIClient</code>: <code>chat()</code>, <code>get_session_messages()</code>, <code>poll_for_response()</code>. <code>--async</code> flag added to <code>invoke_agent</code>. Eliminates 240s gateway timeout.</div>
+          <div class="tl-cmd">invoke_agent --async -a BomGenerator "prompt"</div>
+        </div>
+        <div class="tl-item tl-blue">
+          <div class="tl-title">JobNumberLookup tool + agent update (Feb 12)</div>
+          <div class="tl-detail">16th tool published. Agent workflow updated for dynamic job number allocation. Backward compatible with prompt-specified numbers.</div>
+          <div class="tl-cmd">validate_spec &bull; publish_tool &bull; update_asset (agent)</div>
+        </div>
+        <div class="tl-item tl-green">
+          <div class="tl-title">BH-T03000 &amp; ST-10000: automated tests pass (Feb 12)</div>
+          <div class="tl-detail">First fully automated pipeline (generate &rarr; invoke &rarr; verify). 12/12 and 16/16 checks passed. Both backward-compat and ad-hoc paths validated.</div>
+          <div class="tl-cmd">test_bom_agent.py (built on GenAIClient async API)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>GAF_CLI &mdash; GenAI Agent Factory CLI &bull; Feb 2026</div>
+    <div class="tech-stack">
+      <span>Python</span>
+      <span>OAuth 2.0</span>
+      <span>Infor GenAI</span>
+      <span>REST API</span>
+      <span>Claude Code</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

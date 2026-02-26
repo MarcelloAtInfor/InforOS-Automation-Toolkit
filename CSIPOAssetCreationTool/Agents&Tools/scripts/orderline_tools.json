@@ -1,0 +1,60 @@
+{
+  "QueryUpcomingOrders_Tool": {
+    "guid": "fb99c0c4-eaf0-4683-a823-0dba3e512113",
+    "name": "QueryUpcomingOrders_Tool",
+    "description": "Retrieve the 20 customer order lines with the soonest upcoming due dates from SyteLine",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLCoitems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Required fields: CoNum, CoLine, Item, DueDate, QtyOrderedConv, Stat, _ItemId\n\nParameter: orderBy\nFormat: STRING\nRequired: True\nDescription: Sort order for results. Use 'DueDate ASC' to get lines with soonest due dates first\n\nParameter: recordCap\nFormat: INTEGER\nRequired: True\nDescription: Maximum number of records to return. Use 20 to get the 20 soonest due date lines\n\nExample Request:\n\nTo get the 20 order lines with soonest due dates:\n/load/SLCoitems?properties=CoNum,CoLine,Item,DueDate,QtyOrderedConv,Stat,_ItemId&orderBy=DueDate ASC&recordCap=20\n\nResponse Format:\nThe DueDate field is returned in format: YYYYMMDD HH:MM:SS.mmm (e.g., \"20161205 00:00:00.000\")",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with order line details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"CoNum\": \"DC00000106\",\n      \"CoLine\": \"1\",\n      \"Item\": \"FA-10000\",\n      \"DueDate\": \"20161205 00:00:00.000\",\n      \"QtyOrderedConv\": \"100.00000000\",\n      \"Stat\": \"C\",\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[8b03ec75-871e-4207-b700-caefc63ba779]\"\n    }\n  ],\n  \"MoreRowsExist\": false,\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of order line objects sorted by DueDate ascending\n- CoNum: Customer order number\n- CoLine: Line number within the order\n- DueDate: Due date in YYYYMMDD HH:MM:SS.mmm format\n- _ItemId: Required for updates (identifies the specific record)\n- MoreRowsExist: Boolean indicating if more records are available\n- Success: Boolean indicating API call success",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to retrieve the 20 customer order lines with the soonest upcoming due dates.\n\nReturns: Order number, line number, item, due date, quantity, status, and item ID for each line.\n\nThe results are automatically sorted by due date (earliest first) and limited to 20 records.\n\nUse when the user asks to:\n- Get upcoming order lines\n- Find orders with soonest due dates\n- Retrieve order lines for due date updates\n- Check which orders are coming due soon",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T23:11:12.585583Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  "UpdateOrderDueDate_Tool": {
+    "guid": "43fb60c7-276d-4ad9-b25e-97f2e321cd8b",
+    "name": "UpdateOrderDueDate_Tool",
+    "description": "Update the due date for specific customer order lines in SyteLine",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: POST\nENDPOINT: /update/SLCoitems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\nContent-Type: application/json\n\nRequest Body (JSON):\n\nThe body must be a JSON object with an \"SLCoitems\" array containing update operations.\n\nParameter: _ItemId\nFormat: STRING\nRequired: True\nDescription: The unique identifier for the order line record (obtained from query results)\n\nParameter: DueDate\nFormat: STRING\nRequired: True\nDescription: New due date in YYYYMMDD format (e.g., \"20260125\" for January 25, 2026)\n\nExample Request Body:\n\n{\n  \"SLCoitems\": [\n    {\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[2014-09-09 15:09:03.160] coi.ID=[8b03ec75-871e-4207-b700-caefc63ba779]\",\n      \"DueDate\": \"20260125\"\n    }\n  ]\n}\n\nTo update multiple lines at once, include multiple objects in the SLCoitems array:\n\n{\n  \"SLCoitems\": [\n    {\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[...] coi.ID=[guid1]\",\n      \"DueDate\": \"20260125\"\n    },\n    {\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[...] coi.ID=[guid2]\",\n      \"DueDate\": \"20260125\"\n    }\n  ]\n}\n\nImportant Notes:\n- The _ItemId must match exactly as returned from the query\n- DueDate format is YYYYMMDD (8 digits, no separators or time portion)\n- The API will validate the date format and return an error if invalid",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object indicating success or failure of the update.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"_ItemId\": \"PBT=[coitem] coi.DT=[...] coi.ID=[guid]\",\n      \"DueDate\": \"20260125 00:00:00.000\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null,\n  \"RowsAffected\": 1\n}\n\nExample error response:\n{\n  \"Success\": false,\n  \"Message\": \"Invalid date format\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if the update succeeded\n- Message: Error message if Success is false, null otherwise\n- Items: Array of updated records (may be empty on error)\n- RowsAffected: Number of records successfully updated\n\nHTTP Status Codes:\n- 200 OK: Update processed (check Success field for actual result)\n- 401 Unauthorized: Authentication failed\n- 422 Validation Error: Invalid request body or parameters",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-3-7-sonnet-20250219-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to update the due date for customer order lines.\n\nInput requirements:\n- _ItemId: The unique record identifier (from query results)\n- DueDate: New date in YYYYMMDD format (e.g., \"20260125\")\n\nCan update single or multiple order lines in one request.\n\nUse when the user asks to:\n- Update due dates for order lines\n- Change when orders are due\n- Set new due dates\n- Modify order line due dates",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-27T23:11:13.459720Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  }
+}

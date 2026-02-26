@@ -1,0 +1,444 @@
+[
+  {
+    "documetFlowID": 665,
+    "documentFlowName": "CSI_APInvoice_Extract_V2",
+    "documentFlowDescription": "Extracts vendor, PO header, and line item data from AP invoices",
+    "activities": [
+      {
+        "activityId": 509,
+        "activityTypeId": 1,
+        "activityName": "Document Classification",
+        "activityDescription": "Document Classification",
+        "activityProviders": [
+          {
+            "providerId": 9,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 9,
+        "status": 0,
+        "activityGuild": "afbd9eb2-622e-4e79-ac51-f54f3ba823eb",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      },
+      {
+        "activityId": 510,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "37eb75bd-7e93-4efb-80cc-04cae0cd0f1d",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "d6635c5e-b1be-410f-afda-c5ee7cc59663",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "07eb4bf3-eaa3-43ff-a8df-45f6c62cd495",
+        "documentTypeId": 502,
+        "documentName": "Other",
+        "documentFields": [],
+        "tableHeaders": [],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "",
+        "description": "Document which does not belong to any of the previously mentioned classes should be classified as Other",
+        "documentClassID": 0
+      },
+      {
+        "documentClassGuid": "b5d0da61-6ceb-4cd3-9d69-307e5bd3f9fe",
+        "documentTypeId": 501,
+        "documentName": "AP_Invoice_Extraction",
+        "documentFields": [
+          {
+            "fieldName": "Billing Address",
+            "description": "The complete physical address of the buyer or customer where bills are sent.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Buyer Email Address",
+            "description": "An email address for the buyer contact point. Return valid email format (someone@example.com) or empty string if not found.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Buyer Fax Number",
+            "description": "The fax number of the buyer.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Buyer Name",
+            "description": "The buyer&#39;s company/organization name from the document. If both a person name and a company/organization name are present, prefer the company/organization name. Only use a person name if the company name is not mentioned.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Buyer Phone Number",
+            "description": "All phone numbers associated with the buyer or purchasing organization. Include both main and additional contact numbers if available. If multiple phone numbers are present, extract all relevant ones linked to the buyer.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Currency",
+            "description": "The currency in which all Invoice amounts are given. If the currency is represented by a symbol (e.g., $, \u20ac, &#165;) or by name (e.g., US dollars, euros, yen), normalize it to the official 3-letter ISO 4217 currency code (e.g., USD, EUR, JPY). However, if it is ambiguous (like &#39;$&#39;), infer the most likely currency based on context such as country names, addresses, phone numbers, or other regional indicators. Return only the ISO currency code.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Delivery Numbers",
+            "description": "A unique identifier that references the physical delivery or shipment of goods associated with that invoice. Often labeled as &#39;Delivery No.&#39;, &#39;DN#&#39;, &#39;Tracking #&#39;, &#39;Tracking ID&#39;, &#39;Tracking Number&#39;, &#39;Shipment Number&#39; or &#39;Ship No.&#39;. If multiple delivery numbers are present, extract all of them. Ignore all other non-tracking identifiers.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Discount Amount",
+            "description": "Standalone discounts that are not part of the tables. Follow the format (e.g., &#39;$1,234.56&#39; \u2192 &#39;1234.56&#39;, &#39;1000,00&#39; \u2192 &#39;1000.00&#39;). Disregard early payment discount amount and terms in invoice text, such as &#39;2% 10 Net 30 if paid by 5/31/24.&#39; or similar phrasing.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Date",
+            "description": "The date when the Invoice was issued. Return the date in ISO standard format (YYYY-MM-DD).",
+            "fieldType": "Date",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Number",
+            "description": "A unique identifier of the Invoice. Following are examples of key identifiers for the invoice number: &#39;Invoice No&#39;, &#39;Inv #&#39;, &#39;Invoice #&#39;, etc.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Type",
+            "description": "The functional type of the invoice must always be one of the following: [Standard Invoice, Credit Invoice, Debit Invoice, Commercial Invoice, Timesheet Invoice, Expense Report, Pro Forma Invoice, Interim Invoice, Final Invoice, Past Due Invoice, Recurring Invoice, Prepayment Invoice]. This list is fixed and cannot include any additional or alternative values.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Order Date",
+            "description": "Order Date refers to the specific date on which a customer places an order with a supplier or seller. Return the date in ISO standard format (YYYY-MM-DD).",
+            "fieldType": "Date",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Order Number",
+            "description": "The seller&#39;s internal order tracking identifier. Key labels for the Order Number include: Order Number, Sales Order Number, SO Number, Order SO, Order Reference, etc.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Payment Terms",
+            "description": "The full payment terms as stated in the document. Include all details such as payment due date, payment period, payment method, any early payment discounts or penalties, and any other conditions directly related to payment.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Purchase Order Date",
+            "description": "The date when the purchase order was created. Return the date in ISO standard format (YYYY-MM-DD).",
+            "fieldType": "Date",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Purchase Order Number",
+            "description": "An identifier of a referenced purchase order, issued by the Buyer. Do not confuse it with invoice numbers or internal order numbers. Following are examples of key identifiers for the Purchase Order Number: &#39;PO Number&#39;, &#39;Purchase Order No.&#39;, &#39;Customer Order Number&#39;, etc.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Remit Address",
+            "description": "The specific address where payments should be sent. Consider it only if it is explicitly present in the document.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Shipping Address",
+            "description": "The complete shipping address where goods or services are to be delivered.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Shipping/Handling Charges",
+            "description": "Costs associated with shipping and handling of goods.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Sub Total",
+            "description": "It represents the total cost of goods or services before taxes and additional charges. Do not derive or calculate it from the line item table. Extract it only if explicitly mentioned in the line item summary section or the invoice summary table.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Total Amount",
+            "description": "The final amount to be paid, including all charges and taxes.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "VAT/Tax Amount",
+            "description": "The tax amount applied to the transaction. Return empty string if no tax amount is present in the document.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Address",
+            "description": "The physical address components of the vendor or supplier, excluding the company/vendor name and concatenate all lines with empty string into a single string without newline characters or any additional separators. Look for labels such as &#39;Vendor Address&#39;, &#39;Supplier Address&#39;, or near the company logo or footer. Include Street address (number, street name), City, State/Province, ZIP/Postal code, Country (if international), Suite/Unit numbers, PO Box information.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Email Address",
+            "description": "The email address of the vendor or supplier. Return valid email format (someone@example.com) or empty string if not found.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Fax Number",
+            "description": "The fax number of the vendor or supplier.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Name",
+            "description": "The official business name or legal entity name of the supplier or service provider who is issuing the invoice. Typically found in the header or footer sections of the document, often labeled as &#39;From:&#39;, &#39;Vendor:&#39;, &#39;Supplier:&#39;, &#39;Bill From:&#39;, or prominently displayed as the company letterhead or company logo.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Phone Number",
+            "description": "All phone numbers associated with the vendor or supplier which may be appear in headers, footer, vendor and remit addresses. Include both main and additional contact numbers if available. If multiple phone numbers are present, extract all relevant ones linked to the vendor.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Line Item Table",
+            "tableFields": [
+              {
+                "fieldId": 271,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "A unique identifier assigned by the seller or vendor to track specific products or items or materials within their internal inventory management and accounting systems."
+              },
+              {
+                "fieldId": 272,
+                "documentClassId": 0,
+                "fieldName": "Description",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "A textual description providing details about an item or product. Do not include any key value pairs into description."
+              },
+              {
+                "fieldId": 273,
+                "documentClassId": 0,
+                "fieldName": "Quantity Shipped",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The number of units that have been shipped to the customer. If there is only single quantity column named like &#39;&#39;Qty&#39;&#39;, &#39;&#39;Quantity&#39;&#39;, treat it as &#39;&#39;Quantity Shipped&#39;&#39;."
+              },
+              {
+                "fieldId": 274,
+                "documentClassId": 0,
+                "fieldName": "Quantity Ordered",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The total quantity of items that have been ordered or requested."
+              },
+              {
+                "fieldId": 275,
+                "documentClassId": 0,
+                "fieldName": "Quantity BackOrder",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The number of units that could not be shipped or remained to ship."
+              },
+              {
+                "fieldId": 276,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The price of a single unit of an item or product."
+              },
+              {
+                "fieldId": 277,
+                "documentClassId": 0,
+                "fieldName": "UOM",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The Unit of Measurement (UOM) specifies the unit used to measure items being sold, ordered, or invoiced. Unit measurement codes are EA, CS, BX, KG, LB, PK, PC, Units etc. It sometimes appears with Quantity."
+              },
+              {
+                "fieldId": 278,
+                "documentClassId": 0,
+                "fieldName": "Discount",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "Discount value amount (exclude %) per line item. If there is discount percent (%) column or value, treat it as Other column. If it is empty in the actual document table, return as empty string as its value."
+              },
+              {
+                "fieldId": 279,
+                "documentClassId": 0,
+                "fieldName": "Line Total",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The final or Net total amount in float specified for a particular line item after discount, tax etc in a line item table. Extract the value from table line items only. There can be multiple total amounts in line items, extract the desired value for Line Total which will be after discount value."
+              },
+              {
+                "fieldId": 280,
+                "documentClassId": 0,
+                "fieldName": "Tax",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The monetary amount applied as tax for a line item.  Do not consider tax percentage as Tax value. If the value is not provided in the document table, return it as an empty string."
+              },
+              {
+                "fieldId": 281,
+                "documentClassId": 0,
+                "fieldName": "PO Number",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The Purchase Order Number (PO Number, PO# etc) within line context."
+              },
+              {
+                "fieldId": 282,
+                "documentClassId": 0,
+                "fieldName": "Packing Slip Number",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The Packing Slip Number (Pack Slip#, Packing List etc) within line context."
+              },
+              {
+                "fieldId": 283,
+                "documentClassId": 0,
+                "fieldName": "Line Number",
+                "isRequired": false,
+                "dataType": "number",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "A Line Number is a sequential numeric or alphanumeric identifier that appears at the beginning or left side of each itemized product/service entry in an invoice&#39;s line item table. It serves as a unique reference for each individual item being billed."
+              }
+            ],
+            "isRequired": false,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": "A line item table is a detailed breakdown of individual products, services, or charges within a transaction, typically showing quantities, descriptions, unit prices, and totals for each item."
+          }
+        ],
+        "baseModelID": "1b3574e9-5330-43af-a010-0f658d4162cb",
+        "status": null,
+        "idmDocumentType": "",
+        "description": "An invoice is a time-stamped commercial document that itemizes and records a transaction between a buyer and a seller or an invoice is an itemized commercial document that records the products or services delivered to the customer, the total amount due, and the preferred payment method.",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": "",
+      "dcPrompt": "$Document Classification System Prompt Start$\nYou are a document classification expert who can analyze and classify multiple documents and their page boundaries within a document package from various domains.\nYour task is to determine the document type based on its content and structure, using the provided document type definitions.\nYour output must be valid JSON according to the requested format.\n$Document Classification System Prompt End$\n\n$Document Classification Task Prompt Start$\n&lt;task-description&gt;\nYou are a document classification system. Your task is to analyze a document package containing multiple pages and identify distinct document segments, classifying each segment according to the predefined document types provided below.\nYou&#39;ll be provided with the OCR results of the document.\n&lt;/task-description&gt;\n\n&lt;documentclasses&gt;\nType: AP_Invoice_Extraction\nDescription: An invoice is a time-stamped commercial document that itemizes and records a transaction between a buyer and a seller or an invoice is an itemized commercial document that records the products or services delivered to the customer, the total amount due, and the preferred payment method.\n\nType: Other\nDescription: Document which does not belong to any of the previously mentioned classes should be classified as Other\n&lt;/documentclasses&gt;\n\n&lt;instructions&gt;\n1. Analyze each page of the input document.\n2. Identify each separate document instance and where it begins and ends. Refer to the &lt;document_boundary_detection&gt; to decide document instance separations.\n3. Classify each document instance according to the provided classes.\n4. Provide confidence scores for each classification.\n5. Include the specific page numbers for each document (single page as &quot;1&quot;, multiple pages as &quot;4,5,6,7,8&quot;).\n&lt;/instructions&gt;\n\n&lt;document_boundary_detection&gt;\n1. Identify the start and end and page numbers of each distinct document.\n2. New reference numbers mean new document instances. This has the topmost priority for identifying distinct document instances.Each unique invoice number, reference number, document ID, or similar identifier indicates a separate document.\nExamples: Invoice #00576781, Invoice #00576782, PO #00576783, etc.\nEven if documents are the same type, different numbers is equal to different documents.\nTreat each subdocument or subinvoice or summarydocument as separate document.\n- If a document contains a summary of multiple invoice numbers, treat the summary as Document #1.\n- Each individual detailed invoice should be treated as separate documents.\n- Summary pages should NOT be included in individual invoice page ranges.\n- Example: If page 1 lists invoices #001, #002, #003, and pages 2-3 contain details for #001:\n  - Document 1: Summary (page 1).\n  - Document 2: Invoice #001 details (pages 2-3).\n3. Some other lower priority guidelines are as follows-\n- Look for subtle distinctions in addressing, reference numbers, dates, or unique document identifiers.\n- Note page breaks, section markers, or other formatting clues that signal document boundaries.\n- Recognize header/footer patterns that might indicate new documents.\n- Pay attention to standard document markers like headers, signatures, dates, and greeting/closing lines.\n- Consider format shifts, topic changes, or addressing changes as potential boundaries.\n&lt;/document_boundary_detection&gt;\n\n&lt;output_format&gt;\nStrictly provide the response in the below provided structure enclosed in &lt;result&gt;&lt;/result&gt; and do not use code block formatting or any other text formatting. The json inside result tags should be valid and without any error.&lt;result&gt;\n{\n    &quot;DocumentClassification&quot;: [\n        {\n            &quot;DocumentDetected&quot;: &quot;Predicted Document Class name&quot;,\n            &quot;ConfidenceScore&quot;: &quot;Predicted Document Class Score Percentage out of 100 as float&quot;,\n            &quot;ListOfClass&quot;: {\n                &quot;0&quot;: &quot;AP_Invoice_Extraction&quot;,\n                &quot;1&quot;: &quot;Other&quot;\n            },\n            &quot;ConfidenceOfClass&quot;: {\n                &quot;AP_Invoice_Extraction&quot;: &quot;Percentage Score out of 100 of document being a AP_Invoice_Extraction represented as a float&quot;,\n                &quot;Other&quot;: &quot;Percentage Score out of 100 of document being a Other represented as a float&quot;\n            },\n            &quot;PageNo&quot;: &quot;Page number(s) where this document appears (e.g., &#39;1&#39; for single page or &#39;4,5,6,7,8&#39; for multiple pages)&quot;,\n            &quot;KeyIdentifiers&quot;: [\n                &quot;List of specific identifiers found in this document that helped determine its boundaries and classification like headers, signatures, formatting patterns, reference numbers&quot;\n            ]\n        }\n    ]\n}\n&lt;/result&gt;\n&lt;/output_format&gt;\n\n&lt;document_ocr&gt;\n{OCR_TEXT}\n&lt;/document_ocr&gt;\n$Document Classification Task Prompt End$",
+      "ecPrompt": [
+        {
+          "AP_Invoice_Extraction": "$Entity Classification System Prompt Start$\nYou are an expert document processing system designed to extract and validate structured or unstructured data from documents. You will receive BOTH the original document file (image/PDF) AND pre-extracted OCR text data for each page. Your task is to intelligently combine both inputs to achieve maximum accuracy in data extraction from provided document.\n$Entity Classification System Prompt End$\n\n$Entity Classification Task Prompt Start$\n<background>\nYou are an expert in document analysis and information extraction.\nYou can understand and extract key information from documents classified as type: AP_Invoice_Extraction.\n</background>\n\n<task>\nYour task is to analyze the provided document along with its OCR-extracted text, using the layout details from the document pages to guide your understanding of the structure. Identify the main entities, attributes, or categories mentioned in the entity list below and use them as keys in the JSON object.\nThen, extract the relevant information from the text and populate the corresponding values in the JSON object.\n</task>\n\n<extraction_guidelines>\n    1. OCR Data:\n- Line breaks and spacing in OCR text may indicate layout structure.\n- Use OCR text to rely on characters when the text is not clear in the original document\nDocument Layout:\n- Evaluate both the visual layout of the document and the OCR text to analyze the document structure including headers, tables accurately.\n2. If a field is not found or if unsure, return null.\n3. There are 27 entities in <entities> tags, be diligent in ensuring to capture all entities value completely upfront without missing any.\n4. Go through the clues one by one and understand the meaning of each entity type and extract correct values only if you're certain with less false positives.\n5. Avoid calculating any entity value and do not include any other entity outside the <entities> tags.\n6. If there are multiple instances of one entity type present in the document, extract all the distinct values with page numbers for that entity type and give them as an array of values. Example: there are multiple \"Invoice Number\" values, include all of them in the output like this: {\"entity\": \"Invoice Number\", \"value\": [\"26\", \"123\", \"456\"], \"confidence\": \"High\", PageNo:[\"1,2\",\"3,4\",\"5,6\"]}.\n7. Format your output as a JSON object for each type-value pair you extract, in this format:\n<format> {\"entity\": <entity selected from <entities> list>, \"value\": <value text from input document>, \"confidence\": <confidence in entity match>}, \"PageNo\": <Comma separated all page numbers where the entity is present></format>\n8. Your response should include text from only documents and wrapped in <result></result> tags. Do not include any other explanatory text\n9. If an entity appears on multiple pages, regardless of whether the value is the same or different, list all the corresponding page numbers in the \"PageNo\" field. If the value is the same across pages, the page numbers should be provided as a comma-separated string, e.g., \"1,2,4\" If the values differ, group the page numbers into lists, e.g., [\"1,2\", \"3,4\", \"2,5\"], corresponding to their respective values, e.g., [\"value1\", \"value2\", \"value3\"].\n10. When providing confidence in your answer, do not use numeric scores or percentages. Instead, choose one of the following ordinal categories to indicate confidence:\nVery Low = Little to no confidence; mostly a guess.\nLow = Some weak evidence, but still doubtful.\nMedium = Uncertain, but the answer is reasonable.\nHigh = Strong confidence with minor uncertainty.\nVery High = Near certainty; answer is clear and well-supported.\n\n    <Quality_Assurance_Validations>\n        1.Ensure that the all addresses fields are extracted as it is from the key labels present in the document.\n2.Ensure that all the amounts extracted in decimal format and excluding non numeric fields like currency. For example, if the value is $1200, extract it as 1200 only.\n    </Quality_Assurance_Validations>\n\n</extraction_guidelines>\n\nBelow are the entity definitions for the entities to be extracted. Use these entity names and their descriptions to accurately identify and extract values from the document. Extract and return only the specified entities, using the provided definitions as a reference.\n\n<entities>\n    Billing Address - The complete physical address of the buyer or customer where bills are sent.\nBuyer Email Address - An email address for the buyer contact point. Return valid email format (someone@example.com) or empty string if not found.\nBuyer Fax Number - The fax number of the buyer.\nBuyer Name - The buyer's company/organization name from the document. If both a person name and a company/organization name are present, prefer the company/organization name. Only use a person name if the company name is not mentioned.\nBuyer Phone Number - All phone numbers associated with the buyer or purchasing organization. Include both main and additional contact numbers if available. If multiple phone numbers are present, extract all relevant ones linked to the buyer.\nCurrency - The currency in which all Invoice amounts are given. If the currency is represented by a symbol (e.g., \"$\", \u20ac, \u00a5) or by name (e.g., US dollars, euros, yen), normalize it to the official 3-letter ISO 4217 currency code (e.g., USD, EUR, JPY). However, if it is ambiguous (like '\"$\"'), infer the most likely currency based on context such as country names, addresses, phone numbers, or other regional indicators. Return only the ISO currency code.\nDelivery Numbers - A unique identifier that references the physical delivery or shipment of goods associated with that invoice. Often labeled as 'Delivery No.', 'DN#', 'Tracking #', 'Tracking ID', 'Tracking Number', 'Shipment Number' or 'Ship No.'. If multiple delivery numbers are present, extract all of them. Ignore all other non-tracking identifiers.\nDiscount Amount - Standalone discounts that are not part of the tables. Follow the format (e.g., '\"$\"1,234.56' \u2192 '1234.56', '1000,00' \u2192 '1000.00'). Disregard early payment discount amount and terms in invoice text, such as '2% 10 Net 30 if paid by 5/31/24.' or similar phrasing.\nInvoice Date - The date when the Invoice was issued. Return the date in ISO standard format (YYYY-MM-DD).\nInvoice Number - A unique identifier of the Invoice. Following are examples of key identifiers for the invoice number: 'Invoice No', 'Inv #', 'Invoice #', etc.\nInvoice Type - The functional type of the invoice must always be one of the following: [Standard Invoice, Credit Invoice, Debit Invoice, Commercial Invoice, Timesheet Invoice, Expense Report, Pro Forma Invoice, Interim Invoice, Final Invoice, Past Due Invoice, Recurring Invoice, Prepayment Invoice]. This list is fixed and cannot include any additional or alternative values.\nOrder Date - Order Date refers to the specific date on which a customer places an order with a supplier or seller. Return the date in ISO standard format (YYYY-MM-DD).\nOrder Number - The seller's internal order tracking identifier. Key labels for the Order Number include: Order Number, Sales Order Number, SO Number, Order SO, Order Reference, etc.\nPayment Terms - The full payment terms as stated in the document. Include all details such as payment due date, payment period, payment method, any early payment discounts or penalties, and any other conditions directly related to payment.\nPurchase Order Date - The date when the purchase order was created. Return the date in ISO standard format (YYYY-MM-DD).\nPurchase Order Number - An identifier of a referenced purchase order, issued by the Buyer. Do not confuse it with invoice numbers or internal order numbers. Following are examples of key identifiers for the Purchase Order Number: 'PO Number', 'Purchase Order No.', 'Customer Order Number', etc.\nRemit Address - The specific address where payments should be sent. Consider it only if it is explicitly present in the document.\nShipping Address - The complete shipping address where goods or services are to be delivered.\nShipping/Handling Charges - Costs associated with shipping and handling of goods.\nSub Total - It represents the total cost of goods or services before taxes and additional charges. Do not derive or calculate it from the line item table. Extract it only if explicitly mentioned in the line item summary section or the invoice summary table.\nTotal Amount - The final amount to be paid, including all charges and taxes.\nVAT/Tax Amount - The tax amount applied to the transaction. Return empty string if no tax amount is present in the document.\nVendor Address - The physical address components of the vendor or supplier, excluding the company/vendor name and concatenate all lines with empty string into a single string without newline characters or any additional separators. Look for labels such as 'Vendor Address', 'Supplier Address', or near the company logo or footer. Include Street address (number, street name), City, State/Province, ZIP/Postal code, Country (if international), Suite/Unit numbers, PO Box information.\nVendor Email Address - The email address of the vendor or supplier. Return valid email format (someone@example.com) or empty string if not found.\nVendor Fax Number - The fax number of the vendor or supplier.\nVendor Name - The official business name or legal entity name of the supplier or service provider who is issuing the invoice. Typically found in the header or footer sections of the document, often labeled as 'From:', 'Vendor:', 'Supplier:', 'Bill From:', or prominently displayed as the company letterhead or company logo.\nVendor Phone Number - All phone numbers associated with the vendor or supplier which may be appear in headers, footer, vendor and remit addresses. Include both main and additional contact numbers if available. If multiple phone numbers are present, extract all relevant ones linked to the vendor.\n</entities>\n\n<output_format>\nProvide your response in the following json format. Only provide the json and do not provide any preamble\n<result>\n{\n      \"entities\":\n    [\n        {\"entity\":\"Billing Address\",\"value\":\"Billing Address Value\", \"confidence\": 99, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Buyer Email Address\",\"value\":\"Buyer Email Address Value\", \"confidence\": 80, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Buyer Fax Number\",\"value\":\"Buyer Fax Number Value\", \"confidence\": 90, \"PageNo\":\"1,2,3\"},\n        {\"entity\":\"Buyer Name\",\"value\":\"\", \"confidence\": 82, \"PageNo\":\"1,2,3\"}\n    ]\n}\n</result>\nBefore providing your response, ensure that you return all entities identified within the <entities> tags. Deliver your final response within the <result> tags.\n</output_format>\n\nPlease process the provided document file and corresponding page-by-page OCR text, using visual analysis to interpret the text structure and maximize extraction accuracy.\n\n<document_ocr>\n{OCR_TEXT}\n</document_ocr>\n\n$Entity Classification Task Prompt End$\n\n$Table Detection System Prompt Start$\nYou are an expert document processing system designed to extract and validate structured or unstructured data from documents.\nYou will receive BOTH the original document file (image/PDF) AND pre-extracted OCR text data for each page.\nYour task is to intelligently combine both inputs to achieve maximum accuracy in data extraction from provided document.\n$Table Detection System Prompt End$\n$Table Detection Task Prompt Start$\n<background>\nYou are an expert in document analysis and information extraction.\nYou can understand and extract key information from documents classified as type: AP_Invoice_Extraction.\n</background>\n\n<task>\nYour task is to analyze the provided document along with its OCR-extracted text, using the layout details from the document pages to guide your understanding of the structure. Focus on identifying the \"Line Item Table\" - A line item table is a detailed breakdown of individual products, services, or charges within a transaction, typically showing quantities, descriptions, unit prices, and totals for each item..\nCarefully examine the visual and textual structure to detect table headers, rows, and corresponding data across all pages.\n</task>\n\n<extraction_guidelines>\n1. OCR Data:- Line breaks and spacing in OCR text may indicate layout structure.- Use OCR text to rely on characters when the text is not clear in the original documentDocument Layout:- Evaluate both the visual layout of the document and the OCR text to analyze the document structure including headers, tables accurately.\n2. If a field is not found or if unsure, return null.\n3. The response must include an additional column called \"PageNo\", which indicates the page number(s) from which each row's data was extracted. If the data spans multiple pages, list the page numbers as a comma-separated string (e.g., \"1\", \"3\", or \"1,2\").\n4. When assigning confidence at the column level, do not use numeric scores or percentages. Instead, evaluate each extracted column and assign one of the following ordinal categories based on how accurately it matches the expected column definition provided in a <clues> tag and supporting evidence from its values:\n    Very Low = Little to no confidence; mostly a guess.\n    Low = Some weak evidence, but still doubtful.\n    Medium = Uncertain, but the match appears reasonable.\n    High = Strong confidence with minor uncertainty.\n    Very High = Near certainty; the column name and values are clearly aligned.\n  Ensure that each column is assigned its own confidence value based on this scale.\n  DO NOT give low confidence for empty valued column values, if they are genuinely not present in document.\n\n  <Quality_Assurance_Validations>\n    \n  </Quality_Assurance_Validations>\n</extraction_guidelines>\n\nBelow are the column definitions for the tables to extract. Use these column names and their descriptions to guide accurate identification and extraction of values from the document. Only extract and return the specified columns using the provided definitions as reference.\n\nTable Name: \"Line Item Table\"\n<columns>\nItem Code - A unique identifier assigned by the seller or vendor to track specific products or items or materials within their internal inventory management and accounting systems.\nDescription - A textual description providing details about an item or product. Do not include any key value pairs into description.\nQuantity Shipped - The number of units that have been shipped to the customer. If there is only single quantity column named like ''Qty'', ''Quantity'', treat it as ''Quantity Shipped''.\nQuantity Ordered - The total quantity of items that have been ordered or requested.\nQuantity BackOrder - The number of units that could not be shipped or remained to ship.\nUnit Price - The price of a single unit of an item or product.\nUOM - The Unit of Measurement (UOM) specifies the unit used to measure items being sold, ordered, or invoiced. Unit measurement codes are EA, CS, BX, KG, LB, PK, PC, Units etc. It sometimes appears with Quantity.\nDiscount - Discount value amount (exclude %) per line item. If there is discount percent (%) column or value, treat it as Other column. If it is empty in the actual document table, return as empty string as its value.\nLine Total - The final or Net total amount in float specified for a particular line item after discount, tax etc in a line item table. Extract the value from table line items only. There can be multiple total amounts in line items, extract the desired value for Line Total which will be after discount value.\nTax - The monetary amount applied as tax for a line item.  Do not consider tax percentage as Tax value. If the value is not provided in the document table, return it as an empty string.\nPO Number - The Purchase Order Number (PO Number, PO# etc) within line context.\nPacking Slip Number - The Packing Slip Number (Pack Slip#, Packing List etc) within line context.\nLine Number - A Line Number is a sequential numeric or alphanumeric identifier that appears at the beginning or left side of each itemized product/service entry in an invoice's line item table. It serves as a unique reference for each individual item being billed.\n<columns>\n\n<output_format>\nProvide your response in the following json format. Only provide the json and do not provide any preamble.\nResponse data type definitions:\n{\n  \"Table Name\": {\n    \"headers\": List[str],              # list each element is a list of strings\n    \"rows\": List[Dict[str,str]], # List containing dictionaries with string keys and string values\n    \"table_confidence\": str               # A string indicating the confidence level for the entire table\n  }\n}\n\nExamples:\n<result>\n{\n  \"Line Item Table\": {\n    \"headers\": [\n      \"Item Code\",\n      \"Description\",\n      \"Quantity Shipped\",\n      \"Quantity Ordered\",\n      \"Quantity BackOrder\",\n      \"Unit Price\",\n      \"UOM\",\n      \"Discount\",\n      \"Line Total\",\n      \"Tax\",\n      \"PO Number\",\n      \"Packing Slip Number\",\n      \"Line Number\",\n      \"PageNo\"\n    ],\n    \"rows\": [\n      {\n        \"Item Code\": \"cellvalue\",\n        \"Description\": \"cellvalue\",\n        \"Quantity Shipped\": \"cellvalue\",\n        \"Quantity Ordered\": \"cellvalue\",\n        \"Quantity BackOrder\": \"cellvalue\",\n        \"Unit Price\": \"cellvalue\",\n        \"UOM\": \"cellvalue\",\n        \"Discount\": \"cellvalue\",\n        \"Line Total\": \"cellvalue\",\n        \"Tax\": \"cellvalue\",\n        \"PO Number\": \"cellvalue\",\n        \"Packing Slip Number\": \"cellvalue\",\n        \"Line Number\": \"cellvalue\",\n        \"PageNo\": \"1\"\n      }\n    ],\n    \"table_confidence\": \"Confidence of the Table in float\"\n  }\n}\n</result>\n\nThe allowed values for Confidence Level are \"Very High\", \"High\", \"Medium\", \"Low\", \"Very Low\" by considering instructions.\nThe \"PageNo\" should be in comma-separated page numbers (example: \"2\" or \"2,3\") from where the row data is fetched.\nStrictly provide the response in the required JSON structure. If any row's extracted values cannot be confidently aligned to the defined column headers, then for that row you must:\n1. assign empty strings (\"\") to the unmatched columns, and\n2. never output a value without a column key,\n3. never include extra values, and never guess new column names.\n\nEvery row must contain exactly one key\u2013value entry per header, using empty strings for missing or unmappable values.\nIf no table is present in the document or if the document contains an empty table, the output format should be:<result></result>\nRefer to the provided image to understand the layout structure of the tables.\nIf a requested table (from the Tables to Extract section) is NOT found in the document, DO NOT output its column header row. Instead omit that table key entirely from the JSON.\nNever output a table with only a header row and an empty data row (e.g. [\"Header1\",\"Header2\",\"PageNo\"], []). This is invalid.\n</output_format>\n\nPlease process the provided document file and corresponding page-by-page OCR text, using visual analysis to interpret the text structure and maximize extraction accuracy.\n\n<document_ocr>\n{OCR_TEXT}\n</document_ocr>\n$Table Detection Task Prompt End$"
+        }
+      ]
+    },
+    "createtime": "2026-01-29T17:25:08",
+    "updatedtime": "2026-01-29T17:51:39.5355097+00:00",
+    "errormsg": "",
+    "dpfVersionId": 599,
+    "versionID": "1",
+    "versionName": "v1",
+    "versionStatus": "Active",
+    "promptStructure": 1,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  }
+]

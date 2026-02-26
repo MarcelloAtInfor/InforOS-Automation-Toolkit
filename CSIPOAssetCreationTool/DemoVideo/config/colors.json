@@ -1,0 +1,20 @@
+{
+  "background_dark": "#1B2A4A",
+  "background_gradient_end": "#0F1B33",
+  "text_primary": "#FFFFFF",
+  "text_secondary": "#B0BEC5",
+  "accent": "#00B4D8",
+  "accent_alt": "#FFB703",
+  "box_rpa": "#2196F3",
+  "box_idp": "#4CAF50",
+  "box_genai": "#FF9800",
+  "box_erp": "#9C27B0",
+  "box_pulse": "#E91E63",
+  "box_pdf": "#607D8B",
+  "metric_value": "#00B4D8",
+  "metric_label": "#B0BEC5",
+  "placeholder_bg": "#37474F",
+  "placeholder_text": "#78909C",
+  "caption_bg": "#263238",
+  "title_bar_bg": "#1B2A4A"
+}

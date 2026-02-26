@@ -1,0 +1,23 @@
+{
+  "guid": "ddd0613e-1181-4fe5-87f1-22ee0f90bf9c",
+  "name": "GAF_SyteLine_SetuprgidUpdate_Tool_v1",
+  "description": "Set the setup resource group and scheduling driver on routing operations in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLJrtSchs\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nBatch update multiple operations in one call:\n{\n  \"IDOName\": \"SLJrtSchs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Setuprgid\", \"Value\": \"FA-400-LRG\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"SchedDrv\", \"Value\": \"L\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Job\", \"Value\": \"     90001\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"OperNum\", \"Value\": \"10\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"_ItemId\", \"Value\": \"PBT=[SLJrtSchs]...\"}\n      ]\n    },\n    {\n      \"Action\": 2,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Setuprgid\", \"Value\": \"INS-20-LRG\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"SchedDrv\", \"Value\": \"L\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Job\", \"Value\": \"     90001\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"OperNum\", \"Value\": \"20\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"_ItemId\", \"Value\": \"PBT=[SLJrtSchs]...\"}\n      ]\n    }\n  ]\n}\nCRITICAL: SchedDrv MUST match resource group type:\n- LRG resource groups (Labor type) -> SchedDrv = 'L'\n- MRG resource groups (Machine type) -> SchedDrv = 'M'\nMismatch causes UI warning: 'Sched Driver was X now is Y'.\nAction 2 = update. Key fields (Job, Suffix, OperNum) MUST be included as non-modified.\n_ItemId from the JrtSchs Load tool MUST be included as non-modified.\nJob number must be left-padded with spaces to 10 chars.\nBatch: include ALL operations for a job in one Changes array.\nCRITICAL: You MUST first use the JrtSchs Load tool to get the _ItemId for each operation. Without _ItemId, the update will fail.\nExample Request:\nSet resource groups for job 90001, operations 10 and 20 (batch):\nPOST /update/SLJrtSchs with Changes array containing one entry per operation, each with _ItemId from the Load tool.",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if update succeeded\n- Message: Error message if Success is false\n- Items: Array with updated records showing new Setuprgid and SchedDrv values\nAfter successful update, Setuprgid appears as JshSetuprgid in SLJobRoutes queries.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Update Setuprgid and SchedDrv on SLJrtSchs records (POST only).\nRequires _ItemId from the JrtSchs Load tool — call that FIRST.\nSchedDrv MUST match RG type: LRG -> 'L', MRG -> 'M'.\nBatch: ALL operations in one Changes array.\nKey fields (Job, Suffix, OperNum, _ItemId) as non-modified.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

@@ -1,0 +1,89 @@
+{
+  "VendorSearch_Tool_v2": {
+    "guid": "b7be3168-6771-4114-abe4-8c43530419ad",
+    "name": "VendorSearch_Tool_v2",
+    "description": "Search for existing vendors in SyteLine by vendor name or vendor number",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLVendors\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Required fields: VendNum, Name, VadAddr_1, VadCity, VadState, VadZip, VadPhone, VadEmail, _ItemId\n\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter results. Use 'VendNum = \"VENDOR123\"' for exact match or 'Name LIKE \"%ACME%\"' for partial name match\n\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 10\n\nExample Requests:\n\nSearch by vendor number (exact match):\n/load/SLVendors?properties=VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,VadPhone,VadEmail,_ItemId&filter=VendNum = \"DEMO001\"\n\nSearch by vendor name (partial match):\n/load/SLVendors?properties=VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,VadPhone,VadEmail,_ItemId&filter=Name LIKE \"%ACME%\"&recordCap=10\n\nResponse Format:\nReturns JSON with Items array containing vendor records",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with vendor details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"DEMO001\",\n      \"Name\": \"ACME Corporation\",\n      \"VadAddr_1\": \"123 Main St\",\n      \"VadCity\": \"Chicago\",\n      \"VadState\": \"IL\",\n      \"VadZip\": \"60601\",\n      \"VadPhone\": \"312-555-0100\",\n      \"VadEmail\": \"ap@acme.com\",\n      \"_ItemId\": \"PBT=[vendor] ven.DT=[...] ven.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of vendor objects (empty if not found)\n- VendNum: Vendor number (7 char max, unique identifier)\n- Name: Vendor name\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no vendors match the search criteria, Items will be an empty array.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for existing vendors before creating new ones.\n\nSearch options:\n- By vendor number (exact match): filter=VendNum = \"VENDOR123\"\n- By vendor name (partial match): filter=Name LIKE \"%company name%\"\n\nReturns vendor details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if a vendor already exists\n- Look up vendor number by name\n- Verify vendor information before inserting",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:25.951358Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  "ItemSearch_Tool_v2": {
+    "guid": "f2abd732-2cdd-4238-afda-ab929d65be7b",
+    "name": "ItemSearch_Tool_v2",
+    "description": "Search for existing items in SyteLine by item code or description",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLItems\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Required fields: Item, Description, UM, ProductCode, _ItemId\n\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter results. Use 'Item = \"ITEM-CODE\"' for exact match or 'Description LIKE \"%widget%\"' for partial description match\n\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 10\n\nExample Requests:\n\nSearch by item code (exact match):\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Item = \"WIDGET-A\"\n\nSearch by description (partial match):\n/load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Description LIKE \"%Premium Widget%\"&recordCap=10\n\nResponse Format:\nReturns JSON with Items array containing item records",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with item details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"Item\": \"WIDGET-A\",\n      \"Description\": \"Premium Widget Type A\",\n      \"UM\": \"EA\",\n      \"ProductCode\": \"FG-100\",\n      \"_ItemId\": \"PBT=[item] itm.DT=[...] itm.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array of item objects (empty if not found)\n- Item: Item code (unique identifier)\n- Description: Item description\n- UM: Unit of measure (e.g., EA, LB, BOX)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no items match the search criteria, Items will be an empty array.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for existing items before creating new ones.\n\nSearch options:\n- By item code (exact match): filter=Item = \"ITEM-CODE\"\n- By description (partial match): filter=Description LIKE \"%text%\"\n\nReturns item details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if an item already exists\n- Look up item code by description\n- Verify item information before inserting",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:26.593808Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  },
+  "PoSearch_Tool_v2": {
+    "guid": "bdb42c90-7a2f-40ca-951b-64f1c5f5f3af",
+    "name": "PoSearch_Tool_v2",
+    "description": "Search for existing purchase orders in SyteLine by PO number",
+    "type": "API_DOCS",
+    "inputs": null,
+    "data": {
+      "servicePath": "CSI/IDORequestService/ido",
+      "api_docs": "Method: GET\nENDPOINT: /load/SLPos\n\nHeaders:\n\nX-Infor-MongooseConfig: <YOUR_SITE>\n\nQuery Parameters:\n\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Required fields: PoNum, VendNum, OrderDate, Whse, Stat, _ItemId\n\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause to filter by PO number. Use 'PoNum = \"PO-NUMBER\"' for exact match\n\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 1 (should only find one PO by number)\n\nExample Request:\n\nSearch by PO number:\n/load/SLPos?properties=PoNum,VendNum,OrderDate,Whse,Stat,_ItemId&filter=PoNum = \"DP00009000\"&recordCap=1\n\nResponse Format:\nReturns JSON with Items array containing PO record (or empty if not found)",
+      "headers": {},
+      "responseInstructions": "The API responds with a JSON object containing an Items array with PO details.\n\nExample response:\n{\n  \"Items\": [\n    {\n      \"PoNum\": \"DP00009000\",\n      \"VendNum\": \"DEMO001\",\n      \"OrderDate\": \"20260128 00:00:00.000\",\n      \"Whse\": \"MAIN\",\n      \"Stat\": \"O\",\n      \"_ItemId\": \"PBT=[po] po.DT=[...] po.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nKey Response Fields:\n- Items: Array with PO object (empty if not found)\n- PoNum: Purchase order number (10 char, unique)\n- VendNum: Vendor number associated with PO\n- OrderDate: PO order date\n- Whse: Warehouse\n- Stat: Status (O=Open, C=Complete, etc.)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\n\nIf no PO matches the search criteria, Items will be an empty array.",
+      "returnDirect": false,
+      "model": {
+        "model": "CLAUDE",
+        "version": "claude-sonnet-4-5-20250929-v1:0"
+      }
+    },
+    "status": 1,
+    "ignoreSearch": false,
+    "utterances": [],
+    "stubResponse": "",
+    "instructions": "Use this tool to search for existing purchase orders before creating new ones.\n\nSearch by PO number (exact match): filter=PoNum = \"PO-NUMBER\"\n\nReturns PO details if found, empty Items array if not found.\n\nUse when you need to:\n- Check if a PO number is already in use\n- Verify PO doesn't exist before creating\n- Look up existing PO information",
+    "createdBy": "<USER_GUID_1>",
+    "createdOn": "2026-01-28T17:35:27.266253Z",
+    "updatedBy": null,
+    "updatedOn": null,
+    "gp_config": null,
+    "security": null
+  }
+}

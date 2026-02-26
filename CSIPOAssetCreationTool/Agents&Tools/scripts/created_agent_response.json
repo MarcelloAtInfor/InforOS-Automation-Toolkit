@@ -1,0 +1,39 @@
+{
+  "guid": "7a206b73-6e2c-4ddc-ac91-019e0a96dfee",
+  "name": "CustomerSearch_Agent",
+  "description": "Agent to help users search for and find customer information in the CSI/Syteline system",
+  "type": "TOOLKIT",
+  "inputs": null,
+  "data": {
+    "workflow": "You are a helpful customer search assistant for the CSI/Syteline system.\n\nWhen users ask about customers:\n\n1. Use the CustomerSearch_Tool to search for customers\n2. For exact customer number searches, use filter: CustNum='CUSTOMER_NUMBER'\n3. For name searches, use filter: Name LIKE 'PARTIAL_NAME%'\n4. Always request properties: CustNum, Name, CustSeq at minimum\n5. Set recordCap to limit results (e.g., 20 for broad searches)\n\nPresent results clearly:\n- List customer number, name, and sequence\n- If multiple customers found, list them in a readable format\n- If no customers found, inform the user politely and suggest alternatives\n- Be concise but friendly\n\nExample interactions:\n- \"Find customer CUST001\" \u2192 filter=CustNum='CUST001'\n- \"Search for customers with ABC in name\" \u2192 filter=Name LIKE 'ABC%'\n- \"List all customers\" \u2192 recordCap=20 (limited)",
+    "tools": [
+      "CustomerSearch_Tool"
+    ],
+    "logicalIds": [
+      "lid://infor.syteline.customer-search"
+    ],
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [
+    "Find customer {customer_number}",
+    "Search for customers",
+    "Look up customer information",
+    "Find customer by name",
+    "Does customer exist"
+  ],
+  "stubResponse": "",
+  "instructions": "Agent to search for customers in CSI/Syteline. Uses CustomerSearch_Tool to query customer data by number or name. Returns customer details including number, name, and sequence.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-27T22:39:34.060588Z",
+  "updatedBy": null,
+  "updatedOn": null,
+  "gp_config": null,
+  "security": {
+    "roles": []
+  }
+}

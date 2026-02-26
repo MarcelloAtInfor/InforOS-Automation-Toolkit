@@ -1,0 +1,170 @@
+"""XML condition string builder for ifthenelse flowparts.
+
+ION workflows use XML-encoded condition strings for branching logic.
+
+Simple condition example:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Condition version="1.0">
+      <UsedSubcondition>IsApproved</UsedSubcondition>
+      <Subconditions>
+        <Subcondition>
+          <Name>IsApproved</Name>
+          <Type>AttributeValueComparison</Type>
+          <AttributeName>ApproveReject</AttributeName>
+          <ComparisonOperator>Equal</ComparisonOperator>
+          <Value>Approved</Value>
+        </Subcondition>
+      </Subconditions>
+    </Condition>
+
+Compound condition example (AND/OR):
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Condition version="1.0">
+      <UsedSubcondition>BothApproved</UsedSubcondition>
+      <Subconditions>
+        <Subcondition>
+          <Name>EngApproved</Name>
+          <Type>AttributeValueComparison</Type>
+          ...
+        </Subcondition>
+        <Subcondition>
+          <Name>QualApproved</Name>
+          <Type>AttributeValueComparison</Type>
+          ...
+        </Subcondition>
+        <Subcondition>
+          <Name>BothApproved</Name>
+          <Type>BooleanCombination</Type>
+          <BooleanOperator>AND</BooleanOperator>
+          <SubconditionNames>
+            <SubconditionName>EngApproved</SubconditionName>
+            <SubconditionName>QualApproved</SubconditionName>
+          </SubconditionNames>
+        </Subcondition>
+      </Subconditions>
+    </Condition>
+"""
+from __future__ import annotations
+
+VALID_OPERATORS = {
+    "Equal",
+    "NotEqual",
+    "GreaterThan",
+    "LessThan",
+    "GreaterThanOrEqual",
+    "LessThanOrEqual",
+}
+
+
+def build_condition(
+    name: str,
+    variable: str,
+    operator: str,
+    value: str,
+) -> str:
+    """Build an XML condition string for an ifthenelse flowpart.
+
+    Args:
+        name: Subcondition name (e.g. "IsApproved").
+        variable: Workflow variable to compare (e.g. "ApproveReject").
+        operator: Comparison operator (Equal, NotEqual, GreaterThan, etc.).
+        value: Literal value to compare against.
+
+    Returns:
+        XML condition string matching ION workflow format.
+    """
+    if operator not in VALID_OPERATORS:
+        raise ValueError(
+            f"Invalid operator '{operator}'. Must be one of: {sorted(VALID_OPERATORS)}"
+        )
+
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Condition version="1.0">'
+        f"<UsedSubcondition>{name}</UsedSubcondition>"
+        "<Subconditions>"
+        "<Subcondition>"
+        f"<Name>{name}</Name>"
+        "<Type>AttributeValueComparison</Type>"
+        f"<AttributeName>{variable}</AttributeName>"
+        f"<ComparisonOperator>{operator}</ComparisonOperator>"
+        f"<Value>{value}</Value>"
+        "</Subcondition>"
+        "</Subconditions>"
+        "</Condition>"
+    )
+
+
+VALID_LOGIC_OPERATORS = {"AND", "OR"}
+
+
+def build_compound_condition(
+    name: str,
+    logic: str,
+    conditions: list,
+) -> str:
+    """Build a compound XML condition with AND/OR logic.
+
+    Generates a BooleanCombination subcondition that references multiple
+    AttributeValueComparison subconditions by name.
+
+    Args:
+        name: Name for the compound subcondition (e.g. "BothApproved").
+        logic: Boolean operator — "AND" or "OR".
+        conditions: List of sub-condition specs, each having
+            name, variable, operator, value attributes.
+
+    Returns:
+        XML condition string with compound logic.
+    """
+    if logic not in VALID_LOGIC_OPERATORS:
+        raise ValueError(
+            f"Invalid logic '{logic}'. Must be one of: {sorted(VALID_LOGIC_OPERATORS)}"
+        )
+    if len(conditions) < 2:
+        raise ValueError("Compound condition requires at least 2 sub-conditions")
+
+    # Build individual subcondition XML fragments
+    subcondition_xml = ""
+    subcondition_names_xml = ""
+    for cond in conditions:
+        if cond.operator not in VALID_OPERATORS:
+            raise ValueError(
+                f"Invalid operator '{cond.operator}' in sub-condition '{cond.name}'. "
+                f"Must be one of: {sorted(VALID_OPERATORS)}"
+            )
+        subcondition_xml += (
+            "<Subcondition>"
+            f"<Name>{cond.name}</Name>"
+            "<Type>AttributeValueComparison</Type>"
+            f"<AttributeName>{cond.variable}</AttributeName>"
+            f"<ComparisonOperator>{cond.operator}</ComparisonOperator>"
+            f"<Value>{cond.value}</Value>"
+            "</Subcondition>"
+        )
+        subcondition_names_xml += (
+            f"<SubconditionName>{cond.name}</SubconditionName>"
+        )
+
+    # Build the compound BooleanCombination subcondition
+    compound_xml = (
+        "<Subcondition>"
+        f"<Name>{name}</Name>"
+        "<Type>BooleanCombination</Type>"
+        f"<BooleanOperator>{logic}</BooleanOperator>"
+        "<SubconditionNames>"
+        f"{subcondition_names_xml}"
+        "</SubconditionNames>"
+        "</Subcondition>"
+    )
+
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Condition version="1.0">'
+        f"<UsedSubcondition>{name}</UsedSubcondition>"
+        "<Subconditions>"
+        f"{subcondition_xml}"
+        f"{compound_xml}"
+        "</Subconditions>"
+        "</Condition>"
+    )

@@ -1,0 +1,23 @@
+{
+  "guid": "20e5bc21-6338-46b7-a63e-aba7893c0f2d",
+  "name": "GAF_SyteLine_JobInsert_Tool_v1",
+  "description": "Create a new standard job (BOM container) for an item in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLJobs\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nThe body creates a standard job for an item:\n{\n  \"IDOName\": \"SLJobs\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Job\", \"Value\": \"     99001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Item\", \"Value\": \"ITEM-CODE\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Suffix\", \"Value\": \"0\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Type\", \"Value\": \"S\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Stat\", \"Value\": \"F\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"QtyReleased\", \"Value\": \"1.00\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Whse\", \"Value\": \"MAIN\"}\n      ]\n    }\n  ]\n}\nCRITICAL: Job number is REQUIRED. It will NOT auto-assign. You must provide a unique Job number.\nJob number format: right-aligned in a 10-character field, left-padded with spaces. Example: \"     99001\" (5 spaces + 99001).\nGenerate unique job numbers using a high range (90000-99999) to avoid conflicts with existing jobs.\nNOTE: Action 1 = insert. Type 'S' = Standard job (BOM template). Stat 'F' = Firm.\nExample Request:\nPOST /update/SLJobs\nCreate standard job 99001 for item FA-20000:",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created job record (includes Job number and _ItemId)\n- Job: The auto-assigned job number (IMPORTANT - capture this for routing and material operations)\n- _ItemId: Unique record identifier\nCRITICAL: Extract the Job number from the response. You need it for all subsequent routing and material inserts.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create a standard job (BOM container) for an item in SyteLine.\nA standard job defines the routing operations and material list for manufacturing an item.\nAlways use Type='S' for standard jobs and Stat='F' for firm status.\nCRITICAL: You MUST provide the Job number explicitly. It will NOT auto-assign.\nFormat: right-aligned in 10 chars, left-padded with spaces (e.g., '     99001').\nUse range 90000-99999. Use the same Job number for routing and material inserts.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

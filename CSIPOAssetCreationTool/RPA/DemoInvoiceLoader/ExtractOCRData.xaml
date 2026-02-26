@@ -1,0 +1,257 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:iao="clr-namespace:Infor.Activities.OCR;assembly=Infor.Activities.OCR"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="documentPath" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="ocrJsonResponse" Type="OutArgument(njl:JToken)" />
+    <x:Property Name="ocrStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="ocrStatusComments" Type="OutArgument(x:String)" />
+    <x:Property Name="responseCode" Type="OutArgument(x:Int32)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>System</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="TryCatch OCR Extraction" sap2010:WorkflowViewState.IdRef="TryCatch_Main">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="njl:JToken" Name="ocrResponse" />
+      <Variable x:TypeArguments="x:Int32" Name="ocrErrorCode" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence DisplayName="Extract OCR Data" sap2010:WorkflowViewState.IdRef="Sequence_1">
+        <Assign DisplayName="Init Status" sap2010:WorkflowViewState.IdRef="Assign_InitStatus">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[ocrStatus]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["PENDING"]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Comments" sap2010:WorkflowViewState.IdRef="Assign_InitComments">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[ocrStatusComments]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[""]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <Assign DisplayName="Init Response Code" sap2010:WorkflowViewState.IdRef="Assign_InitResponseCode">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Int32">[responseCode]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Int32">[0]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log OCR Start" sap2010:WorkflowViewState.IdRef="Append_Line_OCRStart" Line="[System.Environment.NewLine+&quot;  OCR Extraction: Starting for &quot;+documentPath]" Source="[logFile]" />
+        <iao:ExtractDataActivity ActivityID="5039de7e-ad53-47db-ba1a-1fa199a22fb5" ContinueOnError="True" DisplayName="Get OCR Text" DocumentPath="[documentPath]" ErrorCode="[ocrErrorCode]" ExecuteFile="True" sap2010:WorkflowViewState.IdRef="ExtractDataActivity_1" OcrType="2" ResponseObject="[ocrResponse]" />
+        <If Condition="[ocrResponse Is Nothing]" DisplayName="Check OCR Response" sap2010:WorkflowViewState.IdRef="If_CheckOCRResponse">
+          <If.Then>
+            <Sequence DisplayName="OCR Failed - No Response" sap2010:WorkflowViewState.IdRef="Sequence_OCRNoResponse">
+              <Assign DisplayName="Set Failed Status" sap2010:WorkflowViewState.IdRef="Assign_FailedNoResponse">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatus]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Failed Comments" sap2010:WorkflowViewState.IdRef="Assign_FailedNoResponseComments">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatusComments]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["OCR returned no response - ErrorCode: "+ocrErrorCode.ToString()]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Response Code 500" sap2010:WorkflowViewState.IdRef="Assign_ResponseCode500">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Int32">[responseCode]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Int32">[500]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log OCR No Response" sap2010:WorkflowViewState.IdRef="Append_Line_OCRNoResponse" Line="[System.Environment.NewLine+&quot;  OCR Extraction: FAILED - No response received. ErrorCode: &quot;+ocrErrorCode.ToString()]" Source="[logFile]" />
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <Sequence DisplayName="OCR Success" sap2010:WorkflowViewState.IdRef="Sequence_OCRSuccess">
+              <Assign DisplayName="Set OCR Response Output" sap2010:WorkflowViewState.IdRef="Assign_OCRResponseOutput">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="njl:JToken">[ocrJsonResponse]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="njl:JToken">[ocrResponse]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Success Status" sap2010:WorkflowViewState.IdRef="Assign_SuccessStatus">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatus]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Success Comments" sap2010:WorkflowViewState.IdRef="Assign_SuccessComments">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:String">[ocrStatusComments]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:String">["OCR extraction completed successfully"]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Set Response Code 200" sap2010:WorkflowViewState.IdRef="Assign_ResponseCode200">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Int32">[responseCode]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Int32">[200]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log OCR JSON Response" sap2010:WorkflowViewState.IdRef="Append_Line_OCRJsonResponse" Line="[System.Environment.NewLine+&quot;  OCR JSON Response: ExtractionData=&quot;+If(ocrResponse(&quot;ExtractionData&quot;) IsNot Nothing, CType(ocrResponse(&quot;ExtractionData&quot;), JArray).Count.ToString()+&quot; fields&quot;, &quot;none&quot;)+&quot;, TableDetection=&quot;+If(ocrResponse(&quot;TableDetection&quot;) IsNot Nothing AndAlso CType(ocrResponse(&quot;TableDetection&quot;), JArray).Count &gt; 0 AndAlso ocrResponse(&quot;TableDetection&quot;)(0)(&quot;TableRows&quot;) IsNot Nothing, CType(ocrResponse(&quot;TableDetection&quot;)(0)(&quot;TableRows&quot;), JArray).Count.ToString()+&quot; rows&quot;, &quot;none&quot;)]" Source="[logFile]" />
+            </Sequence>
+          </If.Else>
+        </If>
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log OCR Result" sap2010:WorkflowViewState.IdRef="Append_Line_OCRResult" Line="[System.Environment.NewLine+&quot;  OCR Extraction: &quot;+ocrStatus+&quot; - &quot;+ocrStatusComments]" Source="[logFile]" />
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Handle Exception" sap2010:WorkflowViewState.IdRef="Sequence_HandleException">
+            <Assign DisplayName="Set Failed Status on Exception" sap2010:WorkflowViewState.IdRef="Assign_ExceptionFailed">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ocrStatus]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign DisplayName="Set Exception Comments" sap2010:WorkflowViewState.IdRef="Assign_ExceptionComments">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:String">[ocrStatusComments]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:String">["Exception: "+exception.Message]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign DisplayName="Set Exception Response Code" sap2010:WorkflowViewState.IdRef="Assign_ExceptionResponseCode">
+              <Assign.To>
+                <OutArgument x:TypeArguments="x:Int32">[responseCode]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="x:Int32">[500]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Exception" sap2010:WorkflowViewState.IdRef="Append_Line_Exception" Line="[System.Environment.NewLine+&quot;  OCR Extraction: EXCEPTION - &quot;+exception.Message+System.Environment.NewLine+&quot;  StackTrace: &quot;+exception.StackTrace]" Source="[logFile]" />
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+    <sads:DebugSymbol.Symbol>d15DOlxVc2Vyc1xtbWFydGluczFcT25lRHJpdmUgLSBJbmZvclwwMF9BQ1RJVkVcRGV2XENDXFJQQVxEZW1vSW52b2ljZUxvYWRlclxFeHRyYWN0T0NSRGF0YS54YW1sQz0DygEOAgEBQwejARICARarAQvFARYCAQJECUsSAgFeTAlTEgIBWlQJWxICAVZcCVyLAgIBUV0JXbcCAgFIXgmhAQ4CAR2iAQmiAZ8CAgEXrAENswEWAgEStAENuwEWAgENvAENwwEWAgEJxAENxAHfAgIBA0k0ST8CAWFGNUZAAgFfUTRROAIBXU41TkgCAVtZM1k2AgFZVjRWQgIBV1yeAVz1AQIBVFz9AVyIAgIBUl2SAl2VAgIBUF2lAl20AgIBTl2TAV2jAQIBTF2uAV2+AQIBSl0tXVMCAUleF14xAgEeYA16GAIBNX0NnwEYAgEfogGgAaIBiQICARqiAZECogGcAgIBGLEBOLEBQgIBFa4BOa4BRAIBE7kBOLkBWQIBELYBObYBTAIBDsEBN8EBPAIBDL4BOL4BRgIBCsQBowHEAckCAgEGxAHRAsQB3AICAQRhD2gYAgFEaQ9wGAIBP3EPeBgCATt5D3nEAgIBNn4PhQEYAgEwhgEPjQEYAgEsjgEPlQEYAgEolgEPnQEYAgEkngEPngHEBgIBIGY6ZkQCAUdjO2NGAgFFbjpufAIBQms7a04CAUB2OXY+AgE+czpzSAIBPHmvAXmuAgIBOXm2AnnBAgIBN4MBPIMBSQIBM4ABPYABTgIBMYsBOosBRQIBL4gBO4gBRgIBLZMBOpMBYwIBK5ABO5ABTgIBKZsBOZsBPgIBJ5gBOpgBSAIBJZ4BswGeAa4GAgEjngG2Bp4BwQYCASE=</sads:DebugSymbol.Symbol>
+  </TryCatch>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_InitStatus" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_InitComments" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_InitResponseCode" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Append_Line_OCRStart" sap:VirtualizedContainerService.HintSize="553,22" />
+      <sap2010:ViewStateData Id="ExtractDataActivity_1" sap:VirtualizedContainerService.HintSize="553,159" />
+      <sap2010:ViewStateData Id="Assign_FailedNoResponse" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_FailedNoResponseComments" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_ResponseCode500" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Append_Line_OCRNoResponse" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_OCRNoResponse" sap:VirtualizedContainerService.HintSize="264,446">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_OCRResponseOutput" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_SuccessStatus" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_SuccessComments" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Assign_ResponseCode200" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Append_Line_OCRJsonResponse" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Sequence_OCRSuccess" sap:VirtualizedContainerService.HintSize="264,546">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_CheckOCRResponse" sap:VirtualizedContainerService.HintSize="553,694" />
+      <sap2010:ViewStateData Id="Append_Line_OCRResult" sap:VirtualizedContainerService.HintSize="553,22" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="575,1441">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_ExceptionFailed" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_ExceptionComments" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Assign_ExceptionResponseCode" sap:VirtualizedContainerService.HintSize="553,60" />
+      <sap2010:ViewStateData Id="Append_Line_Exception" sap:VirtualizedContainerService.HintSize="553,22" />
+      <sap2010:ViewStateData Id="Sequence_HandleException" sap:VirtualizedContainerService.HintSize="575,350">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_Main" sap:VirtualizedContainerService.HintSize="593,1667" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="633,1747" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

@@ -1,0 +1,18 @@
+{
+  "guid": "f97018bf-67c0-487b-bff3-b201999cb7f7",
+  "name": "GAF_GenAI_GetAsset_Tool_v1",
+  "description": "Retrieve the full configuration of a specific GenAI asset by its GUID.",
+  "instructions": "Use this tool to fetch the complete specification of an existing asset. Requires the exact GUID. Parameters: guid (required) - The unique identifier of the asset to retrieve. Returns: The complete asset specification including all configuration fields. Error if asset not found. Note: To find an asset's GUID, first use GAF_GenAI_ListAssets_Tool_v1 to search by name prefix.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "Method: GET\nEndpoint: /api/v1/tools/{guid}\nPath Parameters: guid (required) - The GUID of the asset to retrieve.\nExample request:\nGET /api/v1/tools/b5707a26-301b-493d-8000-3cc0b214ee96",
+    "headers": {},
+    "responseInstructions": "The API responds with the complete tool specification. Example response: {\"guid\":\"uuid-here\",\"name\":\"Tool_Name\",\"description\":\"Tool description\",\"instructions\":\"How to use the tool\",\"type\":\"API_DOCS\",\"data\":{}}. HTTP 404 indicates the asset was not found.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

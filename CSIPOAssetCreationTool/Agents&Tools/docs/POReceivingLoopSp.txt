@@ -1,0 +1,2572 @@
+'ProcedureDefinition' : [/* $Header: /ApplicationDB/Stored Procedures/POReceivingLoopSp.sp 74    6/16/17 3:07p Clarsco $ */
+/*
+***************************************************************
+*                                                             *
+*                           NOTICE                            *
+*                                                             *
+*   THIS SOFTWARE IS THE PROPERTY OF AND CONTAINS             *
+*   CONFIDENTIAL INFORMATION OF INFOR AND/OR ITS AFFILIATES   *
+*   OR SUBSIDIARIES AND SHALL NOT BE DISCLOSED WITHOUT PRIOR  *
+*   WRITTEN PERMISSION. LICENSED CUSTOMERS MAY COPY AND       *
+*   ADAPT THIS SOFTWARE FOR THEIR OWN USE IN ACCORDANCE WITH  *
+*   THE TERMS OF THEIR SOFTWARE LICENSE AGREEMENT.            *
+*   ALL OTHER RIGHTS RESERVED.                                *
+*                                                             *
+*   (c) COPYRIGHT 2010 INFOR.  ALL RIGHTS RESERVED.           *
+*   THE WORD AND DESIGN MARKS SET FORTH HEREIN ARE            *
+*   TRADEMARKS AND/OR REGISTERED TRADEMARKS OF INFOR          *
+*   AND/OR ITS AFFILIATES AND SUBSIDIARIES. ALL RIGHTS        *
+*   RESERVED.  ALL OTHER TRADEMARKS LISTED HEREIN ARE         *
+*   THE PROPERTY OF THEIR RESPECTIVE OWNERS.                  *
+*                                                             *
+*************************************************************** 
+*/
+/* $Archive: /ApplicationDB/Stored Procedures/POReceivingLoopSp.sp $
+ *
+ * SL9.01 74 224058 Clarsco Fri Jun 16 15:07:01 2017
+ * Deadlocking when multiple users doing PO Receiving on same GRN
+ * Fixed Regression Issue 224058
+ * Added new Buffer var @GrnLineLoop
+ * Replaced @TtRcvGrnLine w/@GrnLineLoop, 17 places.
+ * Skipped APAR 216439 s UPDATE tt_rcv SET tt_rcv.grn_line,
+ * When @GrnLineLoop matches @TtRcvGrnLine
+ *
+ * SL9.01 73 RS8137 Mmarsolo Thu Apr 20 10:48:41 2017
+ * RS8137 - Alter I= messages if returning severity = 16.
+ *
+ * SL9.01 72 RS7472 Mzhang4 Sun Apr 09 22:24:11 2017
+ * RS7472 - update the feedback.
+ *
+ * SL9.01 71 RS7472 Mzhang4 Fri Apr 07 01:52:03 2017
+ * RS7472
+ *
+ * SL9.01 70 RS7472 qzhang3 Wed Mar 29 03:23:50 2017
+ * RS7472 - Add restriction code validation when receiving
+ *
+ * SL9.01 69 215046 Lqian2 Tue Mar 21 04:10:18 2017
+ * Issue 215046, update ETP block.
+ *
+ * SL9.01 68 216439 calagappan Tue Jul 26 17:37:53 2016
+ * Partial PO receiving for new GRN is duplicating quantity.
+ * Update temp table grn line number after grn line is created
+ *
+ * SL9.01 67 208321 pgross Thu Mar 24 09:58:47 2016
+ * PO Receiving get a deadlock error when 2 Users to Press 'Process' a same time.
+ * added more columns when looking for tt_rcv records
+ *
+ * SL9.01 66 205284 Dyang2 Tue Feb 23 02:09:13 2016
+ * Error when creating empty database with collation Vietnamese_CI_AS
+ * Issue 205284: Fix case sensitive issue for temp variable and column name.
+ *
+ * SL9.01 65 RS6770 qzhang3 Mon Feb 01 04:17:07 2016
+ * RS6770 - Get the po currency instead of vendor.curr_code
+ *
+ * SL9.01 64 RS6298 Lqian2 Wed Dec 23 04:47:14 2015
+ * RS6298
+ *
+ * SL9.01 63 RS7116 Jsun Mon Dec 14 04:56:01 2015
+ * RS7116:
+ * 1.) Added the variable @DocumentNum and modified the ETP block;
+ * 2.) Modified the interface invoking the stored prcedure PoReceivingTrxPostSp.
+ *
+ * SL9.01 62 202556 Mnewcomb Fri Oct 02 16:42:02 2015
+ * No [Create Receiver] message when receiving non-QC Items with QC Items.
+ * adding apar 193290 to script
+ *
+ * SL9.00 61 186532 pgross Tue Oct 21 08:30:56 2014
+ * check for an error coming from JournalImmediateSp
+ *
+ * SL9.00 60 181940 Mnewcomb Fri Aug 29 21:33:57 2014
+ * No QCS Receiver is generated in a non master site in a master site environment
+ * fixing issue with master site licensing
+ *
+ * SL9.00 59 159534 Lliu Sat May 03 22:06:28 2014
+ * PO Tolerane is not working when receive with GRN
+ * Issue 159534: If items are not set up with an Over Tolerance setting, cancel to calculate tolerance.
+ *
+ * SL9.00 58 159534 Lliu Wed Apr 30 04:31:21 2014
+ * PO Tolerane is not working when receive with GRN
+ * Issue 159534: Correct Algorithms
+ *
+ * SL9.00 57 159534 Lliu Wed Apr 30 03:01:00 2014
+ * PO Tolerane is not working when receive with GRN
+ * Issue 159534: Correct the condition about compare with Item PO tolerance over.
+ *
+ * SL9.00 56 159534 Lliu Wed Apr 30 02:54:51 2014
+ * PO Tolerane is not working when receive with GRN
+ * Issue 159534: Recalculate Qty that need received in PO line to compare with the entered Qty and Item PO tolerance over.
+ * If entered Qty bigger, stop the process.
+ *
+ * SL9.00 55 172262 pgross Wed Nov 27 09:34:36 2013
+ * Cannot receive non-item master item
+ * repositioned call to ItemLocAddSp
+ *
+ * SL9.00 54 171906 Ehe Wed Nov 20 21:58:06 2013
+ * Post job WIP move transaction Problem with PO receiving with X ref to JOB
+ * 171906
+ * Change the sp to add the location when location is not exist.
+ *
+ * SL8.04 53 158358 Mnewcomb Mon Aug 26 16:14:20 2013
+ * Duplicate receivers produced for "obsolete" items
+ * APAR 158358
+ *
+ * SL8.04 52 159193 pgross Thu Feb 28 16:36:11 2013
+ * Dead Lock error message of PO Receiving
+ * 1)  lock these records prior to posting:  po, poitem, itemloc, itemwhse
+ * 2)  ensure that all tt_rcv references include SessionID
+ *
+ * SL8.04 51 RS5855 Bbai Tue Jan 15 02:50:17 2013
+ * RS5855:
+ * Pass Vend Invoice Num in the call of PoReceivingTrxPostSp.
+ *
+ * SL8.04 50 RS5015 Dyang2 Thu Dec 06 01:50:37 2012
+ * RS5015: When update famaster acq_date column, add a condtion for fa_stat, so if the FA isn't "NEW" stat, don't do update now.
+ *
+ * SL8.04 49 RS5015 Dyang2 Tue Dec 04 02:17:12 2012
+ * RS5015 - Update famaster table acq_date column when receive PO for FA.
+ *
+ * SL8.03 48 147472 pgross Wed Mar 07 09:48:32 2012
+ * PO Receiving fails due to negative stock although Neg on Hand Flag is set to On
+ * only perform the on-hand negative check for Reserved or Contained items
+ *
+ * SL8.03 47 140357 DPalmer Thu Sep 01 16:32:26 2011
+ * Error when receiving serial number into container
+ * Issue 140357 - Include Item in INNER JOIN of serial and don't include serial.stat = 'P'.
+ *
+ * SL8.03 46 rs4892 Jpan2 Fri Jun 10 01:19:40 2011
+ * rs4892 - @PromptButtons may not be required parameter, set default value.
+ *
+ * SL8.03 45 rs4892 Jpan2 Thu Jun 02 03:11:15 2011
+ * RS4892 - change message string.
+ *
+ * SL8.03 44 rs4892 Jpan2 Wed May 25 22:36:08 2011
+ * RS4892 Add Container Number as a part of parameters.
+ *
+ * SL8.03 43 RS4581 Ezi Wed May 11 02:10:37 2011
+ * RS4581 - Add Mfg Part Number (AML - AVL)
+ *
+ * SL8.03 42 RS3640 Cjin2 Tue Mar 22 04:08:47 2011
+ * Set auto voucher to tt_rcv
+ *
+ * SL8.03 41 134518 calagappan Tue Nov 30 11:18:45 2010
+ * Purchase Order Receiving form is displaying incorrect values in the sub grid as well as showing multiple instances of the same pop up message.
+ * Set temp table column PostSuccess to 0 when receiving was not completed successfully
+ * so that next unprocessed PO line / release will be selected
+ *
+ * SL8.02 40 rs4588 Dahn Thu Mar 04 15:20:55 2010
+ * rs4588 copyright header changes
+ *
+ * SL8.02 39 127186 pgross Mon Feb 08 10:04:07 2010
+ * Unit cost wrong in PO receiving when UM conversion exists and cost includes tax
+ * calculate taxes using currency.places_cp instead of places
+ *
+ * SL8.01 38 123291 Dmcwhorter Wed Aug 19 15:00:07 2009
+ * Purchase Order Receiving is allowed when a Physical Inventory is in process for that warehouse.
+ * 123291 - Set CurrentWhse variable.
+ *
+ * SL8.01 37 116120 pgross Thu Jan 08 10:02:09 2009
+ * Quantity Returned is greater than Quantity Vouchered when processing a Debit Return 
+ * added GRN number to error message
+ *
+ * SL8.01 36 rs3953 Vlitmano Wed Aug 27 13:21:45 2008
+ * RS3953 - Changed a Copyright header?
+ *
+ * SL8.01 34 109680 pgross Fri Jun 13 09:15:57 2008
+ * System should not set GRN_Line = 0 if user creates a new line using  Add PO button to do partial qty return PO, process the receipt would create additonal GRN Lines
+ * assign a value to GRN Line if it is zero for a return
+ *
+ * SL8.01 33 108564 pgross Fri Apr 04 09:45:00 2008
+ * Records are being stranded in the tmp_mass_journal table
+ * ensure that JournalImmediateSp is called upon exit
+ *
+ * SL8.00 32 107228 pgross Fri Dec 28 09:53:40 2007
+ * Get wrong transactions when processing PO receive after applying fix SL106887 
+ * improved handling of GRN creation
+ *
+ * SL8.00 31 105716 akottapp Wed Sep 26 00:55:04 2007
+ * 2nd PO Line not updated on GoodsReceivingNotes form
+ * Issue 105716 : Removed the check for 'tt_rcv.grn_line' from the last update tt_rcv statement.
+ *
+ * SL8.00 30 101988 Dahn Wed Sep 05 15:27:58 2007
+ * SQL Objects Wording - Some SPs and Numerous Scalar- Valued Functions
+ * Changed header's comment (file dbo.AcctChgSp) to "Copyright ? 2007 Infor Global Solutions Technology GmbH, and/or its affiliate and subsidiaries.  All rights reserved.  The word and design marks set forth herein are trademarks and/or registered trademarks of Infor Global Solutions Technology GmbH and/or its affiliate and subsidiaries.  All rights reserved.  All other trademarks listed herein are the property of their respective owners."
+ *
+ * SL8.00 29 104110 hcl-nautami Fri Aug 03 04:45:42 2007
+ * APAR#106887 did not solve APAR#108119
+ * Issue 104110
+ * Added new variable '@CurrentWhse' inorder to use the  current Whse in GRN for PO Return.
+ *
+ * SL8.00 28 RS3681 magler Fri Jun 29 17:31:22 2007
+ * Removed SupplyWeb interface points
+ *
+ * SL8.00 27 101297 Hcl-ajain Thu May 03 02:31:29 2007
+ * Field "Deductible = Yes/No" give an incorrect amount.
+ * Issue # 91407
+ * Added Handling of IncludeTaxInCost flag for PO's.
+ *
+ * SL8.00 26 100579 pgross Fri Mar 30 08:34:42 2007
+ * The accumulated value is incorrect on the Job Material Transactions when the same material is on the Job BOM multiple times and x-ref to the same PO.
+ * only look at tt_rcv records where PostSuccess is null
+ *
+ * SL8.00 25 RS2968 nkaleel Fri Feb 23 04:23:17 2007
+ * changing copyright information(RS2968)
+ *
+ * SL8.00 24 97175 flagatta Fri Oct 13 10:27:14 2006
+ * SyteLine SupplyWEB Integration - Outbound Purchase Orders
+ * Added code for SupplyWEB integration. 97175
+ *
+ * SL8.00 23 97170 pcoate Wed Oct 04 11:48:36 2006
+ * po_rcpt record not updated correctly when a negative PO receipt is performed that includes receipts with and without GRN
+ * Issue 97170 - Prevent a negative receipt with no GRN number from processing when a lesser value was received without a GRN.  Also, prevent a negative receipt with a GRN number from processing when a lesser value was received on that GRN.
+ *
+ * SL8.00 22 RS2968 prahaladarao.hs Tue Jul 11 10:37:50 2006
+ * RS 2968, Name change CopyRight Update.
+ *
+ * SL8.00 21 92609 hcl-singnee Tue Feb 21 06:35:35 2006
+ * Consignments field not updated on receive
+ * Issue# 92609
+ * Modified SELECT Statement of tt_rcv table for tt_rcv_crs cursor. 
+ * Now this is selecting consign field instead of by_cons field.
+ *
+ * SL8.00 20 91818 NThurn Mon Jan 09 10:32:30 2006
+ * Inserted standard External Touch Point call.  (RS3177)
+ *
+ * SL7.05 19 91150 hcl-singind Thu Dec 29 02:23:59 2005
+ * Issue #: 91150
+ * Added "WITH (READUNCOMMITTED)" to item Select Statement.
+ *
+ * SL7.05 18 90167 Hcl-tayamoh Thu Nov 10 15:46:55 2005
+ * Locking & blocking during PO Receive
+ * 90157
+ *
+ * SL7.05 17 89790 Hcl-kannvai Fri Oct 07 08:59:56 2005
+ * The "Count in Process" message added for APAR 100384 does not contain the "Cancel" button.
+ * Checked in for Issue #89790.
+ * Reverted back the changes done for issue 89475.
+ *
+ * SL7.05 15 87610 Hcl-purosan Wed Jun 08 05:57:26 2005
+ * Purchase order receiving - can receive item in obsolete status without any messages on status
+ * Issue 87610
+ * Handled Severity when ObsSlowSp is called
+ *
+ * SL7.05 14 86778 Hcl-kavimah Thu Apr 28 02:43:37 2005
+ * Cannot perform voucher adjustment after PO Return with GRN
+ * Issue 86778,
+ *
+ * Added the following code to verify the GRN
+ *
+ *
+ *    IF @TtRcvDrReturn <> 0
+ *    BEGIN
+ *       IF NOT EXISTS(SELECT 1 FROM po_rcpt
+ *          WHERE po_rcpt.po_num      = @TtRcvPoNum
+ *          AND   po_rcpt.po_line     = @TtRcvPoLine
+ *          AND   po_rcpt.po_release  = @TtRcvPoRelease
+ *          AND   po_rcpt.grn_num     = @TtRcvGrnNum )
+ *            BEGIN
+ *       
+ *          EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoExist0'
+ *          , '@grn_hdr'
+ *               GOTO LineError
+ *       END
+ *    END
+ *
+ *
+ * SL7.04 14 86778 Hcl-kavimah Thu Apr 28 02:41:42 2005
+ * Cannot perform voucher adjustment after PO Return with GRN
+ * Issue 86778,
+ *
+ * Added the following code to verify the GRN
+ *
+ *
+ *    IF @TtRcvDrReturn <> 0
+ *    BEGIN
+ *       IF NOT EXISTS(SELECT 1 FROM po_rcpt
+ *          WHERE po_rcpt.po_num      = @TtRcvPoNum
+ *          AND   po_rcpt.po_line     = @TtRcvPoLine
+ *          AND   po_rcpt.po_release  = @TtRcvPoRelease
+ *          AND   po_rcpt.grn_num     = @TtRcvGrnNum )
+ *            BEGIN
+ *       
+ *          EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoExist0'
+ *          , '@grn_hdr'
+ *               GOTO LineError
+ *       END
+ *    END
+ *
+ *
+ * $NoKeywords: $
+ */
+CREATE PROCEDURE dbo.POReceivingLoopSp (
+  @FirstSequenceWithError   INT                      OUTPUT
+, @Infobar                  InfobarType              OUTPUT
+, @PromptButtons            InfobarType     = NULL   OUTPUT
+, @DocumentNum              DocumentNumType = NULL
+, @ParentWantsReturnCode ListYesNoType = 0
+) AS
+
+-- Begin of CallALTETPs.exe generated code.
+-- Check for existence of alternate definitions (this section was generated and inserted by CallALTETPs.exe):
+IF EXISTS (SELECT 1 FROM [optional_module] [om] WHERE ISNULL([om].[is_enabled],0) = 1
+AND OBJECT_ID(QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])) IS NOT NULL)
+BEGIN
+   DECLARE @ALTGEN TABLE ([SpName] SYSNAME)
+   DECLARE @ALTGEN_SpName SYSNAME
+   DECLARE @ALTGEN_Severity int
+
+   INSERT INTO @ALTGEN ([SpName])
+   SELECT QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])
+   FROM [optional_module] [om]
+   WHERE ISNULL([om].[is_enabled], 0) = 1 AND
+   OBJECT_ID(QUOTENAME(OBJECT_NAME(@@PROCID) + CHAR(95) + [om].[ModuleName])) IS NOT NULL
+
+   WHILE EXISTS (SELECT 1 FROM @ALTGEN)
+   BEGIN
+      SELECT TOP 1 @ALTGEN_SpName = [SpName]
+      FROM @ALTGEN
+
+      -- Invoke the ALT routine, passing in (and out) this routine's parameters:
+      EXEC @ALTGEN_Severity = @ALTGEN_SpName
+           @FirstSequenceWithError   OUTPUT
+         , @Infobar   OUTPUT
+         , @PromptButtons   OUTPUT
+         , @DocumentNum
+         , @ParentWantsReturnCode
+
+      -- ALTGEN routine can RETURN 1 to signal that the remainder of this standard routine should now proceed:
+      IF @ALTGEN_Severity <> 1
+         RETURN @ALTGEN_Severity
+
+      DELETE @ALTGEN WHERE [SpName] = @ALTGEN_SpName
+   END
+END
+-- End of alternate definitions code.
+
+-- Check for existence of Generic External Touch Point routine (this section was generated and inserted by CallALTETPs.exe):
+IF OBJECT_ID(N'dbo.EXTGEN_POReceivingLoopSp') IS NOT NULL
+BEGIN
+      DECLARE @EXTGEN_SpName sysname
+      SET @EXTGEN_SpName = N'dbo.EXTGEN_POReceivingLoopSp'
+      -- Invoke the ETP routine, passing in (and out) this routine's parameters:
+      DECLARE @EXTGEN_Severity int
+      EXEC @EXTGEN_Severity = @EXTGEN_SpName
+           @FirstSequenceWithError   OUTPUT
+         , @Infobar   OUTPUT
+         , @PromptButtons   OUTPUT
+         , @DocumentNum
+         , @ParentWantsReturnCode
+
+      -- ETP routine can RETURN 1 to signal that the remainder of this standard routine should now proceed:
+      IF @EXTGEN_Severity <> 1
+         RETURN @EXTGEN_Severity
+END
+-- End of Generic External Touch Point code.
+-- End of CallALTETPs.exe generated code.
+
+DECLARE @WhsePhyInvFlg ListYesNoType
+   , @PoitemItem ItemType
+   , @PoitemWhse WhseType
+   , @QtyVoucher QtyUnitNoNegType
+   , @QtyReturned QtyUnitNoNegType
+   , @QtyReceived QtyUnitNoNegType
+   , @SerialStat SerialStatusType
+   , @TmpSerSerNum SerNumType
+   , @GrnHdrRowpointer RowPointerType
+   , @GrnHdrStat GrnStatusType
+   , @GrnHdrVendNum VendNumType
+   , @GrnHdrGrnNum GrnNumType
+   , @TtRcvPoNum PoNumType
+   , @TtRcvPoLine PoLineType
+   , @TtRcvPoRelease PoReleaseType
+   , @TtRcvGrnNum GrnNumType
+   , @TtRcvGrnexists ListYesNoType
+   , @TtRcvGrnLine GrnLineType
+   , @GrnLineLoop GrnLineType
+   , @TtRcvDrReturn ListYesNoType
+   , @TtRcvEcCode EcCodeType
+   , @TtRcvLot LotType
+   , @TtRcvTcQtuToReceive QtyUnitType
+   , @TtRcvLoc LocType
+   , @TtRcvTcQtuToReject QtyUnitType
+   , @TtRcvTransdate DateType
+   , @TtRcvWorkkey RefStrType
+   , @TtRcvRowPointer RowPointerType
+   , @TtRcvTcCprUnitMatCost CostPrcType
+   , @TtRcvTcCprUnitDutyCost CostPrcType
+   , @TtRcvTcCprUnitFreightCost CostPrcType
+   , @TtRcvTcCprUnitBrokCost CostPrcType
+   , @TtRcvTcCprUnitMatCostConv CostPrcType
+   , @TtRcvTcCprUnitDutyCostConv CostPrcType
+   , @TtRcvTcCprUnitFreightCostConv CostPrcType
+   , @TtRcvTcCprUnitBrokCostConv CostPrcType
+   , @TtRcvTcCprUnitInsuranceCost CostPrcType
+   , @TtRcvTcCprUnitInsuranceCostConv CostPrcType
+   , @TtRcvTcCprUnitLocFrtCost CostPrcType
+   , @TtRcvTcCprUnitLocFrtCostConv CostPrcType
+   , @TtRcvAutoVoucher ListYesNoType
+   , @TtrcvManufacturerId ManufacturerIdType
+   , @TtrcvManufacturerItem ManufacturerItemType
+   , @LocFrt CostPrcType
+   , @Insurance CostPrcType
+   , @FreightExchRate ExchRateType
+   , @DutyExchRate ExchRateType
+   , @BrokerageExchRate ExchRateType
+   , @InsuranceExchRate ExchRateType
+   , @LocFrtExchRate ExchRateType
+   , @TtRcvWhse WhseType
+   , @TtRcvUM UMType
+   , @TtRcvReasonCode ReasonCodeType
+   , @TtRcvByCons ListYesNoType
+   , @TtRcvPacknum GrnPackNumType
+   , @TtRcvSequence INT
+   , @ItemRowpointer RowPointerType
+   , @ItemLotTracked ListYesNoType
+   , @ItemSerialTracked ListYesNoType
+   , @ItemCostMethod CostMethodType
+   , @GrnLineRowpointer RowPointerType
+   , @GrnLinePoNum PoNumType
+   , @GrnLinePoLine PoLineType
+   , @GrnLinePoRelease PoReleaseType
+   , @GrnLineQtyVouchered QtyUnitType
+   , @GrnLineQtyReturned QtyUnitType
+   , @GrnLineVendNum VendNumType
+   , @GrnLineGrnNum GrnNumType
+   , @GrnLineGrnLine GrnLineType
+   , @GrnLineQtyRec QtyUnitType
+   , @InvparmsNegFlag ListYesNoType
+   , @ItemlocRowpointer RowPointerType
+   , @ItemlocLocType LocTypeType
+   , @ItemlocQtyOnHand QtyUnitType
+   , @ItemlocQtyRsvd QtyUnitType
+   , @ItemlocQtyContained QtyUnitType
+   , @ItemlocWhse WhseType
+   , @ItemlocItem ItemType
+   , @ItemlocLoc LocType
+   , @LotLocRowpointer RowPointerType
+   , @LotLocQtyOnHand QtyUnitType
+   , @LotLocQtyRsvd QtyUnitType
+   , @LotLocQtyContained QtyUnitType
+   , @PoVendNum VendNumType
+   , @GrnHdrWhse WhseType
+   , @CurrWhse WhseType
+   , @CurrentWhse WhseType
+   , @TrRcvContainerNum ContainerNumType
+   , @VendInvNum TH_VendInvNumType
+   , @ItemwhseRowpointer RowPointerType
+   , @RSQCNeedsQC ListYesNoType -- qcs
+   , @RSQCAutoAccept ListYesNoType -- qcs
+   , @RSQCLoc LocType -- qcs
+   , @RSQCCallingFunction DescriptionType -- qcs
+   , @RSQCOrigDueDate DateType -- qcs
+   , @RSQCRcvrNum INT -- qcs
+   , @RSQCMessages InfobarType -- qcs
+   , @RSQCUserCode UserCodeType -- qcs
+   , @RSQCRcvrNumStack InfobarType -- qcs
+   , @RSQCStatusStack InfobarType -- qcs
+   , @RSQCMessageStack InfobarType -- qcs
+   , @RSQCPopUp ListYesNoType -- qcs
+   , @RSQCPopUpChar NVARCHAR(1) -- qcs
+   , @RSQCPrintTag ListYesNoType -- qcs
+   , @RSQCPrintTagChar NVARCHAR(1) -- qcs
+   , @RSQCSequenceStack InfobarType -- qcs
+   , @IsQCLicensed FlagNyType -- qcs
+   , @QCS_SpName SYSNAME -- qcs
+   , @QCS_Severity INT -- qcs
+DECLARE @PoitemQtyReceived QtyUnitNoNegType
+   , @PoitemQtyOrdered QtyUnitNoNegType
+   , @ItemTolerance TolerancePercentType
+
+SET @IsQCLicensed = dbo.IsAddonAvailable('QualityControlSolution')
+
+DECLARE @Severity INT
+   , @Severity2 INT
+   , @SaveSeverity INT -- qcs
+   , @TMText LongListType
+   , @GRNNowExists ListYesNoType
+   , @BufferJournal RowPointerType
+   , @InitialTranCount INT
+   , @NeedGrnInError ListYesNoType
+   , @SessionID RowPointerType
+   , @RowPointer RowPointerType
+
+
+DECLARE @MsgSeverity INT
+   , @MsgParm1 InfobarType
+DECLARE @PoTaxCode1 TaxCodeType
+   , @PoTaxCode2 TaxCodeType
+   , @PoExchRate ExchRateType
+   , @PoTermsCode TermsCodeType
+   , @CurrCode CurrCodeType
+   , @TaxAmount CostPrcType
+   , @TaxAmountConv CostPrcType
+   , @TaxAmount1 AmountType
+   , @TaxAmount2 AmountType
+   , @xAmount AmountType
+   , @CurrencyPlaces DecimalPlacesType
+   , @Poinclude_tax_in_cost ListYesNoType
+   , @PoitemTaxCode1 TaxCodeType
+   , @PoitemTaxCode2 TaxCodeType
+   , @PoAutoVoucher ListYesNoType
+   , @PoitemFaNum FaNumType
+   , @ParmsSite SiteType
+   , @Today DateType
+   , @DomCurrCode CurrCodeType
+   , @IsTaxInterfaceAvailable ListYesNoType
+   , @vrtx_parm_Exists ListYesNoType
+   , @IsJapanInterfaceAvailable ListYesNoType
+DECLARE @TtRcvImportDocId ImportDocIdType
+   , @ContainsOnlyTaxFreeMatls ListYesNoType
+   , @TaxFreeMatl ListYesNoType
+   , @TFIQRowPointer RowPointerType
+   , @TFIQQtyOnHand QtyUnitType
+   , @TFIQQtyRsvd QtyUnitType
+
+--CSIB_97762 FM Start
+DECLARE
+    @ProductNameCSIB_97762      ProductNameType
+   ,@FeatureIDCSIB_97762        ApplicationFeatureIDType
+   ,@FeatureCSIB_97762Active    ListYesNoType
+   ,@MexicanCountryPackOn   ListYesNoType
+
+SET @ProductNameCSIB_97762 = 'CSI'
+SET @FeatureIDCSIB_97762 = 'CSIB_97762'
+
+EXEC @Severity      = dbo.IsFeatureActiveSp
+     @ProductName   = @ProductNameCSIB_97762
+   , @FeatureID     = @FeatureIDCSIB_97762
+   , @FeatureActive = @FeatureCSIB_97762Active OUTPUT 
+   , @Infobar       = @Infobar OUTPUT
+
+IF @Severity <> 0
+   RETURN @Severity
+
+SET @MexicanCountryPackOn = CASE WHEN @FeatureCSIB_97762Active = 1 AND dbo.IsAddonAvailable('MexicanCountryPack') = 1 THEN 1 ELSE 0 END
+--CSIB_97762 FM End
+
+--CSIB_97762 Variables Start
+DECLARE @TaxedMatl ListYesNoType
+--CSIB_97762 Variables End
+
+--RS9168 FM Start
+DECLARE @ProductNameRS9168        ProductNameType
+DECLARE @FeatureRS9168       ApplicationFeatureIDType
+DECLARE @FeatureRS9168Active ListYesNoType
+
+SET @ProductNameRS9168  = N'CSI'
+SET @FeatureRS9168 = N'RS9168'
+
+EXEC @Severity = dbo.IsFeatureActiveSp
+     @ProductName   = @ProductNameRS9168
+    ,@FeatureID     = @FeatureRS9168
+    ,@FeatureActive = @FeatureRS9168Active OUTPUT
+   , @Infobar       = @Infobar OUTPUT
+IF @Severity <> 0
+   Return @Severity
+--RS9168 FM End
+
+SET XACT_ABORT
+   , ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET @FirstSequenceWithError = NULL
+SET @Severity = 0
+SET @InitialTranCount = @@trancount
+SET @PromptButtons = NULL
+SET @TMText = '@%process'
+SET @SessionID = dbo.SessionIDSp()
+
+SELECT @InvparmsNegFlag = invparms.neg_flag
+FROM invparms WITH (READUNCOMMITTED)
+
+EXEC @Severity = dbo.DefineVariableSp 'ItemMiscReceiptSp.SkipCalcCost'
+   , '1'
+   , @Infobar OUTPUT
+
+
+DECLARE tt_rcv_crs CURSOR LOCAL STATIC
+FOR
+SELECT tt_rcv.po_num
+   , tt_rcv.po_line
+   , tt_rcv.po_release
+   , tt_rcv.grn_num
+   , tt_rcv.grnexists
+   , isnull(tt_rcv.grn_line, 0)
+   , tt_rcv.dr_return
+   , tt_rcv.ec_code
+   , tt_rcv.lot
+   , tt_rcv.tc_qtu_to_receive
+   , tt_rcv.loc
+   , tt_rcv.tc_qtu_to_reject
+   , tt_rcv.transdate
+   , tt_rcv.[workkey]
+   , tt_rcv.tc_cpr_unit_mat_cost
+   , tt_rcv.tc_cpr_unit_duty_cost
+   , tt_rcv.tc_cpr_unit_freight_cost
+   , tt_rcv.tc_cpr_unit_brok_cost
+   , tt_rcv.tc_cpr_unit_mat_cost_conv
+   , tt_rcv.tc_cpr_unit_duty_cost_conv
+   , tt_rcv.tc_cpr_unit_freight_cost_conv
+   , tt_rcv.tc_cpr_unit_brok_cost_conv
+   , tt_rcv.tc_cpr_unit_insurance_cost
+   , tt_rcv.tc_cpr_unit_insurance_cost_conv
+   , tt_rcv.tc_cpr_unit_loc_frt_cost
+   , tt_rcv.tc_cpr_unit_loc_frt_cost_conv
+   , freight_exch_rate
+   , duty_exch_rate
+   , brokerage_exch_rate
+   , insurance_exch_rate
+   , local_freight_exch_rate
+   , tt_rcv.whse
+   , tt_rcv.u_m
+   , tt_rcv.reason_code
+   , tt_rcv.consign
+   , tt_rcv.packnum
+   , tt_rcv.sequence
+   , tt_rcv.import_doc_id
+   , tt_rcv.RowPointer
+   , tt_rcv.manufacturer_id
+   , tt_rcv.manufacturer_item
+   , tt_rcv.container_num
+   , TH_vend_inv_num
+FROM tt_rcv WITH (READUNCOMMITTED)
+WHERE tt_rcv.SessionID = @SessionID
+   AND tt_rcv.PostSuccess IS NULL
+
+OPEN tt_rcv_crs
+
+WHILE 1 = 1
+BEGIN
+   FETCH tt_rcv_crs
+   INTO @TtRcvPoNum
+      , @TtRcvPoLine
+      , @TtRcvPoRelease
+      , @TtRcvGrnNum
+      , @TtRcvGrnexists
+      , @TtRcvGrnLine
+      , @TtRcvDrReturn
+      , @TtRcvEcCode
+      , @TtRcvLot
+      , @TtRcvTcQtuToReceive
+      , @TtRcvLoc
+      , @TtRcvTcQtuToReject
+      , @TtRcvTransdate
+      , @TtRcvWorkkey
+      , @TtRcvTcCprUnitMatCost
+      , @TtRcvTcCprUnitDutyCost
+      , @TtRcvTcCprUnitFreightCost
+      , @TtRcvTcCprUnitBrokCost
+      , @TtRcvTcCprUnitMatCostConv
+      , @TtRcvTcCprUnitDutyCostConv
+      , @TtRcvTcCprUnitFreightCostConv
+      , @TtRcvTcCprUnitBrokCostConv
+      , @TtRcvTcCprUnitInsuranceCost
+      , @TtRcvTcCprUnitInsuranceCostConv
+      , @TtRcvTcCprUnitLocFrtCost
+      , @TtRcvTcCprUnitLocFrtCostConv
+      , @FreightExchRate
+      , @DutyExchRate
+      , @BrokerageExchRate
+      , @InsuranceExchRate
+      , @LocFrtExchRate
+      , @TtRcvWhse
+      , @TtRcvUM
+      , @TtRcvReasonCode
+      , @TtRcvByCons
+      , @TtRcvPacknum
+      , @TtRcvSequence
+      , @TtRcvImportDocId
+      , @TtRcvRowPointer
+      , @TtrcvManufacturerId
+      , @TtrcvManufacturerItem
+      , @TrRcvContainerNum
+      , @VendInvNum
+   
+   IF @@fetch_status <> 0
+      BREAK
+
+   if @InitialTranCount = 0
+      BEGIN TRANSACTION
+   
+   EXEC dbo.JournalDeferSp @Partition = @BufferJournal OUTPUT
+      , @Infobar = @Infobar OUTPUT
+
+
+   SELECT @PoVendNum = po.vend_num
+   , @ContainsOnlyTaxFreeMatls = contains_only_tax_free_matls
+   , @PoTaxCode1 = po.tax_code1
+   , @PoTaxCode2 = po.tax_code2
+   , @PoVendNum = po.vend_num
+   , @PoExchRate = po.exch_rate
+   , @PoTermsCode = po.terms_code
+   , @Poinclude_tax_in_cost = po.include_tax_in_cost
+   , @PoAutoVoucher = po.auto_voucher
+   , @CurrCode = po.curr_code
+   FROM po WITH (
+      ROWLOCK
+      , XLOCK
+      , HOLDLOCK
+      )
+   WHERE po.po_num = @TtRcvPoNum
+
+   SELECT @PoitemItem = poitem.item
+      , @PoitemWhse = poitem.whse
+      , @PoitemTaxCode1 = poitem.tax_code1
+      , @PoitemTaxCode2 = poitem.tax_code2
+      , @PoitemFaNum = poitem.fa_num
+      , @PoitemQtyReceived = poitem.qty_received
+      , @PoitemQtyOrdered = poitem.qty_ordered
+   FROM poitem WITH (
+         ROWLOCK
+         , XLOCK
+         , HOLDLOCK
+         )
+   WHERE poitem.po_num = @TtRcvPoNum
+      AND poitem.po_line = @TtRcvPoLine
+      AND poitem.po_release = @TtRcvPoRelease
+
+SELECT @ItemRowpointer = item.rowpointer
+      , @ItemLotTracked = item.lot_tracked
+      , @ItemSerialTracked = item.serial_tracked
+      , @TaxFreeMatl = item.tax_free_matl
+      , @ItemCostMethod = item.cost_method
+      , @ItemTolerance = item.rcvd_over_po_qty_tolerance
+      , @TaxedMatl = item.taxed_matl
+   FROM item WITH (READUNCOMMITTED)
+   WHERE item.item = @PoitemItem
+   IF @@rowcount <> 1
+      SET @ItemRowpointer = NULL
+   
+   --Validate Receipt's Transaction Restriction
+   IF @ItemLotTracked = 1
+   AND @TtRcvDrReturn <> 1
+   BEGIN
+      EXEC @Severity = [dbo].[ValidateRestrictedTransSp] 
+           @Item = @PoitemItem
+         , @Lot = @TtRcvLot
+         , @SerialNums = NULL
+         , @MatlTransType = 'R'
+         , @Infobar = @Infobar OUTPUT
+         , @RefId = NULL
+         , @RefType = NULL
+         , @ProcessId = NULL
+         , @Site = @ParmsSite
+
+      IF @Severity <> 0
+         GOTO LineError
+           
+
+   END
+
+-- qcs
+   IF @IsQCLicensed = 1 
+   BEGIN
+      select
+         @RSQCOrigDueDate = poitem.due_date
+      from poitem
+      where poitem.po_num = @TtRcvPoNum and
+         poitem.po_line = @TtRcvPoLine and
+         poitem.po_release = @TtRcvPoRelease
+   END
+   -- qcs
+
+      
+   IF @ItemRowpointer is not null
+   BEGIN
+      if NOT EXISTS (Select 1 FROM itemloc with (readuncommitted) WHERE itemloc.whse = @TtRcvWhse AND
+                                             itemloc.item = @PoitemItem AND
+                                             itemloc.loc = @TtRcvLoc)
+      BEGIN
+         EXEC @Severity = dbo.ItemLocAddSp
+               @TtRcvWhse,
+               @PoitemItem,
+               @TtRcvLoc,
+               0, --@UcFlag
+               0, --@UnitCost
+               0, --@MatlCost
+               0, --@LbrCost,
+               0, --@FovhdCost,
+               0, --@VovhdCost,
+               0, --@OutCost,
+               0 , --@SetPermFlag,
+               @RowPointer   OUTPUT,
+               @Infobar   OUTPUT
+         IF @Severity <> 0
+            GOTO LineError
+         
+      END
+      
+      IF ISNULL(@TtRcvDrReturn,0) <> 1 AND @ItemTolerance IS NOT NULL
+      BEGIN         
+         --&1 is not within the &2 limit. &3 that has [&4: &5] and [&6: &7] and [&8: &9] needs updated.
+         IF @TtRcvTcQtuToReceive > @PoitemQtyOrdered * (100 + @ItemTolerance)/100 - @PoitemQtyReceived
+         BEGIN
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=Notinlimit'
+               , '@po_rcpt.qty_received'
+               , '@Item.rcvd_over_po_qty_tolerance'
+               , '@po.po_num'
+               , '@tmp_rcv.po_num'
+               , @TtRcvPoNum
+               , '@tmp_rcv.po_line'
+               , @TtRcvPoLine
+               , '@tmp_rcv.po_release'
+               , @TtRcvPoRelease
+               
+            GOTO LineError
+         END
+      END
+   END
+   SET @Currentwhse = @PoitemWhse
+
+   SET @TtRcvAutoVoucher = 0
+
+   IF  @TtRcvTcQtuToReceive >0 AND @TtRcvDrReturn <> 1 AND @PoAutoVoucher = 1 
+       AND @PoVendNum IS NOT NULL
+      SET @TtRcvAutoVoucher   = 1
+   UPDATE tt_rcv SET auto_voucher = @TtRcvAutoVoucher
+   WHERE tt_rcv.SessionID = @SessionID
+   and tt_rcv.grn_line = @TtRcvGrnLine
+   and tt_rcv.po_num = @TtRcvPoNum
+   AND tt_rcv.po_line = @TtRcvPoLine
+   AND tt_rcv.po_release = @TtRcvPoRelease
+   and tt_rcv.sequence = @TtRcvSequence
+
+   -- Buffer @TtRcvGrnLine
+   SET @GrnLineLoop = @TtRcvGrnLine
+
+   if @TtRcvGrnNum is not null
+   BEGIN /* DEPTH:2 */
+      if @TtRcvTcQtuToReceive < 0 or @TtRcvDrReturn = 1
+         if @TtRcvGrnLine = 0
+            IF @ItemRowPointer IS NOT NULL AND @ItemCostMethod = 'F'
+               SELECT TOP 1
+                 @GrnLineLoop = po_rcpt.grn_line
+               FROM po_rcpt
+               WHERE po_rcpt.po_num    = @TtRcvPoNum
+               AND po_rcpt.po_line     = @TtRcvPoLine
+               AND po_rcpt.po_release  = @TtRcvPoRelease
+               and po_rcpt.grn_num = @TtRcvGrnNum
+               ORDER BY
+                 po_rcpt.po_num
+               , po_rcpt.po_line
+               , po_rcpt.po_release
+               , po_rcpt.rcvd_date
+               , po_rcpt.date_seq
+            else
+               SELECT TOP 1
+                 @GrnLineLoop = po_rcpt.grn_line
+               FROM po_rcpt
+               WHERE po_rcpt.po_num    = @TtRcvPoNum
+               AND po_rcpt.po_line     = @TtRcvPoLine
+               AND po_rcpt.po_release  = @TtRcvPoRelease
+               and po_rcpt.grn_num = @TtRcvGrnNum
+               ORDER BY
+                 po_rcpt.po_num     DESC
+               , po_rcpt.po_line    DESC
+               , po_rcpt.po_release DESC
+               , po_rcpt.rcvd_date  DESC
+               , po_rcpt.date_seq   DESC
+
+      set @QtyVoucher = 0
+      set @QtyReturned = 0
+      set @QtyReceived = 0
+      select
+           @QtyVoucher = @QtyVoucher + qty_vouchered
+         , @QtyReturned = @QtyReturned + qty_returned
+         , @QtyReceived = @QtyReceived + qty_received
+      from po_rcpt
+      where po_num = @TtRcvPoNum and
+            po_line = @TtRcvPoLine and
+            po_release = @TtRcvPoRelease and
+            grn_num = @TtRcvGrnNum and
+            grn_line = @GrnLineLoop
+
+      select
+       @GrnHdrRowpointer = grn_hdr.rowpointer
+      ,@GrnHdrStat = grn_hdr.stat
+      ,@GrnHdrVendNum = grn_hdr.vend_num
+      ,@GrnHdrGrnNum = grn_hdr.grn_num
+      ,@GrnHdrWhse   = grn_hdr.whse
+      from grn_hdr
+      where grn_hdr.vend_num = @PoVendNum
+         and grn_hdr.grn_num = @TtRcvGrnNum
+      if @@rowcount <> 1
+         set @GrnHdrRowpointer = null
+
+      SELECT @Currentwhse = isnull(@GrnHdrWhse,@PoitemWhse)
+
+
+   IF @TtRcvDrReturn <> 0
+   BEGIN
+      IF NOT EXISTS(SELECT 1 FROM po_rcpt
+         WHERE po_rcpt.po_num      = @TtRcvPoNum
+         AND   po_rcpt.po_line     = @TtRcvPoLine
+         AND   po_rcpt.po_release  = @TtRcvPoRelease
+         AND   po_rcpt.grn_num     = @TtRcvGrnNum )
+           BEGIN
+      
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoExist0'
+         , '@grn_hdr'
+              GOTO LineError
+      END
+   END
+
+      if @TtRcvTcQtuToReceive >= 0 and @TtRcvDrReturn = 0
+      and @GrnHdrRowpointer is not null
+         set @GRNNowExists = 1
+
+      if (@GrnHdrRowpointer is not null) and @GrnHdrStat <> 'I'
+      BEGIN /* DEPTH:3 */
+         BEGIN
+            SET @MsgParm1 = '@:GrnStatus:' + @GrnHdrStat
+
+            EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare2'
+            , '@grn_hdr.stat', @MsgParm1, '@grn_hdr', '@grn_hdr.vend_num', @GrnHdrVendNum, '@grn_hdr.grn_num', @GrnHdrGrnNum
+            IF @MsgSeverity >= ISNULL(@Severity, 0)
+               SET @Severity = @MsgSeverity
+         END
+
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=MustCompare='
+            , '@grn_hdr.stat'
+            , '@:GrnStatus:I'
+
+         GOTO LineError
+      end /* DEPTH:3 */  /* if available grn-hdr... */
+
+      /* Issue 4067 */
+      if @GRNNowExists = 1 and @TtRcvGrnexists = 0
+         SET @TtRcvGrnexists = 1
+
+      IF @TtRcvGrnexists <> 0
+      BEGIN /* DEPTH:3 */
+         if @GrnHdrRowpointer is null
+            SET @TtRcvGrnexists = 0
+         else if @GrnLineLoop > 0
+         BEGIN /* DEPTH:4 */
+            select
+             @GrnLineRowpointer = grn_line.rowpointer
+            ,@GrnLinePoNum = grn_line.po_num
+            ,@GrnLinePoLine = grn_line.po_line
+            ,@GrnLinePoRelease = grn_line.po_release
+            ,@GrnLineQtyVouchered = grn_line.qty_vouchered
+            ,@GrnLineQtyReturned = grn_line.qty_returned
+            ,@GrnLineVendNum = grn_line.vend_num
+            ,@GrnLineGrnNum = grn_line.grn_num
+            ,@GrnLineGrnLine = grn_line.grn_line
+            ,@GrnLineQtyRec = grn_line.qty_rec
+            from grn_line
+            where grn_line.vend_num = @PoVendNum
+               and grn_line.grn_num = @TtRcvGrnNum
+               and grn_line.grn_line = @GrnLineLoop
+
+            if @@rowcount <> 1
+               set @GrnLineRowpointer = null
+
+            if @GrnLineRowpointer is null
+               SET @GrnLineLoop = 0  /* add a new record */
+            else
+            if @GrnLinePoNum <> @TtRcvPoNum
+            and @GrnLinePoLine <> @TtRcvPoLine
+            and @GrnLinePoRelease <> @TtRcvPoRelease
+               SET @GrnLineLoop = 0  /* add a new record */
+         end /* DEPTH:4 */  /* else if tt-rcv.grn-line > 0 */
+      end /* DEPTH:3 */
+   end /* DEPTH:2 */  /* if tt-rcv.grn-num <> '' */
+   else
+   begin /* @TtRcvGrnNum is null */
+      set @QtyVoucher = 0
+      set @QtyReturned = 0
+      set @QtyReceived = 0
+      select
+           @QtyVoucher = @QtyVoucher + qty_vouchered
+         , @QtyReturned = @QtyReturned + qty_returned
+         , @QtyReceived = @QtyReceived + qty_received
+      from po_rcpt
+      where po_num = @TtRcvPoNum and
+            po_line = @TtRcvPoLine and
+            po_release = @TtRcvPoRelease and
+            grn_num is null
+   end
+
+   if (@ItemRowpointer is not null)
+      IF @TtRcvDrReturn <> 0
+         EXEC @Severity = dbo.ObsSlowSp
+              @Item = @PoitemItem
+            , @WarnIfSlowMoving  = 1
+            , @ErrorIfSlowMoving = 0
+            , @WarnIfObsolete    = 1
+            , @ErrorIfObsolete   = 0
+            , @Infobar           = @Infobar OUTPUT
+            , @Site = @ParmsSite
+      else
+         EXEC @Severity = dbo.ObsSlowSp
+              @Item = @PoitemItem
+            , @WarnIfSlowMoving  = 1
+            , @ErrorIfSlowMoving = 0
+            , @WarnIfObsolete    = 0
+            , @ErrorIfObsolete   = 1
+            , @Infobar           = @Infobar OUTPUT
+            , @Site = @ParmsSite
+
+   IF @Severity <> 0
+      GOTO LineError
+
+   select
+    @WhsePhyInvFlg = whse.phy_inv_flg
+   from whse with (readuncommitted)
+   where whse.whse = @Currentwhse
+   IF @WhsePhyInvFlg <> 0
+   BEGIN /* DEPTH:2 */
+      EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+         , @TMText
+         , '@tmp_rcv'
+         , '@tmp_rcv.po_num'
+         , @TtRcvPoNum
+         , '@tmp_rcv.po_line'
+         , @TtRcvPoLine
+         , '@tmp_rcv.po_release'
+         , @TtRcvPoRelease
+
+      EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare'
+         , '@whse.phy_inv_flg'
+         , '@:ListYesNo:1'
+
+      GOTO LineError
+   end /* DEPTH:2 */
+
+   -- qcs >>> 
+   -- Check to see if qcs needed at this time for this item
+   IF @IsQCLicensed = 1 
+   BEGIN
+      IF OBJECT_ID(N'dbo.RSQC_AutoCreateQCItem3Sp') IS NOT NULL
+      BEGIN
+         SET @QCS_SpName = N'dbo.RSQC_AutoCreateQCItem3Sp'
+         EXEC   @QCS_Severity = @QCS_SpName
+            @i_po = @TtRcvPoNum,
+            @i_line = @TtRcvPoLine,
+            @Infobar = @Infobar OUTPUT
+      END
+      IF @TtRcvTcQtuToReceive > 0 AND @TtRcvDrReturn = 0
+      IF OBJECT_ID(N'dbo.RSQC_CheckSupplierItemsSp') IS NOT NULL
+      BEGIN
+         SET @QCS_SpName = N'dbo.RSQC_CheckSupplierItemsSp'
+         EXEC @QCS_Severity = @QCS_SpName
+           @PoitemItem
+         , @PoVendNum
+         , @RSQCCallingFunction
+         , @TtRcvTcQtuToReceive
+         , @TtRcvLoc
+         , @PoitemWhse
+         , @RSQCAutoAccept OUTPUT
+         , @RSQCNeedsQC OUTPUT
+         , @RSQCLoc OUTPUT
+         , @Infobar OUTPUT
+      END
+      
+      IF @FeatureRS9168Active = 1
+      BEGIN
+         IF @RSQCNeedsQC = 1 AND (@RSQCLoc <> @TtRcvLoc) AND NOT EXISTS(SELECT 1 FROM whse with (readuncommitted) WHERE whse = @PoitemWhse AND controlled_by_external_wms = 1)
+            SET @TtRcvLoc = @RSQCLoc
+      END
+      ELSE
+      BEGIN
+         IF @RSQCNeedsQC = 1 AND (@RSQCLoc <> @TtRcvLoc)
+            SET @TtRcvLoc = @RSQCLoc
+      END
+   END
+   -- <<< qcs
+
+   if (@ItemRowpointer is not null)
+   BEGIN /* DEPTH:2 */
+      IF @ItemLotTracked <> 0
+      and @TtRcvLot IS NULL
+      and @TtRcvTcQtuToReceive <> 0
+      BEGIN /* DEPTH:3 */
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+            , @TMText
+            , '@tmp_rcv'
+            , '@tmp_rcv.po_num'
+            , @TtRcvPoNum
+            , '@tmp_rcv.po_line'
+            , @TtRcvPoLine
+            , '@tmp_rcv.po_release'
+            , @TtRcvPoRelease
+
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+            , '@tmp_rcv.lot'
+            , @TtRcvLot
+
+         GOTO LineError
+      end /* DEPTH:3 */
+
+      IF ((@ContainsOnlyTaxFreeMatls = 1 AND @TaxFreeMatl = 1) OR (@TaxedMatl = 1 AND @MexicanCountryPackOn = 1))
+      AND @TtRcvImportDocId IS NULL
+      AND @TtRcvTcQtuToReceive <> 0
+      BEGIN /* DEPTH:3 */
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+            , @TMText
+            , '@tmp_rcv'
+            , '@tmp_rcv.po_num'
+            , @TtRcvPoNum
+            , '@tmp_rcv.po_line'
+            , @TtRcvPoLine
+            , '@tmp_rcv.po_release'
+            , @TtRcvPoRelease
+
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+            , '@rsvd_inv.import_doc_id'
+            , @TtRcvImportDocId
+
+         GOTO LineError
+      end /* DEPTH:3 */
+
+      select
+       @ItemlocRowpointer = itemloc.rowpointer
+      ,@ItemlocLocType = itemloc.loc_type
+      ,@ItemlocQtyOnHand = itemloc.qty_on_hand
+      ,@ItemlocQtyRsvd = itemloc.qty_rsvd
+      ,@ItemlocQtyContained = itemloc.qty_contained
+      ,@ItemlocWhse = itemloc.whse
+      ,@ItemlocItem = itemloc.item
+      ,@ItemlocLoc = itemloc.loc
+      from itemloc with (rowlock,xlock,holdlock)
+          where itemloc.whse = @Currentwhse
+         and itemloc.item = @PoitemItem
+         and itemloc.loc = @TtRcvLoc
+
+      if @@rowcount <> 1
+         set @ItemlocRowpointer = null
+
+      if (@ItemlocRowpointer is not null) and @ItemlocLocType = 'T'
+      BEGIN /* DEPTH:3 */
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+            , @TMText
+            , '@tmp_rcv'
+            , '@tmp_rcv.po_num'
+            , @TtRcvPoNum
+            , '@tmp_rcv.po_line'
+            , @TtRcvPoLine
+            , '@tmp_rcv.po_release'
+            , @TtRcvPoRelease
+
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+            , '@itemloc.loc_type'
+            , '@:LocType:T'
+            , '@itemloc'
+            , '@itemloc.whse'
+            , @Currentwhse
+            , '@itemloc.item'
+            , @PoitemItem
+            , '@itemloc.loc'
+            , @TtRcvLoc
+
+         GOTO LineError
+      end /* DEPTH:3 */  /* if itemloc.loc-type = 'T' then do: */
+   end /* DEPTH:2 */  /* if available(item) then do: */
+
+   if @TtRcvTcQtuToReceive IS NULL
+   or @TtRcvTcQtuToReject IS NULL
+   or @TtRcvTcQtuToReceive = 0.0 and @TtRcvTcQtuToReject = 0.0
+      GOTO NextLine
+
+   DECLARE
+      @CurrentPeriod FinPeriodType
+      , @PeriodsRowPointer RowPointer
+
+   EXEC @Severity = dbo.PerGetSp
+        @Date = @TtRcvTransdate
+      , @PeriodsRowPointer = @PeriodsRowPointer OUTPUT
+      , @CurrentPeriod = @CurrentPeriod OUTPUT
+      , @Infobar = @Infobar OUTPUT
+      , @Site = @ParmsSite
+
+   IF @Severity <> 0
+      GOTO LineError
+
+   IF @TtRcvDrReturn <> 0
+   BEGIN /* DEPTH:2 */
+      /* RETURN VOUCHERED QTY */
+      if @TtRcvTcQtuToReceive > 0.0
+      BEGIN /* DEPTH:3 */
+         if @TtRcvTcQtuToReceive > (@QtyVoucher - @QtyReturned)
+         BEGIN /* DEPTH:4 */
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed4'
+               , @TMText
+               , '@tmp_rcv'
+               , '@tmp_rcv.po_num'
+               , @TtRcvPoNum
+               , '@tmp_rcv.po_line'
+               , @TtRcvPoLine
+               , '@tmp_rcv.po_release'
+               , @TtRcvPoRelease
+               , '@grn_line.grn_num'
+               , @GrnLineGrnNum
+
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare>'
+               , '@poitem.qty_returned'
+               , '@poitem.qty_voucher'
+
+            set @NeedGrnInError = 1
+            GOTO LineError
+         end /* DEPTH:4 */
+
+         if @GrnLineLoop > 0
+         BEGIN /* DEPTH:4 */
+            if @TtRcvTcQtuToReceive > (@GrnLineQtyVouchered - @GrnLineQtyReturned)
+            BEGIN /* DEPTH:5 */
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                  , @TMText
+                  , '@tmp_rcv'
+                  , '@grn_line.vend_num'
+                  , @GrnLineVendNum
+                  , '@grn_line.grn_num'
+                  , @GrnLineGrnNum
+                  , '@grn_line.grn_line'
+                  , @GrnLineGrnLine
+
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare>'
+                  , '@grn_line.qty_returned'
+                  , '@grn_line.qty_vouchered'
+
+               GOTO LineError
+            end /* DEPTH:5 */
+         end /* DEPTH:4 */  /* if tt-rcv.grn-line > 0 */
+
+         if (@ItemlocRowpointer is not null)
+         BEGIN /* DEPTH:4 */
+            IF @ItemLotTracked <> 0
+            BEGIN /* DEPTH:5 */
+               select
+                @LotLocRowpointer = lot_loc.rowpointer
+               ,@LotLocQtyOnHand = lot_loc.qty_on_hand
+               ,@LotLocQtyRsvd = lot_loc.qty_rsvd
+               ,@LotLocQtyContained = lot_loc.qty_contained
+               from lot_loc
+               where lot_loc.whse = @Currentwhse
+                  and lot_loc.item = @PoitemItem
+                  and lot_loc.loc = @TtRcvLoc
+                  and lot_loc.lot = @TtRcvLot
+
+               if @@rowcount <> 1
+                  set @LotLocRowpointer = null
+
+               IF (@LotLocRowpointer is not null)
+               BEGIN /* DEPTH:6 */
+                  IF @TtRcvTcQtuToReceive > @LotLocQtyOnHand - @LotLocQtyRsvd - @LotLocQtyContained
+                  and (@LotLocQtyRsvd > 0 or @LotLocQtyContained > 0)
+                   BEGIN /* DEPTH:7 */
+                     
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                        , '@itemlifo.qty'
+                        , @TtRcvTcQtuToReceive
+
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                        , '@lot_loc.qty_on_hand'
+                        , @LotLocQtyOnHand
+                        , '@lot_loc'
+                        , '@lot_loc.whse'
+                        , @Currentwhse
+                        , '@lot_loc.item'
+                        , @PoitemItem
+                        , '@lot_loc.loc'
+                        , @TtRcvLoc
+                        , '@lot_loc.lot'
+                        , @TtRcvLot
+
+                     IF  @LotLocQtyRsvd > 0
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                          , '@lot_loc.qty_rsvd'
+                          , @LotLocQtyRsvd
+                          , '@lot_loc'
+                          , '@lot_loc.whse'
+                          , @Currentwhse
+                          , '@lot_loc.item'
+                          , @PoitemItem
+                          , '@lot_loc.loc'
+                          , @TtRcvLoc
+                          , '@lot_loc.lot'
+                          , @TtRcvLot
+
+                     IF  @LotLocQtyContained > 0
+                     BEGIN
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                          , '@lot_loc.qty_contained'
+                          , @LotLocQtyContained
+                          , '@lot_loc'
+                          , '@lot_loc.whse'
+                          , @Currentwhse
+                          , '@lot_loc.item'
+                          , @PoitemItem
+                          , '@lot_loc.loc'
+                          , @TtRcvLoc
+                          , '@lot_loc.lot'
+                          , @TtRcvLot
+                          
+                        EXEC dbo.MsgAskSp @Infobar OUTPUT, @PromptButtons OUTPUT
+                          , 'Q=FunctPerformNoYes'
+                          , '@!GoToContainer'
+                     END     
+                     GOTO LineError
+                 END /* DEPTH:7 */
+               end /* DEPTH:6 */
+            end /* DEPTH:5 */ /* lot-tracked */
+            
+            IF @TtRcvTcQtuToReceive > @ItemlocQtyOnHand - @ItemlocQtyRsvd - @ItemlocQtyContained   
+            and (@ItemlocQtyRsvd > 0 or @ItemlocQtyContained > 0)
+            BEGIN /* DEPTH:5 */
+                EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                   , '@itemlifo.qty'
+                   , @TtRcvTcQtuToReceive
+
+                EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                   , '@itemloc.qty_on_hand'
+                   , @ItemlocQtyOnHand
+                   , '@itemloc'
+                   , '@itemloc.whse'
+                   , @ItemlocWhse
+                   , '@itemloc.item'
+                   , @ItemlocItem
+                   , '@itemloc.loc'
+                   , @ItemlocLoc
+                   
+                IF @ItemlocQtyRsvd > 0
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                    , '@itemloc.qty_rsvd'
+                    , @ItemlocQtyRsvd
+                    , '@itemloc'
+                    , '@itemloc.whse'
+                    , @ItemlocWhse
+                    , '@itemloc.item'
+                    , @ItemlocItem
+                    , '@itemloc.loc'
+                    , @ItemlocLoc
+                   
+                IF @ItemlocQtyContained > 0
+                BEGIN
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                    , '@itemloc.qty_contained'
+                    , @ItemlocQtyContained
+                    , '@itemloc'
+                    , '@itemloc.whse'
+                    , @ItemlocWhse
+                    , '@itemloc.item'
+                    , @ItemlocItem
+                    , '@itemloc.loc'
+                    , @ItemlocLoc
+                    
+                  EXEC dbo.MsgAskSp @Infobar OUTPUT, @PromptButtons OUTPUT
+                    , 'Q=FunctPerformNoYes'
+                    , '@!GoToContainer'
+                END
+
+                GOTO LineError
+            END /* DEPTH:5 */
+
+            IF (@ContainsOnlyTaxFreeMatls = 1 AND @TaxFreeMatl = 1) OR (@TaxedMatl = 1 AND @MexicanCountryPackOn = 1)
+            BEGIN /* DEPTH:5 */
+               if @ItemLotTracked = 1
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot  = @TtRcvLot
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+               else
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot is null
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+
+               if @@rowcount <> 1
+                  set @TFIQRowPointer = null
+
+               IF (@TFIQRowPointer is not null)
+               BEGIN /* DEPTH:6 */
+                  if (@TFIQQtyOnHand - @TFIQQtyRsvd ) < @TtRcvTcQtuToReceive AND @TFIQQtyRsvd > 0
+                    BEGIN /* DEPTH:7 */
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                        , '@itemlifo.qty'
+                        , @TtRcvTcQtuToReceive
+
+                     EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare5'
+                        , '@tax_free_import_qty.qty_on_hand'
+                        , @TFIQQtyOnHand
+                        , '@lot_loc'
+                        , '@tax_free_import_qty.whse'
+                        , @Currentwhse
+                        , '@tax_free_import_item.item'
+                        , @PoitemItem
+                        , '@tax_free_import_qty.loc'
+                        , @TtRcvLoc
+                        , '@tax_free_import_qty.lot'
+                        , @TtRcvLot
+                        , '@rsvd_inv.import_doc_id'
+                        , @TtRcvImportDocId
+
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare0'
+                        , '@lot_loc.qty_rsvd'
+                        , @TFIQQtyRsvd
+                        , '@lot_loc'
+
+                     GOTO LineError
+                  end /* DEPTH:7 */
+               end /* DEPTH:6 */
+            end /* DEPTH:5 */ /* Tax Free Imported Material */
+
+         end /* DEPTH:4 */  /* available item and available itemloc */
+      end /* DEPTH:3 */  /* if tt-rcv.tc-qtu-to-receive > 0.0 then do: */
+
+      /* qty <= 0 */
+      else
+      BEGIN /* DEPTH:3 */
+         if @QtyReturned + @TtRcvTcQtuToReceive < 0.0
+         BEGIN /* DEPTH:4 */
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed4'
+               , @TMText
+               , '@tmp_rcv'
+               , '@tmp_rcv.po_num'
+               , @TtRcvPoNum
+               , '@tmp_rcv.po_line'
+               , @TtRcvPoLine
+               , '@tmp_rcv.po_release'
+               , @TtRcvPoRelease
+               , '@grn_line.grn_num'
+               , @GrnLineGrnNum
+
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare<'
+               , '@poitem.qty_returned'
+               , 0
+
+            set @NeedGrnInError = 1
+            GOTO LineError
+         end /* DEPTH:4 */
+         if @GrnLineLoop > 0
+         BEGIN /* DEPTH:4 */
+            if @GrnLineQtyReturned + @TtRcvTcQtuToReceive < 0.0
+            BEGIN /* DEPTH:5 */
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                  , @TMText
+                  , '@tmp_rcv'
+                  , '@grn_line.vend_num'
+                  , @GrnLineVendNum
+                  , '@grn_line.grn_num'
+                  , @GrnLineGrnNum
+                  , '@grn_line.grn_line'
+                  , @GrnLineGrnLine
+
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare<'
+                  , '@grn_line.qty_returned'
+                  , 0
+
+               GOTO LineError
+            end /* DEPTH:5 */
+         end /* DEPTH:4 */  /* if tt-rcv.grn-line > 0 */
+      end /* DEPTH:3 */
+
+      if (@ItemlocRowpointer is not null)
+      BEGIN /* DEPTH:3 */
+         if @ItemlocQtyOnHand - @TtRcvTcQtuToReceive < 0.0
+         BEGIN /* DEPTH:4 */
+            IF @InvparmsNegFlag = 0
+            BEGIN /* DEPTH:5 */
+               /* Negative quantities not allowed */
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                  , @TMText
+                  , '@tmp_rcv'
+                  , '@tmp_rcv.po_num'
+                  , @TtRcvPoNum
+                  , '@tmp_rcv.po_line'
+                  , @TtRcvPoLine
+                  , '@tmp_rcv.po_release'
+                  , @TtRcvPoRelease
+
+               EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                  , '@tmp_rcv.qty_to_receive'
+                  , @TtRcvTcQtuToReceive
+
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare=3'
+                  , '@itemloc.qty_on_hand'
+                  , @ItemlocQtyOnHand
+                  , '@itemloc'
+                  , '@itemloc.whse'
+                  , @Currentwhse
+                  , '@itemloc.item'
+                  , @PoitemItem
+                  , '@itemloc.loc'
+                  , @TtRcvLoc
+
+               SET @MsgParm1 = @ItemlocQtyOnHand - @TtRcvTcQtuToReceive
+
+               EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+               , '@itemloc.qty_on_hand', @MsgParm1
+               IF @MsgSeverity >= ISNULL(@Severity, 0)
+                  SET @Severity = @MsgSeverity
+
+               GOTO LineError
+            end /* DEPTH:5 */ /* negative quantities not allowed */
+         end /* DEPTH:4 */ /* itemloc quantity being driven negative */
+         IF @ItemLotTracked <> 0
+         BEGIN /* DEPTH:4 */
+            select
+             @LotLocRowpointer = lot_loc.rowpointer
+            ,@LotLocQtyOnHand = lot_loc.qty_on_hand
+            ,@LotLocQtyRsvd = lot_loc.qty_rsvd
+            ,@LotLocQtyContained = lot_loc.qty_contained
+            from lot_loc
+            where lot_loc.whse = @Currentwhse
+               and lot_loc.item = @PoitemItem
+               and lot_loc.loc = @TtRcvLoc
+               and lot_loc.lot = @TtRcvLot
+
+            if @@rowcount <> 1
+               set @LotLocRowpointer = null
+
+            if (@LotLocRowpointer is not null)
+            and @LotLocQtyOnHand - @TtRcvTcQtuToReceive < 0.0
+            BEGIN /* DEPTH:5 */
+               IF @InvparmsNegFlag = 0
+               BEGIN /* DEPTH:6 */
+                  /* Negative quantities not allowed */
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                     , @TMText
+                     , '@tmp_rcv'
+                     , '@tmp_rcv.po_num'
+                     , @TtRcvPoNum
+                     , '@tmp_rcv.po_line'
+                     , @TtRcvPoLine
+                     , '@tmp_rcv.po_release'
+                     , @TtRcvPoRelease
+
+                  EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                     , '@tmp_rcv.qty_to_receive'
+                     , @TtRcvTcQtuToReceive
+
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare=4'
+                     , '@lot_loc.qty_on_hand'
+                     , @LotLocQtyOnHand
+                     , '@lot_loc'
+                     , '@lot_loc.whse'
+                     , @Currentwhse
+                     , '@lot_loc.item'
+                     , @PoitemItem
+                     , '@lot_loc.loc'
+                     , @TtRcvLoc
+                     , '@lot_loc.lot'
+                     , @TtRcvLot
+
+                  SET @MsgParm1 = @LotLocQtyOnHand - @TtRcvTcQtuToReceive
+
+                  EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+                  , '@lot_loc.qty_on_hand', @MsgParm1
+                  IF @MsgSeverity >= ISNULL(@Severity, 0)
+                     SET @Severity = @MsgSeverity
+
+                  GOTO LineError
+               end /* DEPTH:6 */ /* negative quantities not allowed */
+            end /* DEPTH:5 */ /* lot-loc quantity being driven negative */
+         end /* DEPTH:4 */ /* item lot tracked */
+
+
+         IF (@ContainsOnlyTaxFreeMatls = 1 AND @TaxFreeMatl = 1) OR (@TaxedMatl = 1 AND @MexicanCountryPackOn = 1)
+            BEGIN /* DEPTH:4 */
+               if @ItemLotTracked = 1
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot  = @TtRcvLot
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+               else
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot is null
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+
+               if @@rowcount <> 1
+                  set @TFIQRowPointer = null
+
+               IF (@TFIQRowPointer is not null) and
+               (@TFIQQtyOnHand -@TtRcvTcQtuToReceive) < 0
+                    BEGIN /* DEPTH:5 */
+                  /* Negative quantities not allowed */
+                    EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                     , @TMText
+                     , '@tmp_rcv'
+                     , '@tmp_rcv.po_num'
+                     , @TtRcvPoNum
+                     , '@tmp_rcv.po_line'
+                     , @TtRcvPoLine
+                     , '@tmp_rcv.po_release'
+                     , @TtRcvPoRelease
+
+                    EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                     , '@tmp_rcv.qty_to_receive'
+                     , @TtRcvTcQtuToReceive
+
+                     EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare5'
+                        , '@tax_free_import_qty.qty_on_hand'
+                        , @TFIQQtyOnHand
+                        , '@lot_loc'
+                        , '@tax_free_import_qty.whse'
+                        , @Currentwhse
+                        , '@tax_free_import_item.item'
+                        , @PoitemItem
+                        , '@tax_free_import_qty.loc'
+                        , @TtRcvLoc
+                        , '@tax_free_import_qty.lot'
+                        , @TtRcvLot
+                        , '@rsvd_inv.import_doc_id'
+                        , @TtRcvImportDocId
+
+                     SET @MsgParm1 = @TFIQQtyOnHand - @TtRcvTcQtuToReceive
+
+                     EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+                     , '@tax_free_import_qty.qty_on_hand', @MsgParm1
+                     IF @MsgSeverity >= ISNULL(@Severity, 0)
+                        SET @Severity = @MsgSeverity
+
+                     GOTO LineError
+                  end /* DEPTH:5 */
+            end /* DEPTH:4 */ /* Tax Free Imported Material */
+
+
+      end /* DEPTH:3 */ /* itemloc available */
+   end /* DEPTH:2 */ /* if tt-rcv.dr-return */
+
+   /* Receiving */
+   else
+   BEGIN /* DEPTH:2 */
+      if @TtRcvTcQtuToReceive > 0.0
+      BEGIN /* DEPTH:3 */
+         if (@ItemRowpointer is not null) AND @ItemSerialTracked <> 0
+         BEGIN /* DEPTH:4 */
+            set @TmpSerSerNum = null
+            select top 1
+              @TmpSerSerNum = tmp_ser.ser_num
+            , @SerialStat = serial.stat
+            from tmp_ser with (readuncommitted)
+               inner join serial with (readuncommitted) on
+                  serial.ser_num = tmp_ser.ser_num
+                  and serial.item = @PoitemItem
+                  and not serial.stat in ( 'O', 'N', 'P' )
+               /* 'O' is 'Out of Inventory'
+                * 'N' is 'No longer used'
+                * 'P' is 'Preassigned'   */
+            where tmp_ser.SessionID = @SessionID
+            and tmp_ser.ref_str = @TtRcvWorkkey
+
+            if @TmpSerSerNum is not null
+            begin
+               SET @MsgParm1 = '@:SerialStatus:' + @SerialStat
+
+               EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=Exist2'
+               , '@serial', '@serial.ser_num', @TmpSerSerNum, '@serial.stat', @MsgParm1
+               IF @MsgSeverity >= ISNULL(@Severity, 0)
+                  SET @Severity = @MsgSeverity
+
+               GOTO LineError
+            end
+         end /* DEPTH:4 */  /* if avail item and item.serial-tracked */
+      end /* DEPTH:3 */
+
+      /* receiving negative quantity */
+      else
+      BEGIN /* DEPTH:3 */
+         if @QtyReceived - (@QtyVoucher - @QtyReturned) + @TtRcvTcQtuToReceive < 0
+         BEGIN /* DEPTH:4 */
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed4'
+               , @TMText
+               , '@tmp_rcv'
+               , '@tmp_rcv.po_num'
+               , @TtRcvPoNum
+               , '@tmp_rcv.po_line'
+               , @TtRcvPoLine
+               , '@tmp_rcv.po_release'
+               , @TtRcvPoRelease
+               , '@grn_line.grn_num'
+               , @GrnLineGrnNum
+
+            EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare'
+               , '@poitem.qty_received'
+               , @QtyReceived
+
+            SET @MsgParm1 = @QtyVoucher - @QtyReturned
+
+            EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare'
+            , '@poitem.qty_voucher', @MsgParm1
+            IF @MsgSeverity >= ISNULL(@Severity, 0)
+               SET @Severity = @MsgSeverity
+
+            SET @MsgParm1 = - (@QtyReceived - (@QtyVoucher - @QtyReturned))
+
+            EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare<'
+            , '@tmp_rcv.qty_to_receive_conv', @MsgParm1
+            IF @MsgSeverity >= ISNULL(@Severity, 0)
+               SET @Severity = @MsgSeverity
+
+            set @NeedGrnInError = 1
+            GOTO LineError
+         end /* DEPTH:4 */ /* voucher exceeded check */
+         if @GrnLineLoop > 0
+         BEGIN /* DEPTH:4 */
+            if @GrnLineQtyRec - (@GrnLineQtyVouchered - @GrnLineQtyReturned) + @TtRcvTcQtuToReceive < 0
+            BEGIN /* DEPTH:5 */
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                  , @TMText
+                  , '@tmp_rcv'
+                  , '@grn_line.vend_num'
+                  , @GrnLineVendNum
+                  , '@grn_line.grn_num'
+                  , @GrnLineGrnNum
+                  , '@grn_line.grn_line'
+                  , @GrnLineGrnLine
+
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare'
+                  , '@grn_line.qty_rec'
+                  , @GrnLineQtyRec
+
+               SET @MsgParm1 = @GrnLineQtyVouchered - @GrnLineQtyReturned
+
+               EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare'
+               , '@grn_line.qty_vouchered', @MsgParm1
+               IF @MsgSeverity >= ISNULL(@Severity, 0)
+                  SET @Severity = @MsgSeverity
+
+               SET @MsgParm1 = - (@GrnLineQtyRec - (@GrnLineQtyVouchered - @GrnLineQtyReturned))
+
+               EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare<'
+               , '@tmp_rcv.qty_to_receive_conv', @MsgParm1
+               IF @MsgSeverity >= ISNULL(@Severity, 0)
+                  SET @Severity = @MsgSeverity
+
+               GOTO LineError
+            end /* DEPTH:5 */  /* voucher exceeded check */
+         end /* DEPTH:4 */  /* if tt-rcv.grn-line > 0 */
+
+         if (@ItemlocRowpointer is not null)
+         BEGIN /* DEPTH:4 */
+            if @ItemlocQtyOnHand + @TtRcvTcQtuToReceive < 0.0
+            BEGIN /* DEPTH:5 */
+               IF @InvparmsNegFlag = 0
+               BEGIN /* DEPTH:6 */
+                  /* ALLOW NEGATIVE QTY */
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                     , @TMText
+                     , '@tmp_rcv'
+                     , '@tmp_rcv.po_num'
+                     , @TtRcvPoNum
+                     , '@tmp_rcv.po_line'
+                     , @TtRcvPoLine
+                     , '@tmp_rcv.po_release'
+                     , @TtRcvPoRelease
+
+                  EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                     , '@tmp_rcv.qty_to_receive'
+                     , @TtRcvTcQtuToReceive
+
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare=3'
+                     , '@itemloc.qty_on_hand'
+                     , @ItemlocQtyOnHand
+                     , '@itemloc'
+                     , '@itemloc.whse'
+                     , @Currentwhse
+                     , '@itemloc.item'
+                     , @PoitemItem
+                     , '@itemloc.loc'
+                     , @TtRcvLoc
+
+                  SET @MsgParm1 = @ItemlocQtyOnHand + @TtRcvTcQtuToReceive
+
+                  EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+                  , '@itemloc.qty_on_hand', @MsgParm1
+                  IF @MsgSeverity >= ISNULL(@Severity, 0)
+                     SET @Severity = @MsgSeverity
+
+                  GOTO LineError
+               end /* DEPTH:6 */
+            end /* DEPTH:5 */  /* if itemloc.qty-on-hand + tt-rcv.tc-qtu-to-receive < 0.0 */
+
+            IF @ItemLotTracked <> 0
+            BEGIN /* DEPTH:5 */
+               select
+                @LotLocRowpointer = lot_loc.rowpointer
+               ,@LotLocQtyOnHand = lot_loc.qty_on_hand
+               ,@LotLocQtyRsvd = lot_loc.qty_rsvd
+               ,@LotLocQtyContained = lot_loc.qty_contained
+               from lot_loc
+               where lot_loc.whse = @Currentwhse
+                  and lot_loc.item = @PoitemItem
+                  and lot_loc.loc = @TtRcvLoc
+                  and lot_loc.lot = @TtRcvLot
+
+               if @@rowcount <> 1
+                  set @LotLocRowpointer = null
+
+               if (@LotLocRowpointer is not null)
+               BEGIN /* DEPTH:6 */
+                   if ABS(@TtRcvTcQtuToReceive) > @LotLocQtyOnHand - @LotLocQtyRsvd - @LotLocQtyContained
+                   and (@LotLocQtyRsvd > 0 or @LotLocQtyContained > 0)
+                    BEGIN /* DEPTH:7 */
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                        , '@itemlifo.qty'
+                        , @TtRcvTcQtuToReceive
+
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                        , '@lot_loc.qty_on_hand'
+                        , @LotLocQtyOnHand
+                        , '@lot_loc'
+                        , '@lot_loc.whse'
+                        , @Currentwhse
+                        , '@lot_loc.item'
+                        , @PoitemItem
+                        , '@lot_loc.loc'
+                        , @TtRcvLoc
+                        , '@lot_loc.lot'
+                        , @TtRcvLot
+                        
+                     IF @LotLocQtyRsvd > 0
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                            , '@lot_loc.qty_rsvd'
+                            , @LotLocQtyRsvd
+                            , '@lot_loc'
+                            , '@lot_loc.whse'
+                            , @Currentwhse
+                            , '@lot_loc.item'
+                            , @PoitemItem
+                            , '@lot_loc.loc'
+                            , @TtRcvLoc
+                            , '@lot_loc.lot'
+                            , @TtRcvLot
+                            
+                     IF @LotLocQtyContained > 0
+                     BEGIN
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare4'
+                            , '@lot_loc.qty_contained'
+                            , @LotLocQtyContained
+                            , '@lot_loc'
+                            , '@lot_loc.whse'
+                            , @Currentwhse
+                            , '@lot_loc.item'
+                            , @PoitemItem
+                            , '@lot_loc.loc'
+                            , @TtRcvLoc
+                            , '@lot_loc.lot'
+                            , @TtRcvLot
+                            
+                        EXEC dbo.MsgAskSp @Infobar OUTPUT, @PromptButtons OUTPUT
+                          , 'Q=FunctPerformNoYes'
+                          , '@!GoToContainer'
+                     END
+                            
+                     GOTO LineError
+                  end /* DEPTH:7 */
+
+                  if @LotLocQtyOnHand + @TtRcvTcQtuToReceive < 0.0
+                  BEGIN /* DEPTH:7 */
+                     IF @InvparmsNegFlag = 0
+                     BEGIN /* DEPTH:8 */
+                        /* Negative quantities not allowed */
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                           , @TMText
+                           , '@tmp_rcv'
+                           , '@tmp_rcv.po_num'
+                           , @TtRcvPoNum
+                           , '@tmp_rcv.po_line'
+                           , @TtRcvPoLine
+                           , '@tmp_rcv.po_release'
+                           , @TtRcvPoRelease
+
+                        EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                           , '@tmp_rcv.qty_to_receive'
+                           , @TtRcvTcQtuToReceive
+
+                        EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare=4'
+                           , '@lot_loc.qty_on_hand'
+                           , @LotLocQtyOnHand
+                           , '@lot_loc'
+                           , '@lot_loc.whse'
+                           , @Currentwhse
+                           , '@lot_loc.item'
+                           , @PoitemItem
+                           , '@lot_loc.loc'
+                           , @TtRcvLoc
+                           , '@lot_loc.lot'
+                           , @TtRcvLot
+
+                        SET @MsgParm1 = @LotLocQtyOnHand + @TtRcvTcQtuToReceive
+
+                        EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+                        , '@lot_loc.qty_on_hand', @MsgParm1
+                        IF @MsgSeverity >= ISNULL(@Severity, 0)
+                           SET @Severity = @MsgSeverity
+
+                        GOTO LineError
+                     end /* DEPTH:8 */ /* negative quantities not allowed */
+                  end /* DEPTH:7 */ /* lot-loc quantity being driven negative */
+               end /* DEPTH:6 */ /* lot-loc available */
+            end /* DEPTH:5 */ /* item lot tracked */
+            
+            if ABS(@TtRcvTcQtuToReceive) > @ItemlocQtyOnHand - @ItemlocQtyRsvd - @ItemlocQtyContained
+            and (@ItemlocQtyRsvd > 0 or @ItemlocQtyContained > 0)
+            BEGIN /* DEPTH:5 */
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                  , '@itemlifo.qty'
+                  , @TtRcvTcQtuToReceive
+
+               EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                  , '@itemloc.qty_on_hand'
+                  , @ItemlocQtyOnHand
+                  , '@itemloc'
+                  , '@itemloc.whse'
+                  , @ItemlocWhse
+                  , '@itemloc.item'
+                  , @ItemlocItem
+                  , '@itemloc.loc'
+                  , @ItemlocLoc
+
+               IF @ItemlocQtyRsvd > 0
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                      , '@itemloc.qty_rsvd'
+                      , @ItemlocQtyRsvd
+                      , '@itemloc'
+                      , '@itemloc.whse'
+                      , @ItemlocWhse
+                      , '@itemloc.item'
+                      , @ItemlocItem
+                      , '@itemloc.loc'
+                      , @ItemlocLoc
+
+               IF @ItemlocQtyContained > 0
+               BEGIN
+                  EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare3'
+                      , '@itemloc.qty_contained'
+                      , @ItemlocQtyContained
+                      , '@itemloc'
+                      , '@itemloc.whse'
+                      , @ItemlocWhse
+                      , '@itemloc.item'
+                      , @ItemlocItem
+                      , '@itemloc.loc'
+                      , @ItemlocLoc
+                      
+                  EXEC dbo.MsgAskSp @Infobar OUTPUT, @PromptButtons OUTPUT
+                    , 'Q=FunctPerformNoYes'
+                    , '@!GoToContainer'
+               END
+               
+               GOTO LineError
+            end /* DEPTH:5 */
+
+
+            IF (@ContainsOnlyTaxFreeMatls = 1 AND @TaxFreeMatl = 1) OR (@TaxedMatl = 1 AND @MexicanCountryPackOn = 1)
+            BEGIN /* DEPTH:5 */
+               if @ItemLotTracked = 1
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot  = @TtRcvLot
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+               else
+                  SELECT
+                    @TFIQRowPointer = tfiq.RowPointer
+                  , @TFIQQtyOnHand  = tfiq.qty_on_hand
+                  , @TFIQQtyRsvd    = tfiq.qty_rsvd
+                  FROM  tax_free_import_qty AS tfiq with (readuncommitted)
+                  WHERE tfiq.whse = @Currentwhse
+                  AND   tfiq.item = @PoitemItem
+                  AND   tfiq.lot is null
+                  AND   tfiq.loc  = @TtRcvLoc
+                  AND   tfiq.import_doc_id  = @TtRcvImportDocId
+
+               if @@rowcount <> 1
+                  set @TFIQRowPointer = null
+
+               IF (@TFIQRowPointer is not null)
+               BEGIN /* DEPTH:6 */
+                  if (@TFIQQtyOnHand - @TFIQQtyRsvd ) < ABS(@TtRcvTcQtuToReceive) AND @TFIQQtyRsvd > 0
+                    BEGIN /* DEPTH:7 */
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare'
+                        , '@itemlifo.qty'
+                        , @TtRcvTcQtuToReceive
+
+                     EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare5'
+                        , '@tax_free_import_qty.qty_on_hand'
+                        , @TFIQQtyOnHand
+                        , '@lot_loc'
+                        , '@tax_free_import_qty.whse'
+                        , @Currentwhse
+                        , '@tax_free_import_item.item'
+                        , @PoitemItem
+                        , '@tax_free_import_qty.loc'
+                        , @TtRcvLoc
+                        , '@tax_free_import_qty.lot'
+                        , @TtRcvLot
+                        , '@rsvd_inv.import_doc_id'
+                        , @TtRcvImportDocId
+
+                     EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=IsCompare0'
+                        , '@lot_loc.qty_rsvd'
+                        , @TFIQQtyRsvd
+                        , '@lot_loc'
+
+                     GOTO LineError
+                  END /* DEPTH:7 */
+
+                  IF (@TFIQQtyOnHand + @TtRcvTcQtuToReceive) < 0
+                     BEGIN /* DEPTH:7 */
+                    IF @InvparmsNegFlag = 0
+                     BEGIN /* DEPTH:8 */
+                        /* Negative quantities not allowed */
+                      EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=CmdFailed3'
+                        , @TMText
+                        , '@tmp_rcv'
+                        , '@tmp_rcv.po_num'
+                        , @TtRcvPoNum
+                        , '@tmp_rcv.po_line'
+                        , @TtRcvPoLine
+                        , '@tmp_rcv.po_release'
+                        , @TtRcvPoRelease
+
+                       EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare='
+                        , '@tmp_rcv.qty_to_receive'
+                        , @TtRcvTcQtuToReceive
+
+                       EXEC dbo.MsgAppSp @Infobar OUTPUT, 'I=IsCompare5'
+                        , '@tax_free_import_qty.qty_on_hand'
+                        , @TFIQQtyOnHand
+                        , '@lot_loc'
+                        , '@tax_free_import_qty.whse'
+                        , @Currentwhse
+                        , '@tax_free_import_item.item'
+                        , @PoitemItem
+                        , '@tax_free_import_qty.loc'
+                        , @TtRcvLoc
+                        , '@tax_free_import_qty.lot'
+                        , @TtRcvLot
+                        , '@rsvd_inv.import_doc_id'
+                        , @TtRcvImportDocId
+
+                       SET @MsgParm1 = @TFIQQtyOnHand - @TtRcvTcQtuToReceive
+
+                       EXEC @MsgSeverity = dbo.MsgAppSp @Infobar OUTPUT, 'E=NoCompare='
+                        , '@tax_free_import_qty.qty_on_hand', @MsgParm1
+                       IF @MsgSeverity >= ISNULL(@Severity, 0)
+                          SET @Severity = @MsgSeverity
+
+                       GOTO LineError
+                     END /* DEPTH:8 */ /* negative quantities not allowed */
+                   END /* DEPTH:7 */
+               END /* DEPTH:6 */
+            END /* DEPTH:5 */ /* Tax Free Imported Material */
+
+
+         end /* DEPTH:4 */ /* itemloc available */
+      end /* DEPTH:3 */  /* else if tt-rcv.tc-qtu-to-receive < 0.0 then do: */
+   end /* DEPTH:2 */
+
+   /* save serials for xref transactions (see POReceivingProjShipSp) */
+   DECLARE @PoitemRefNum CoJobProjTrnNumType 
+   , @SourceSite SiteType
+   , @SourceCoNum CoNumType
+
+   SELECT @PoitemRefNum = poitem.ref_num
+   , @SourceCoNum = po.source_site_co_num
+   , @SourceSite = vendor.source_site
+   FROM poitem
+   LEFT OUTER JOIN po ON
+      po.po_num = poitem.po_num
+   LEFT OUTER JOIN vendor ON
+      vendor.vend_num = po.vend_num
+   WHERE poitem.po_num = @TtRcvPoNum
+     AND poitem.po_line = @TtRcvPoLine
+     AND poitem.po_release = @TtRcvPoRelease
+
+   --If the PO Line doesn't have Xref, then don't insert into tmp_ser.
+   IF @PoitemRefNum IS NOT NULL AND @PoitemRefNum <> ''
+   BEGIN
+      INSERT INTO tmp_ser (SessionID, ser_num, ref_str)
+      SELECT SessionID, ser_num, 'xref' + @TtRcvWorkkey
+      FROM tmp_ser with (readuncommitted)
+      WHERE tmp_ser.SessionID = @SessionID
+      AND tmp_ser.ref_str = @TtRcvWorkkey
+   END
+
+   /* POST TRANSACTION */
+
+   DECLARE
+      @HaveItem bit
+      , @Cost     CostPrcType
+      , @TranCost CostPrcType
+
+   IF @Poinclude_tax_in_cost = 1
+   BEGIN
+      if @Today is null
+         set @Today = dbo.GetSiteDate(getdate())
+
+      if @IsTaxInterfaceAvailable is null
+         set @IsTaxInterfaceAvailable = dbo.IsAddonAvailable('TaxInterface')
+
+      if @vrtx_parm_Exists is null
+         set @vrtx_parm_Exists = case when OBJECT_ID(N'vrtx_parm') IS NOT NULL then 1 else 0 end
+
+      if @IsJapanInterfaceAvailable is null
+         set @IsJapanInterfaceAvailable = dbo.IsAddonAvailable('JapanCountryPack')
+
+      if @DomCurrCode is null
+         select @DomCurrCode = curr_code from currparms with (readuncommitted)
+
+      IF @CurrCode IS NULL
+         set @CurrCode = @DomCurrCode
+
+      SELECT @CurrencyPlaces = currency.places_cp
+      FROM currency with (readuncommitted)
+      WHERE  currency.curr_code = @CurrCode
+
+     EXEC @Severity = dbo.TaxPriceSeparationSp
+           @InvType                = 'PO'
+         , @Type                   = 'I'
+         , @TaxCode1               = @PoitemTaxCode1
+         , @TaxCode2               = @PoitemTaxCode2
+         , @HdrTaxCode1            = @PoTaxCode1
+         , @HdrTaxCode2            = @PoTaxCode2
+   
+         , @Amount                 = @TtRcvTcCprUnitMatCost
+         , @UndiscAmount           = @TtRcvTcCprUnitMatCost
+   
+         , @CurrCode               = @CurrCode
+         , @ExchRate               = @PoExchRate
+         , @UseExchRate            = 0
+         , @Places                 = @CurrencyPlaces
+         , @InvDate                = @Today
+         , @TermsCode              = @PoTermsCode
+   
+         , @AmountWithoutTax       = @TtRcvTcCprUnitMatCost    OUTPUT
+         , @UndiscAmountWithoutTax = @TtRcvTcCprUnitMatCost    OUTPUT
+         , @Tax1OnAmount           = @TaxAmount1 OUTPUT
+         , @Tax2OnAmount           = @TaxAmount2 OUTPUT
+         , @Tax1OnUndiscAmount     = @xAmount    OUTPUT
+         , @Tax2OnUndiscAmount     = @xAmount    OUTPUT
+         , @Infobar                = @Infobar    OUTPUT
+         , @Site = @ParmsSite
+         , @DomCurrCode = @DomCurrCode
+         , @IsTaxInterfaceAvailable = @IsTaxInterfaceAvailable
+         , @vrtx_parm_Exists  = @vrtx_parm_Exists
+         , @IsJapanInterfaceAvailable = @IsJapanInterfaceAvailable
+
+      IF @Severity <> 0
+         goto LineError
+   
+      SET @TaxAmount = isnull(@TaxAmount1,0) + isnull(@TaxAmount2,0)
+
+      SET @TaxAmount1=NULL
+      SET @TaxAmount2=NULL
+      EXEC @Severity = dbo.TaxPriceSeparationSp
+           @InvType                = 'PO'
+         , @Type                   = 'I'
+         , @TaxCode1               = @PoitemTaxCode1
+         , @TaxCode2               = @PoitemTaxCode2
+         , @HdrTaxCode1            = @PoTaxCode1
+         , @HdrTaxCode2            = @PoTaxCode2
+   
+         , @Amount                 = @TtRcvTcCprUnitMatCostConv
+         , @UndiscAmount           = @TtRcvTcCprUnitMatCostConv
+   
+         , @CurrCode               = @CurrCode
+         , @ExchRate               = @PoExchRate
+         , @UseExchRate            = 0
+         , @Places                 = @CurrencyPlaces
+         , @InvDate                = @Today
+         , @TermsCode              = @PoTermsCode
+   
+         , @AmountWithoutTax       = @TtRcvTcCprUnitMatCostConv    OUTPUT
+         , @UndiscAmountWithoutTax = @TtRcvTcCprUnitMatCostConv    OUTPUT
+         , @Tax1OnAmount           = @TaxAmount1 OUTPUT
+         , @Tax2OnAmount           = @TaxAmount2 OUTPUT
+         , @Tax1OnUndiscAmount     = @xAmount    OUTPUT
+         , @Tax2OnUndiscAmount     = @xAmount    OUTPUT
+         , @Infobar                = @Infobar    OUTPUT
+         , @Site = @ParmsSite
+         , @DomCurrCode = @DomCurrCode
+         , @IsTaxInterfaceAvailable = @IsTaxInterfaceAvailable
+         , @vrtx_parm_Exists  = @vrtx_parm_Exists
+         , @IsJapanInterfaceAvailable = @IsJapanInterfaceAvailable
+
+      IF @Severity <> 0
+         goto LineError
+   
+      SET @TaxAmountConv = isnull(@TaxAmount1,0) + isnull(@TaxAmount2,0)
+   END
+
+   SET @Cost = @TtRcvTcCprUnitMatCost + @TtRcvTcCprUnitDutyCost + @TtRcvTcCprUnitFreightCost + @TtRcvTcCprUnitBrokCost + @TtRcvTcCprUnitInsuranceCost + @TtRcvTcCprUnitLocFrtCost
+   SET @TranCost = @TtRcvTcCprUnitMatCostConv + @TtRcvTcCprUnitDutyCostConv + @TtRcvTcCprUnitFreightCostConv + @TtRcvTcCprUnitBrokCostConv + @TtRcvTcCprUnitInsuranceCostConv + @TtRcvTcCprUnitLocFrtCostConv
+   SET @HaveItem = case when (@ItemRowpointer is not null) then 1 else 0 end
+
+
+   IF  @GrnHdrRowpointer is not null
+      SET @CurrWhse = @GrnHdrWhse
+   ELSE
+      SET @CurrWhse = @TtRcvWhse
+
+   -- try to avoid a deadlock
+   select
+     @ItemwhseRowpointer = itemwhse.rowpointer
+   from itemwhse with (rowlock,xlock,holdlock)
+   where itemwhse.whse = @CurrWhse
+   and itemwhse.item = @PoitemItem
+
+   /* Defind variable to skip SyncCoFromPoSp when do PO Receiving */
+   IF @SourceCoNum IS NOT NULL AND @SourceSite IS NOT NULL
+   BEGIN
+      EXEC dbo.DefineVariableSp
+        @VariableName  = 'SkipSyncCoFromPoSp'
+      , @VariableValue = 1
+      , @Infobar       = @Infobar OUTPUT
+   END
+
+   EXEC @Severity = dbo.PoReceivingTrxPostSp
+        @TransDate         = @TtRcvTransdate
+      , @Whse              = @CurrWhse
+      , @PoNum             = @TtRcvPoNum
+      , @PoLine            = @TtRcvPoLine
+      , @PoRelease         = @TtRcvPoRelease
+      , @QtyToReceive      = @TtRcvTcQtuToReceive   /* t-qty in old code */
+      , @QtyToReject       = @TtRcvTcQtuToReject    /* t-qty-rej in old code */
+      , @Tran1UM           = @TtRcvUM
+      , @Return            = @TtRcvDrReturn
+      , @EcCode            = @TtRcvEcCode
+      , @HaveItem          = @HaveItem
+      , @Item              = @PoitemItem
+      , @Loc               = @TtRcvLoc
+      , @Lot               = @TtRcvLot
+      , @ReasonCode        = @TtRcvReasonCode
+      , @Cost              = @Cost
+      , @Material          = @TtRcvTcCprUnitMatCost
+      , @Duty              = @TtRcvTcCprUnitDutyCost
+      , @Freight           = @TtRcvTcCprUnitFreightCost
+      , @Brokerage         = @TtRcvTcCprUnitBrokCost
+      , @Insurance         = @TtRcvTcCprUnitInsuranceCost
+      , @LocFrt            = @TtRcvTcCprUnitLocFrtCost
+      , @TranCost          = @TranCost
+      , @TranMaterial      = @TtRcvTcCprUnitMatCostConv
+      , @TranDuty          = @TtRcvTcCprUnitDutyCostConv
+      , @TranFreight       = @TtRcvTcCprUnitFreightCostConv
+      , @TranBrokerage     = @TtRcvTcCprUnitBrokCostConv
+      , @TranInsurance     = @TtRcvTcCprUnitInsuranceCostConv
+      , @TranLocFrt        = @TtRcvTcCprUnitLocFrtCostConv
+      , @FreightExchRate   = @FreightExchRate
+      , @DutyExchRate      = @DutyExchRate
+      , @BrokerageExchRate = @BrokerageExchRate
+      , @InsuranceExchRate = @InsuranceExchRate
+      , @LocFrtExchRate    = @LocFrtExchRate
+      , @Consign           = @TtRcvByCons
+      , @PackNum           = @TtRcvPacknum
+      , @WorkKey           = @TtRcvWorkkey
+      , @GRNExists         = @TtRcvGrnexists   OUTPUT
+      , @GrnNum            = @TtRcvGrnNum
+      , @GrnLine           = @GrnLineLoop     OUTPUT
+      , @Infobar           = @Infobar          OUTPUT
+      , @ImportDocId       = @TtRcvImportDocId
+      , @TaxAmount         = @TaxAmount
+      , @TaxAmountConv     = @TaxAmountconv
+      , @ManufacturerId    = @TtrcvManufacturerId
+      , @ManufacturerItem  = @TtrcvManufacturerItem
+      , @ContainerNum      = @TrRcvContainerNum
+      , @VendInvNum        = @VendInvNum
+      , @DocumentNum       = @DocumentNum
+
+   IF @SourceCoNum IS NOT NULL AND @SourceSite IS NOT NULL
+   BEGIN
+      EXEC dbo.UndefineVariableSp
+        @VariableName  = 'SkipSyncCoFromPoSp'
+      , @Infobar       = @Infobar OUTPUT
+   END
+
+   IF @Severity = 0
+   BEGIN
+      IF @TtRcvGrnexists <> 0
+      BEGIN
+         SET @GRNNowExists = 1
+
+         IF @GrnLineLoop <> @TtRcvGrnLine
+			 UPDATE tt_rcv
+			 SET tt_rcv.grn_line = @GrnLineLoop
+			 WHERE tt_rcv.RowPointer = @TtRcvRowPointer
+			 AND tt_rcv.SessionID = @SessionID
+			 AND tt_rcv.grn_num = @TtRcvGrnNum
+			 AND tt_rcv.po_num = @TtRcvPoNum
+			 AND tt_rcv.po_line = @TtRcvPoLine
+			 AND tt_rcv.po_release = @TtRcvPoRelease
+			 AND tt_rcv.sequence = @TtRcvSequence
+      END
+
+      -- qcs >>>
+        IF @IsQCLicensed = 1 
+        BEGIN
+           if @RSQCNeedsQC = 1
+           AND @TtRcvDrReturn = 0
+           AND @TtRcvTcQtuToReceive > 0.0
+           BEGIN
+            SET @RSQCMessages = ''
+            IF OBJECT_ID(N'dbo.RSQC_CreateSupplierReceiverSp') IS NOT NULL
+            BEGIN
+               SET @QCS_SpName = N'dbo.RSQC_CreateSupplierReceiverSp'
+               EXEC @QCS_Severity = @QCS_SpName
+                @TtRcvTcQtuToReceive
+               , @TtRcvWhse
+               , @TtRcvPoNum
+               , @TtRcvPoLine
+               , @TtRcvPoRelease
+               , @TtRcvLoc
+               , @RSQCOrigDueDate
+               , @TtRcvLot
+               , @PoitemItem
+               , @PoVendNum
+               , @TtRcvTransdate
+               , @RSQCAutoAccept
+               , @RSQCCallingFunction
+               , '' -- @QCLot
+               , @RSQCUserCode
+               , 0
+               , @RSQCRcvrNum OUTPUT
+               , @RSQCPopUp OUTPUT
+               , @RSQCPrintTag OUTPUT
+               , @RSQCMessages OUTPUT
+               , @Infobar OUTPUT
+            END
+            IF @RSQCRcvrNum IS NOT NULL
+            BEGIN            
+            EXEC @Severity = dbo.GetVariableSp
+                 'RSQCRcvrNumStack'
+                 , NULL
+                 , 0
+                 , @RSQCRcvrNumStack OUTPUT
+                 , @Infobar OUTPUT
+               EXEC @Severity = dbo.GetVariableSp
+                 'RSQCStatusStack'
+                 , NULL
+                 , 0
+                 , @RSQCStatusStack OUTPUT
+                 , @Infobar OUTPUT
+               EXEC @Severity = dbo.GetVariableSp
+                 'RSQCMessageStack'
+                 , NULL
+                 , 0
+                 , @RSQCMessageStack OUTPUT
+                 , @Infobar OUTPUT
+               EXEC @Severity = dbo.GetVariableSp
+                 'RSQCSequenceStack'
+                 , NULL
+                 , 0
+                 , @RSQCSequenceStack
+                 , @Infobar OUTPUT
+            
+            
+               IF @RSQCRcvrNumStack IS NULL 
+                  SET @RSQCRcvrNumStack = CAST(@RSQCRcvrNum AS nvarchar) + ','
+               ELSE
+                  SET @RSQCRcvrNumStack = @RSQCRcvrNumStack + CAST(@RSQCRcvrNum AS nvarchar) + ','
+                 
+               IF @RSQCStatusStack IS NULL
+                  IF @RSQCAutoAccept = 0
+                     SET @RSQCStatusStack = 'Received,'
+                  ELSE
+                     SET @RSQCStatusStack = 'Accepted,'
+               ELSE
+                  IF @RSQCAutoAccept = 0
+                     SET @RSQCStatusStack = @RSQCStatusStack + 'Received,'
+                 ELSE
+                   SET @RSQCStatusStack = @RSQCStatusStack + 'Accepted,'
+               IF @RSQCMessageStack IS NULL
+                  SET @RSQCMessageStack = @RSQCMessages
+               ELSE
+                  EXEC dbo.MsgConcatSp @RSQCMessageStack OUTPUT, @RSQCMessages
+            
+               IF @RSQCSequenceStack IS NULL
+                  SET @RSQCSequenceStack = CAST(@TtRcvSequence AS nvarchar) + ','
+               ELSE
+                  SET @RSQCSequenceStack = @RSQCSequenceStack + CAST(@TtRcvSequence AS nvarchar) + ','
+             END -- IF @RSQCRcvrNum is not null 
+           END -- IF @RSQCNeedsQC, and not DR, and positive receipt 
+        END-- <<< qcs
+      GOTO NextLine
+   end
+
+   break
+
+   NextLine:
+   goto Commit_Data
+   NextLineDone:
+end
+close tt_rcv_crs
+deallocate tt_rcv_crs
+
+LineError:
+if @Severity > 0
+begin
+   if @NeedGrnInError = 1
+   and @TtRcvGrnNum is null
+   begin
+      select top 1 @TtRcvGrnNum = po_rcpt.grn_num
+      , @GrnLineLoop = po_rcpt.grn_line
+      from po_rcpt with (readuncommitted)
+      where po_rcpt.po_num = @TtRcvPoNum
+      and po_rcpt.po_line = @TtRcvPoLine
+      and po_rcpt.po_release = @TtRcvPoRelease
+      and po_rcpt.grn_num is not null
+
+      if @TtRcvGrnNum is not null
+         EXEC @Severity = dbo.MsgAppSp @Infobar OUTPUT, 'E=Exist5'
+         , '@grn_line'
+         , '@grn_line.grn_num'
+         , @TtRcvGrnNum
+         , '@grn_line.grn_line'
+         , @GrnLineLoop
+         , '@grn_line.po_num'
+         , @TtRcvPoNum
+         , '@grn_line.po_line'
+         , @TtRcvPoLine
+         , '@grn_line.po_release'
+         , @TtRcvPoRelease
+   end
+
+    if @FirstSequenceWithError is null
+       SET @FirstSequenceWithError = @TtRcvSequence
+
+    EXEC @Severity2 = dbo.JournalImmediateSp
+      @Partition = @BufferJournal
+    , @Infobar = @Infobar output
+
+   if @InitialTranCount = 0
+      ROLLBACK TRANSACTION
+
+   UPDATE tt_rcv
+   SET PostSuccess = 0
+   WHERE RowPointer = @TtRcvRowPointer
+   and tt_rcv.SessionID = @SessionID  
+   and tt_rcv.grn_line = @GrnLineLoop
+   and tt_rcv.po_num = @TtRcvPoNum
+   and tt_rcv.po_line = @TtRcvPoLine
+   and tt_rcv.po_release = @TtRcvPoRelease
+   and tt_rcv.sequence = @TtRcvSequence
+end
+else if @@trancount > @InitialTranCount
+begin
+Commit_Data:
+   EXEC @Severity2 = dbo.JournalImmediateSp
+     @Partition = @BufferJournal
+    ,@Infobar = @Infobar output
+   if @Severity = 0
+      set @Severity = @Severity2
+
+   if @Severity = 0
+   begin
+      update tt_rcv
+      set PostSuccess = 1
+      WHERE RowPointer = @TtRcvRowPointer
+      and tt_rcv.SessionID = @SessionID
+      and tt_rcv.grn_line = @GrnLineLoop
+      and tt_rcv.po_num = @TtRcvPoNum
+      and tt_rcv.po_line = @TtRcvPoLine
+      and tt_rcv.po_release = @TtRcvPoRelease
+      and tt_rcv.sequence = @TtRcvSequence
+
+      IF @PoitemFaNum IS NOT NULL
+         update famaster 
+         set acq_date = @TtRcvTransdate
+         where fa_num = @PoitemFaNum and fa_stat =  N'N'
+
+      if @InitialTranCount = 0
+         COMMIT TRANSACTION
+
+      SET @Infobar = NULL
+      SET @Severity = 0
+
+      -- if the cursor is still open, then there must be more work to do
+      if cursor_status ('local', 'tt_rcv_crs') >= 0
+         goto NextLineDone
+   end
+   else
+   begin
+      if @InitialTranCount = 0
+         ROLLBACK TRANSACTION
+
+      if @FirstSequenceWithError is null
+         SET @FirstSequenceWithError = @TtRcvSequence
+
+      UPDATE tt_rcv
+      SET PostSuccess = 0
+      WHERE RowPointer = @TtRcvRowPointer
+      and tt_rcv.SessionID = @SessionID  
+      and tt_rcv.grn_line = @GrnLineLoop
+      and tt_rcv.po_num = @TtRcvPoNum
+      and tt_rcv.po_line = @TtRcvPoLine
+      and tt_rcv.po_release = @TtRcvPoRelease
+      and tt_rcv.sequence = @TtRcvSequence
+   end
+end
+
+EXEC dbo.UndefineVariableSp 'ItemMiscReceiptSp.SkipCalcCost', @Infobar OUTPUT
+
+-- >>> qcs
+IF @IsQCLicensed = 1 and @RSQCRcvrNumStack IS NOT NULL
+BEGIN
+   SET @SaveSeverity = @Severity
+
+
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCRcvrNumStack'
+   , @RSQCRcvrNumStack
+   , @Infobar OUTPUT
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCStatusStack'
+   , @RSQCStatusStack
+   , @Infobar OUTPUT
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCMessageStack'
+   , @RSQCMessageStack
+   , @Infobar OUTPUT
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCSequenceStack'
+   , @RSQCSequenceStack
+   , @Infobar OUTPUT
+   SET @RSQCPopUpChar = CAST(@RSQCPopUp AS NVARCHAR)
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCPopUp'
+   , @RSQCPopUpChar
+   , @Infobar OUTPUT
+   SET @RSQCPrintTagChar = CAST(@RSQCPrintTag AS NVARCHAR)
+   EXEC @Severity = dbo.DefineVariableSp
+     'RSQCPrintTag'
+   , @RSQCPrintTagChar
+   , @Infobar OUTPUT
+
+   SET @Severity = @SaveSeverity
+END   -- <<< qcs
+
+if @ParentWantsReturnCode = 1
+   return @Severity
+RETURN 0
+,]

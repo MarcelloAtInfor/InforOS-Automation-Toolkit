@@ -1,0 +1,34 @@
+{
+  "Items": [
+    {
+      "PoNum": "PO20261009",
+      "PoLine": "1",
+      "PoRelease": "0",
+      "Item": "BOX-CORR-18X1",
+      "QtyOrderedConv": "20.00000000",
+      "QtyReceived": "0.00000000",
+      "UM": "EA",
+      "Stat": "O",
+      "Whse": "MAIN",
+      "RowPointer": "09ab3817-ce49-476a-9909-048fd6ca89ce",
+      "_ItemId": "PBT=[poitem] poi.DT=[2026-01-31 17:22:00.730] poi.ID=[09ab3817-ce49-476a-9909-048fd6ca89ce]"
+    },
+    {
+      "PoNum": "PO20261009",
+      "PoLine": "2",
+      "PoRelease": "0",
+      "Item": "TAPE-PACK-2IN",
+      "QtyOrderedConv": "48.00000000",
+      "QtyReceived": "0.00000000",
+      "UM": "RL",
+      "Stat": "O",
+      "Whse": "MAIN",
+      "RowPointer": "7e6bfaa9-6715-45f4-9968-4664f7b93228",
+      "_ItemId": "PBT=[poitem] poi.DT=[2026-01-31 17:22:00.877] poi.ID=[7e6bfaa9-6715-45f4-9968-4664f7b93228]"
+    }
+  ],
+  "Bookmark": "<B><P><p>PoNum</p><p>PoLine</p><p>PoRelease</p></P><D><f>false</f><f>false</f><f>false</f></D><F><v>PO20261009</v><v>1</v><v>0</v></F><L><v>PO20261009</v><v>2</v><v>0</v></L></B>",
+  "MoreRowsExist": false,
+  "Success": true,
+  "Message": null
+}

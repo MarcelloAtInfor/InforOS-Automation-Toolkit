@@ -1,0 +1,249 @@
+[
+  {
+    "documetFlowID": 0,
+    "documentFlowName": "CSI_APInvoice_Extract",
+    "documentFlowDescription": "Extracts vendor, PO header, and line item data from AP invoices for automated processing by InvoiceAutomation_Agent_v2",
+    "activities": [
+      {
+        "activityId": 0,
+        "activityTypeId": 2,
+        "activityName": "Entity Classification",
+        "activityDescription": "Entity Classification",
+        "activityProviders": [
+          {
+            "providerId": 10,
+            "providerName": "GenAI",
+            "providerDescription": "GenAI Model",
+            "providerGuid": null
+          }
+        ],
+        "seqNo": 0,
+        "activityProviderId": 10,
+        "status": 0,
+        "activityGuild": "",
+        "configurations": null,
+        "base_model_guid": "",
+        "autoSplit": false,
+        "testCount": 20,
+        "trainCount": 80,
+        "expectedAccuracy": 0,
+        "ephocCount": 0
+      }
+    ],
+    "trainingCount": 0,
+    "testCount": 0,
+    "modelAccuracy": 0,
+    "guidID": "",
+    "status": "Active",
+    "documentClasses": [
+      {
+        "documentClassGuid": "",
+        "documentTypeId": 0,
+        "documentName": "AP_Invoice_Extraction",
+        "documentFields": [
+          {
+            "fieldName": "Vendor Name",
+            "description": "The name of the vendor/supplier company that issued this invoice. This is the company we are purchasing goods or services from. Look for the company name in the invoice header, 'From', 'Sold By', 'Supplier', or 'Vendor' sections.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Address Line 1",
+            "description": "The primary street address of the vendor/supplier. Look in the vendor's company details section, typically near the top of the invoice or in the 'Bill From' area.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor City",
+            "description": "The city where the vendor/supplier is located. Extract from the vendor's address block.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor State",
+            "description": "The state or province code (2 characters) where the vendor is located. Extract the abbreviated state code like 'IL', 'CA', 'NY'. If only the full state name is provided, convert to 2-character code.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Zip",
+            "description": "The postal/ZIP code of the vendor's address. Include the full ZIP code if available (5 or 9 digits for US).",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Phone",
+            "description": "The vendor's business phone number. Look in the vendor's contact information section. Extract the number including area code. If no phone number is found, return null.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Vendor Email",
+            "description": "The vendor's business email address. Extract only valid email addresses (format: name@domain.com). Do not extract website URLs. If no email is found, return null.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Number",
+            "description": "The unique invoice number or ID. This will be used as the PO number in SyteLine (limited to 10 characters). Look for 'Invoice #', 'Invoice No.', 'Inv #', or similar labels.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Invoice Date",
+            "description": "The date the invoice was issued. Provide in YYYY-MM-DD format. Look for 'Invoice Date', 'Date', or 'Issued Date' labels.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Payment Terms",
+            "description": "The payment terms code. Common values: N30 (Net 30 days), N45 (Net 45 days), N60 (Net 60 days), COD (Cash on Delivery), NET10, NET15, 2%10NET30 (2% discount if paid in 10 days, otherwise net 30). If terms are described in words, convert to code format. If 'Due upon receipt' return COD.",
+            "fieldType": "text",
+            "isRequired": true,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Currency Code",
+            "description": "The 3-letter ISO currency code (e.g., USD, EUR, GBP, CAD). Extract from currency symbols or text. $ = USD, € = EUR, £ = GBP, C$ = CAD. Default to USD if not specified.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "PO Reference",
+            "description": "If this invoice references a customer PO number (our PO that prompted this invoice), extract it here. Look for 'Your PO #', 'PO Reference', 'Customer PO'. This is optional and different from Invoice Number.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          },
+          {
+            "fieldName": "Notes",
+            "description": "Any special instructions, notes, or comments on the invoice. Include delivery instructions, handling notes, or other remarks verbatim. Return null if none.",
+            "fieldType": "text",
+            "isRequired": false,
+            "idmattributeName": "None"
+          }
+        ],
+        "tableHeaders": [
+          {
+            "tableId": 0,
+            "documentClassId": 0,
+            "tableName": "Line Items",
+            "tableFields": [
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Line Number",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The line number or sequence number. If not explicitly shown, assign sequential numbers (1, 2, 3...) based on order of appearance in the table."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Item Code",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The product code, SKU, part number, or item identifier. Look for columns labeled 'Item #', 'SKU', 'Part No.', 'Product Code', 'Material', or 'Item'."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Description",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The item description or product name. Capture the full description of the product or service."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Quantity",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The quantity ordered. Provide as a decimal number with 2 decimal places (e.g., '25.00', '1.50', '100.00'). Look for 'Qty', 'Quantity', 'Ordered', 'Units' columns."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Unit of Measure",
+                "isRequired": true,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The unit of measure. Common values: EA (Each), LB (Pound), KG (Kilogram), BOX, CS (Case), FT (Foot), M (Meter), GAL (Gallon), PK (Pack), DZ (Dozen). If 'each' or 'unit' is written, use 'EA'. Default to 'EA' if not specified."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Unit Price",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The price per unit. Extract the numeric value only, without currency symbols. Format as decimal (e.g., '25.99', '100.00')."
+              },
+              {
+                "fieldId": 0,
+                "documentClassId": 0,
+                "fieldName": "Due Date",
+                "isRequired": false,
+                "dataType": "text",
+                "idmAttributeName": "",
+                "expectedConfidence": 0,
+                "description": "The required delivery date for this line item. Provide in YYYY-MM-DD format. Look for 'Delivery Date', 'Ship Date', 'Due Date', 'Required By'. If not specified per line, use the invoice due date or leave null."
+              }
+            ],
+            "isRequired": true,
+            "idmAttributeName": "None",
+            "expectedConfidence": 0,
+            "description": "Table containing line item details from the invoice"
+          }
+        ],
+        "baseModelID": "",
+        "status": null,
+        "idmDocumentType": "None",
+        "description": "Accounts Payable Invoice document for extraction. Extracts vendor details, invoice header information, and line items for automated PO creation in SyteLine.",
+        "documentClassID": 0
+      }
+    ],
+    "configurationAndPrompt": {
+      "ocrType": null,
+      "dcPrompt": null,
+      "ecPrompt": [
+        {
+          "AP_Invoice_Extraction": "$Entity Classification Prompt Start$User: You are an expert Document-Based Question-Answering tool assigned to extract specified entities from AP (Accounts Payable) invoice documents. Analyze the provided invoice document carefully. The document includes layout details, and the OCR text is provided page by page within <Page {Page Number}> tags. Entities to be detected are marked within <entities></entities> tags. Think step by step and use the clues to consider what information is potentially relevant for an entity.\n\n<entities>\nVendor Name,Vendor Address Line 1,Vendor City,Vendor State,Vendor Zip,Vendor Phone,Vendor Email,Invoice Number,Invoice Date,Payment Terms,Currency Code,PO Reference,Notes\n</entities>\n\nClues:\nVendor Name - The name of the vendor/supplier company that issued this invoice. This is the company we are purchasing goods or services from. Look for the company name in the invoice header, 'From', 'Sold By', 'Supplier', or 'Vendor' sections.\nVendor Address Line 1 - The primary street address of the vendor/supplier. Look in the vendor's company details section, typically near the top of the invoice or in the 'Bill From' area.\nVendor City - The city where the vendor/supplier is located. Extract from the vendor's address block.\nVendor State - The state or province code (2 characters) where the vendor is located. Extract the abbreviated state code like 'IL', 'CA', 'NY'. If only the full state name is provided, convert to 2-character code.\nVendor Zip - The postal/ZIP code of the vendor's address. Include the full ZIP code if available (5 or 9 digits for US).\nVendor Phone - The vendor's business phone number. Look in the vendor's contact information section. Extract the number including area code. If no phone number is found, return null.\nVendor Email - The vendor's business email address. Extract only valid email addresses (format: name@domain.com). Do not extract website URLs. If no email is found, return null.\nInvoice Number - The unique invoice number or ID. This will be used as the PO number in SyteLine (limited to 10 characters). Look for 'Invoice #', 'Invoice No.', 'Inv #', or similar labels.\nInvoice Date - The date the invoice was issued. Provide in YYYY-MM-DD format. Look for 'Invoice Date', 'Date', or 'Issued Date' labels.\nPayment Terms - The payment terms code. Common values: N30 (Net 30 days), N45 (Net 45 days), N60 (Net 60 days), COD (Cash on Delivery), NET10, NET15. If terms are described in words like 'Net 30 days', convert to 'N30'. If 'Due upon receipt' return 'COD'.\nCurrency Code - The 3-letter ISO currency code (e.g., USD, EUR, GBP, CAD). Extract from currency symbols or text. $ = USD, € = EUR, £ = GBP, C$ = CAD. Default to USD if not specified.\nPO Reference - If this invoice references a customer PO number (our PO that prompted this invoice), extract it here. Look for 'Your PO #', 'PO Reference', 'Customer PO'. This is optional.\nNotes - Any special instructions, notes, or comments on the invoice. Include delivery instructions verbatim. Return null if none.\n\n<instructions>\n1. There are 13 entities in <entities></entities> tag, be diligent in ensuring to capture all entities value completely upfront without missing any.\n2. Go through the clues one by one and understand the meaning of each entity type and extract correct values with less false positive.\n3. Avoid calculating any entity value and do not include any other entity outside <entities></entities> tag.\n4. If there are multiple instances of one entity type present in the document, extract the primary/first value unless it's a multi-value field.\n5. Format your output as a JSON object for each type-value pair you extract, in this format: <format> {\"entity\": <entity selected from <entities> list>, \"value\": <value text from input document>, \"confidence\": <confidence in entity match>, \"PageNo\": <Comma separated all page numbers where the entity is present>}</format>\n6. Your response should include text from only document and wrapped in <result></result> tags. Do not include any other explanatory text\n7. If an entity appears on multiple pages, list all the corresponding page numbers in the \"PageNo\" field as a comma-separated string, e.g., \"1,2,4.\"\n8. For Payment Terms, always convert to standard code format (N30, N45, N60, COD, etc.)\n9. For Vendor State, always provide 2-character state code.\n</instructions>\n\nReturn the result as JSON:\n<result>\n{\n    \"entities\":\n    [\n        {\"entity\":\"Vendor Name\",\"value\":\"ACME Supplies Inc\", \"confidence\": 98, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor Address Line 1\",\"value\":\"456 Industrial Blvd\", \"confidence\": 95, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor City\",\"value\":\"Chicago\", \"confidence\": 95, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor State\",\"value\":\"IL\", \"confidence\": 95, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor Zip\",\"value\":\"60601\", \"confidence\": 95, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor Phone\",\"value\":\"312-555-8900\", \"confidence\": 90, \"PageNo\":\"1\"},\n        {\"entity\":\"Vendor Email\",\"value\":\"ap@acmesupplies.com\", \"confidence\": 90, \"PageNo\":\"1\"},\n        {\"entity\":\"Invoice Number\",\"value\":\"INV2026003\", \"confidence\": 99, \"PageNo\":\"1\"},\n        {\"entity\":\"Invoice Date\",\"value\":\"2026-01-28\", \"confidence\": 98, \"PageNo\":\"1\"},\n        {\"entity\":\"Payment Terms\",\"value\":\"N30\", \"confidence\": 95, \"PageNo\":\"1\"},\n        {\"entity\":\"Currency Code\",\"value\":\"USD\", \"confidence\": 90, \"PageNo\":\"1\"},\n        {\"entity\":\"PO Reference\",\"value\":null, \"confidence\": 0, \"PageNo\":\"\"},\n        {\"entity\":\"Notes\",\"value\":null, \"confidence\": 0, \"PageNo\":\"\"}\n    ]\n}\n</result>\n\nBefore giving the response, please make sure you return all entities present in <entities></entities> tag. Provide your final response within <result></result> tags.\n\nExpert:$Entity Classification Prompt End$\n\n$Table Detection Prompt Start$\nUser:\nYou are an expert document-based table extractor assigned to extract tables from AP invoice documents.\nYou are given with the document for layout understanding and the complete OCR of document page by page enclosed in <Page {Page Number}> OCR of Page </Page {Page Number}>\nYour task is to extract the Line Items Table from all pages of provided document referring the Columns List and Clues. You can refer to the provided document only for understanding the layout of the tables.\n\nTables to Extract: [Line Items]\n\nTask:\n1. Analyze the table information thoroughly from the provided OCR text.\n2. Refer to the provided image to understand the layout structure of the tables.\n3. Extract only the tables mentioned in the Tables to Extract section. Organize the extracted tables into a tabular format using only the OCR text provided, while following the layout structure from the image.\n4. Ensure that all columns from the Column List are included and provide appropriate and correct values for those that exist in the document. Exclude any columns listed in the Column List that are not present in the document. If there are any additional columns present inside the table in the original document that have not been accounted for as part of the columns in Columns List, provide these extra columns separately under \"Other\" with their actual column names from the OCR.\n5. Provide the column headers in the output as \"Columnname from Columns List\". For the extra columns, provide each as a separate \"Other\" entry with the format \"Other (Actual column header name as per OCR)\": \"Value\".\n6. After extracting each table, provide Table Confidence in the format:\n\"{Table_Confidence}\": \"{Table extraction Confidence percentage in the range 0 to 100}\n7. Double check that all the column headers are provided as \"Columnname from Columns List\" and all the extra columns are extracted separately as \"Other\"(Actual column header names as per OCR)\n\nColumns List:\nLine Items - [Line Number, Item Code, Description, Quantity, Unit of Measure, Unit Price, Due Date]\n\nClues:\nLine Items Table:\nLine Number - The line number or sequence number. If not explicitly shown, assign sequential numbers (1, 2, 3...) based on order of appearance in the table.\nItem Code - The product code, SKU, part number, or item identifier. Look for columns labeled 'Item #', 'SKU', 'Part No.', 'Product Code', 'Material', or 'Item'.\nDescription - The item description or product name. Capture the full description of the product or service.\nQuantity - The quantity ordered. Provide as a decimal number with 2 decimal places (e.g., '25.00', '1.50', '100.00'). Look for 'Qty', 'Quantity', 'Ordered', 'Units' columns.\nUnit of Measure - The unit of measure. Common values: EA (Each), LB (Pound), KG (Kilogram), BOX, CS (Case), FT (Foot), M (Meter), GAL (Gallon), PK (Pack), DZ (Dozen). If 'each' or 'unit' is written, use 'EA'. Default to 'EA' if not specified.\nUnit Price - The price per unit. Extract the numeric value only, without currency symbols. Format as decimal (e.g., '25.99', '100.00').\nDue Date - The required delivery date for this line item. Provide in YYYY-MM-DD format. Look for 'Delivery Date', 'Ship Date', 'Due Date', 'Required By'. If not specified per line, leave empty.\n\nGuidelines:\n1. Ensure that the table has a proper table name matching with the table in Tables to Extract Section, table column headers, and respective column values under column headers.\n2. For extra columns, provide them separately under \"Other\" with their actual column names from the OCR.\n3. Make sure to omit the columns that are nowhere present in the document ocr.\n4. Do not compute values on your own. Provide only if they are present in the document.\n5. For Quantity, always format as decimal with 2 places (e.g., 25 becomes 25.00).\n6. For Unit of Measure, convert common variations to standard codes (each/unit -> EA, pound -> LB, etc.).\n\nOutput Format:\nProvide the table information in below format. There may be occurances of empty column values. Parse the column values accurately and map to correct columns.\n\n<result>\n{\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"},\"Table Name\": {\"rows\": [[\"ColumnName1\", \"ColumnName2\", \"ColumnName3\", \"PageNo\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"],[\"cellvalue\", \"cellvalue\", \"cellvalue\", \"1\"]],\"Table_Confidence\": \"Confidence of the Table in float\"}}\n</result>\n\nGuidelines:\nResponse should not contain any comments and new lines.\nThe table structure should be in above format, with proper table names, column names and column values with Page number under column \"PageNo\".\nStrictly provide the response containing only valid XML in the above provided structure enclosed in <result></result> and do not use code block formatting or any other text formatting. The json inside result tags should be valid and without any error.\nIf no table is present in the document or if the document contains an empty table, the output format should be <result></result>.\n$Table Detection Prompt End$"
+        }
+      ]
+    },
+    "createtime": null,
+    "updatedtime": null,
+    "errormsg": "",
+    "dpfVersionId": 0,
+    "versionID": "1",
+    "versionName": "v1",
+    "versionStatus": "Active",
+    "promptStructure": null,
+    "is_default": false,
+    "is_base_df": false,
+    "t2vNamespace": "",
+    "t2vNamespaceCode": "",
+    "isImported": 0
+  }
+]

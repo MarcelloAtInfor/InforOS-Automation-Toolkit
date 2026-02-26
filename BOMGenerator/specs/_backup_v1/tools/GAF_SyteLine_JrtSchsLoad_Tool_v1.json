@@ -1,0 +1,23 @@
+{
+  "guid": "dfda76ea-1e26-4a77-aefd-070bf61ddb5d",
+  "name": "GAF_SyteLine_JrtSchsLoad_Tool_v1",
+  "description": "Load job route schedule records (SLJrtSchs) to get _ItemId and current Setuprgid for routing operations",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLJrtSchs\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Use exactly: Job,Suffix,OperNum,Setuprgid,SchedDrv,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. To load ALL operations for a job: Job = '     90001' AND Suffix = 0\nTo load a single operation: Job = '     90001' AND Suffix = 0 AND OperNum = 10\nParameter: orderby\nFormat: STRING\nRequired: False\nDescription: Use: OperNum ASC\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Max records. Omit to get all operations for the job.\nCRITICAL: Job number must be left-padded with spaces to 10 chars (e.g., '     90001').\nSLJrtSchs records are auto-created when routing operations are inserted via SLJobRoutes.\nThis tool loads records only. Use the SetuprgidUpdate tool to update Setuprgid and SchedDrv.\nBatch-friendly: omit OperNum from filter to load ALL operations for a job in one call.\nExtract _ItemId from EACH item in the response Items array — each operation has its own _ItemId.\nExample Request:\nLoad all operations for job 90001:\nGET /load/SLJrtSchs?properties=Job,Suffix,OperNum,Setuprgid,SchedDrv,_ItemId&filter=Job = '     90001' AND Suffix = 0&orderby=OperNum ASC",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\nKey Response Fields:\n- Items: Array of SLJrtSchs records (one per routing operation)\n- For each record:\n  - Job: Job number (left-padded to 10 chars)\n  - Suffix: Job suffix (usually 0)\n  - OperNum: Operation number (10, 20, 30...)\n  - Setuprgid: Current setup resource group (null if not yet set)\n  - SchedDrv: Current scheduling driver ('M' default, 'L' for labor)\n  - _ItemId: Record identifier REQUIRED for the Update tool\nIf Items is empty: routing operations may not exist yet. Insert routing via SLJobRoutes first.\nEach operation has a UNIQUE _ItemId — extract and pair with OperNum for the update step.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Load SLJrtSchs records to get _ItemId for each routing operation.\nBatch: filter by Job+Suffix (omit OperNum) to get ALL operations in one call.\nExtract _ItemId per operation for use with SetuprgidUpdate tool.\nRecords auto-exist after routing insert.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

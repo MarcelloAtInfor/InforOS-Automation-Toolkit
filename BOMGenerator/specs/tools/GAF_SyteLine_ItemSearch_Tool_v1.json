@@ -1,0 +1,23 @@
+{
+  "guid": "fe474baf-5f54-4fcd-82ce-2be099a22646",
+  "name": "GAF_SyteLine_ItemSearch_Tool_v1",
+  "description": "Search for existing items in SyteLine by item code or description",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLItems\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Use: Item,Description,UM,ProductCode,_ItemId\nParameter: filter\nFormat: STRING\nRequired: False\nDescription: SQL WHERE clause to filter results. Examples: Item = 'WIDGET-A' or Description LIKE '%widget%'\nBatch: Use OR filter to check multiple items in one call:\nfilter=(Item = 'CH-10000') OR (Item = 'SA-SEAT1') OR (Item = 'WD-10001')\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. For batch searches, set to number of items being searched.\nExample Requests:\nSearch by item code:\nGET /load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Item = 'WIDGET-A'\nSearch by description:\nGET /load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=Description LIKE '%Premium%'&recordCap=10\nBatch search (multiple items in one call):\nGET /load/SLItems?properties=Item,Description,UM,ProductCode,_ItemId&filter=(Item = 'CH-10000') OR (Item = 'SA-SEAT1') OR (Item = 'WD-10001')&recordCap=10",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with item details.\nKey Response Fields:\n- Items: Array of item objects (empty array if not found)\n- Item: Item code (unique identifier)\n- Description: Item description\n- UM: Unit of measure (e.g., EA, LB, BOX)\n- ProductCode: Product code category\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\nIf no items match the search criteria, Items will be an empty array.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing items in SyteLine before creating new ones.\nSearch by item code (exact): filter=Item = 'ITEM-CODE'\nSearch by description (partial): filter=Description LIKE '%text%'\nBatch: use OR filter to check multiple items in one call.\nReturns item details if found, empty Items array if not found.\nUse to check if an item exists before inserting.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

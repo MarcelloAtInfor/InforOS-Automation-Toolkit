@@ -1,0 +1,30 @@
+{
+  "guid": "b7be3168-6771-4114-abe4-8c43530419ad",
+  "name": "VendorSearch_Tool_v2",
+  "description": "Search for vendors in SyteLine by vendor number or name",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLVendors\nHeaders:\nX-Infor-MongooseConfig: <YOUR_SITE>\nQuery Parameters:\n- properties: VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,Phone,ExternalEmailAddr,_ItemId\n- filter: (optional) e.g., \"VendNum = 'TESTV01'\" or \"Name LIKE '%Corp%'\"\n- recordCap: (optional) limit number of results, e.g., \"10\"\nIMPORTANT Property Names:\n- Phone (NOT VadPhone!)\n- ExternalEmailAddr (NOT VadEmail!)\nFilter Syntax:\n- Use single quotes for string values: VendNum = 'ABC123'\n- LIKE operator for partial match: Name LIKE '%Corp%'\n- NOT double quotes (will cause IllegalFilterException)\nExample request:\nGET /load/SLVendors?properties=VendNum,Name,Phone,ExternalEmailAddr,_ItemId&filter=VendNum='ABC123'&recordCap=10",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"ABC123\",\n      \"Name\": \"Test Vendor Corporation\",\n      \"VadAddr_1\": \"123 Main St\",\n      \"VadCity\": \"New York\",\n      \"VadState\": \"NY\",\n      \"VadZip\": \"10001\",\n      \"Phone\": \"555-1234\",\n      \"ExternalEmailAddr\": \"vendor@example.com\",\n      \"_ItemId\": \"PBT=[vendor] v.DT=[2024-01-01 12:00:00.000] v.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null,\n  \"MoreRowsExist\": false\n}\n\nEmpty result (vendor not found):\n{\n  \"Items\": [],\n  \"Success\": true,\n  \"Message\": null,\n  \"MoreRowsExist\": false\n}\n\nKey Response Fields:\n- Items: Array of vendor records (empty if no matches)\n- Success: Boolean, true if query executed successfully\n- _ItemId: Required for update operations\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for vendors in SyteLine.\n\nSearch by vendor number (exact match):\n- filter: VendNum = 'ABC123'\n\nSearch by name (partial match):\n- filter: Name LIKE '%Corp%'\n\nIMPORTANT: Use correct property names:\n- Phone (NOT VadPhone)\n- ExternalEmailAddr (NOT VadEmail)\n\nReturns array of matching vendors with _ItemId for updates.",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:25.951358Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}

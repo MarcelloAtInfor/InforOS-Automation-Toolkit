@@ -1,0 +1,136 @@
+{
+  "name": "CS_Credit_Approval_v2",
+  "description": "CSI Credit Approval (generated from template)",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCustomers",
+    "monitored_field": "CreditLimit",
+    "workflow_inputs": {
+      "CustName": "Name",
+      "CustNum": "CustNum",
+      "MGConfig": "CONFIGNAME()",
+      "NewCreditLimit": "CreditLimit",
+      "OldCreditLimit": "ROUND(E(OldCreditLimit), 2)",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.Customers",
+    "access_as": "ue_",
+    "handler_sequence": 200,
+    "handler_description": "ue_CreditLimitWorkflow_Clone",
+    "notes_ido": "SLObjectNotes",
+    "notes_object_type": "customer"
+  },
+  "variables": [
+    {"name": "OldCreditLimit", "input": true},
+    {"name": "CustNum", "input": true},
+    {"name": "RowPointer", "input": true},
+    {"name": "CustName", "input": true},
+    {"name": "NewCreditLimit", "input": true},
+    {"name": "MGConfig", "input": true}
+  ],
+  "views": [
+    {
+      "name": "CustomerDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "CustomerView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CustNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "approval_task",
+      "name": "Review",
+      "message": "Customer -  [CustName] - Credit Limit has changed and is requesting approval",
+      "distribution": ["user1", "user2", "user3"],
+      "send_email": true,
+      "priority": "High",
+      "buttons": [
+        {"label": "Approve", "value": "Approved"},
+        {"label": "Reject", "value": "Rejected"}
+      ],
+      "button_variable": "ApproveReject",
+      "params": [
+        {"label": "Name", "variable": "CustName"},
+        {"label": "New Limit", "variable": "NewCreditLimit", "read_only": false},
+        {"label": "ID", "variable": "CustNum"},
+        {"label": "Old Limit", "variable": "OldCreditLimit"},
+        {"label": "Customer Drill Back", "view": "CustomerDrillBack"}
+      ],
+      "due_date": {"value": 1, "unit": "HOURS"}
+    },
+    {
+      "type": "subworkflow",
+      "name": "Update Record",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "IsApproved",
+            "variable": "ApproveReject",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          "true_assignment": {
+            "name": "SetLimitNew",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "NewCreditLimit"
+          },
+          "false_assignment": {
+            "name": "SetLimitOld",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldCreditLimit"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Get Record",
+          "ido": "SLCustomers",
+          "properties": "Name,CustNum,CreditLimit,CustSeq,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update Record",
+          "ido": "SLCustomers",
+          "changes": [
+            {"property": "CreditLimit", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "Notify",
+      "message": "Customer -  [CustName] -  Newly requested Credit Limit of [NewCreditLimit] has been [ApproveReject].",
+      "distribution": ["user1", "user2", "user3"],
+      "propagate_notes": true,
+      "params": [
+        {"label": "Name", "variable": "CustName"},
+        {"label": "ID", "variable": "CustNum"},
+        {"label": "New Credit Limit", "variable": "NewCreditLimit"},
+        {"label": "Status", "variable": "ApproveReject"},
+        {"label": "Customer Drill Back", "view": "CustomerDrillBack"}
+      ]
+    }
+  ]
+}

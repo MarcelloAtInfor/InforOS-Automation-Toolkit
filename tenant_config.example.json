@@ -1,0 +1,17 @@
+{
+  "site": "<auto-detected during setup — e.g. TENANTID_DEM_DALS>",
+  "logical_id": "lid://infor.syteline.csi/<suffix>",
+  "service_account": "<extracted from your exported ION workflow JSON>",
+  "users": {
+    "approver1": {
+      "guid": "<IFS user GUID — resolved from email during setup>",
+      "name": "First Last",
+      "email": "user@company.com"
+    },
+    "approver2": {
+      "guid": "<IFS user GUID>",
+      "name": "First Last",
+      "email": "user@company.com"
+    }
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "DocumentClassification": {
+    "DocumentDetected": "AP_Invoice_Extraction",
+    "ConfidenceScore": "100",
+    "ListOfClass": {
+      "0": "AP_Invoice_Extraction"
+    },
+    "ConfidenceOfClass": {
+      "Invoice": null
+    }
+  },
+  "TableDetection": [
+    {
+      "TableName": "Line Item Table",
+      "TableRows": [
+        [
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "UOM",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "100",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Quantity Shipped",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "Industrial Widget Assembly Type A",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Description",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "WIDGET-A1",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Item Code",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "1",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Line Number",
+            "PageNo": "1"
+          }
+        ],
+        [
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "UOM",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "500",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Quantity Shipped",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "Hex Bolt M8x25mm Stainless Steel",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Description",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "BOLT-HEX-M8",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Item Code",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "2",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Line Number",
+            "PageNo": "1"
+          }
+        ],
+        [
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "UOM",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "250",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Quantity Shipped",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "Round Rubber Gasket 50mm OD",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Description",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "GASKET-RND",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Item Code",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "3",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Line Number",
+            "PageNo": "1"
+          }
+        ],
+        [
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "UOM",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "24",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Quantity Shipped",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "Ball Bearing 6205-2RS Sealed",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Description",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "BEARING-6205",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Item Code",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "4",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Line Number",
+            "PageNo": "1"
+          }
+        ],
+        [
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "UOM",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "10",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Quantity Shipped",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "Machine Lubricant Grade 32 - 5L",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Description",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "LUBRICANT-5L",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Item Code",
+            "PageNo": "1"
+          },
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "5",
+            "Confidence": 0.0,
+            "Geometry": null,
+            "Type": "Line Number",
+            "PageNo": "1"
+          }
+        ]
+      ],
+      "TableGeometry": null,
+      "PageNo": "1"
+    }
+  ],
+  "ExtractionData": [
+    {
+      "FieldName": "Order Date",
+      "FieldValue": "2026-01-28",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Order Date",
+        "Confidence": 95.0
+      }
+    },
+    {
+      "FieldName": "Purchase Order Number",
+      "FieldValue": "PO-0012345",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Purchase Order Number",
+        "Confidence": 95.0
+      }
+    },
+    {
+      "FieldName": "Vendor Email Address",
+      "FieldValue": "orders@acmeindustrial.com",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Vendor Email Address",
+        "Confidence": 95.0
+      }
+    },
+    {
+      "FieldName": "Vendor Phone Number",
+      "FieldValue": "(312) 555-7890",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Vendor Phone Number",
+        "Confidence": 95.0
+      }
+    },
+    {
+      "FieldName": "Vendor Address",
+      "FieldValue": "1234 Commerce Boulevard Chicago, IL 60601",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Vendor Address",
+        "Confidence": 95.0
+      }
+    },
+    {
+      "FieldName": "Vendor Name",
+      "FieldValue": "Acme Industrial Supply Co.",
+      "FieldValues": null,
+      "FieldGeometry": [
+        [],
+        []
+      ],
+      "Confidence": [
+        100.0,
+        95.0,
+        95.0
+      ],
+      "PageNo": [
+        "1"
+      ],
+      "Type": {
+        "Value": "Vendor Name",
+        "Confidence": 95.0
+      }
+    }
+  ],
+  "_metadata": {
+    "TotalFields": 6,
+    "Confidence": 48.229166666666671,
+    "TaskID": "ddc754b7-6d1a-4817-8cab-4e75b087ea5d",
+    "OcrProvider": "AWS_TEXTRACT",
+    "TenantID": "<YOUR_TENANT>",
+    "NumberOfPages": 1
+  }
+}

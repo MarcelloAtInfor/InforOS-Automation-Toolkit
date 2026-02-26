@@ -1,0 +1,23 @@
+{
+  "guid": "eb4e778a-3c98-45de-a2a1-eafe37c40000",
+  "name": "GAF_SyteLine_JobSearch_Tool_v1",
+  "description": "Search for existing standard jobs (BOMs) in SyteLine by item code",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: GET\nEndpoint: /load/SLJobs\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nQuery Parameters:\nParameter: properties\nFormat: STRING\nRequired: True\nDescription: Comma-separated list of properties to return. Use: Job,Suffix,Item,Type,Stat,QtyReleased,Whse,_ItemId\nParameter: filter\nFormat: STRING\nRequired: True\nDescription: SQL WHERE clause. Always include Type = 'S' for standard jobs. Examples: Type = 'S' AND Item = 'FA-20000' or Type = 'S' AND Item LIKE 'MB%'\nParameter: recordCap\nFormat: INTEGER\nRequired: False\nDescription: Maximum number of records to return. Default: 10\nExample Request:\nSearch for standard job by item:\nGET /load/SLJobs?properties=Job,Suffix,Item,Type,Stat,QtyReleased,Whse,_ItemId&filter=Type = 'S' AND Item = 'FA-20000'&recordCap=5",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object containing an Items array with job records.\nKey Response Fields:\n- Items: Array of job objects (empty array if not found)\n- Job: Job number (NumSortedString, 10 chars, left-padded with spaces)\n- Suffix: Job suffix (0 for standard)\n- Item: Item code this job belongs to\n- Type: 'S' = Standard (BOM template)\n- Stat: Job status ('F' = Firm)\n- _ItemId: Record identifier for updates\n- Success: Boolean indicating API call success\nIf no jobs match, Items will be an empty array.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to search for existing standard jobs (BOM containers) in SyteLine.\nA standard job (Type='S') defines the routing and materials for an item.\nAlways include Type = 'S' in the filter to only find standard jobs.\nSearch by item code: filter=Type = 'S' AND Item = 'ITEM-CODE'\nReturns job details including the Job number needed for routing and material operations.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., '<YOUR_SITE>')"
+}

@@ -1,0 +1,20 @@
+{
+  "guid": "8f39cdba-6209-4d03-b71c-f2ace7b8f0f5",
+  "name": "GAF_GenAI_CreateTool_Tool_v1",
+  "description": "Create a new API_DOCS Tool asset in Infor OS GenAI from a specification.",
+  "instructions": "Create a new Tool in Infor OS GenAI. Tools MUST use type API_DOCS. Required fields: name (GAF_<Product>_<Capability>_Tool_v<N> format), description, instructions, type (MUST be API_DOCS), data object. The data object MUST contain: servicePath, api_docs, headers, responseInstructions, returnDirect, model. Returns: guid, name, type. HTTP 409 means name conflict - use UpdateAsset instead.",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "GENAI/coresvc",
+    "api_docs": "Method: POST\nEndpoint: /api/v1/tools\nHeaders: Content-Type: application/json\nBody: JSON array with ONE tool object.\nREQUIRED PAYLOAD STRUCTURE:\n[{\n  \"name\": \"GAF_<Product>_<Capability>_Tool_v<N>\",\n  \"description\": \"What the tool does\",\n  \"instructions\": \"How to use this tool and what parameters it accepts\",\n  \"type\": \"API_DOCS\",\n  \"data\": {\n    \"servicePath\": \"<service-path-without-tenant>\",\n    \"api_docs\": \"Method: GET|POST|PUT|DELETE\\nEndpoint: /path\\nHeaders: ...\\nBody: ...\",\n    \"headers\": {\"Content-Type\": \"application/json\"},\n    \"responseInstructions\": \"How to interpret the API response\",\n    \"returnDirect\": false,\n    \"model\": {\"model\": \"CLAUDE\", \"version\": \"claude-3-7-sonnet-20250219-v1:0\"}\n  }\n}]\nIMPORTANT: type MUST be API_DOCS. Other types (SCRIPT, TOOLKIT, etc.) are NOT supported for tools.\nExample Request:\nPOST /api/v1/tools\nContent-Type: application/json\n[{\"name\":\"GAF_Test_Sample_Tool_v1\",\"description\":\"Sample tool\",\"instructions\":\"Use this tool\",\"type\":\"API_DOCS\",\"data\":{\"servicePath\":\"GENAI/coresvc\",\"api_docs\":\"Method: GET\\nEndpoint: /api/v1/test\",\"headers\":{},\"responseInstructions\":\"Parse response\",\"returnDirect\":false,\"model\":{\"model\":\"CLAUDE\",\"version\":\"claude-3-7-sonnet-20250219-v1:0\"}}}]",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "responseInstructions": "Success: [{\"guid\":\"new-guid\",\"name\":\"...\",\"type\":\"API_DOCS\",...}]. HTTP 409: Name conflict (tool exists). HTTP 422: Validation failure. HTTP 500: Check payload structure matches required format exactly.\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE:\n---DEBUG---\nFULL_URL: [The complete URL that was called]\nFULL_PAYLOAD: [The exact request body sent (JSON format)]\nFULL_RESPONSE: [The complete API response received]\n---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "model": "CLAUDE",
+      "version": "claude-3-7-sonnet-20250219-v1:0"
+    }
+  }
+}

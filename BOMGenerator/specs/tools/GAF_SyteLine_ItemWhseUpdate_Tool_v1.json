@@ -1,0 +1,23 @@
+{
+  "guid": "d4659be6-5d9b-4e7d-b431-39f8b24aed2c",
+  "name": "GAF_SyteLine_ItemWhseUpdate_Tool_v1",
+  "description": "Link an item to its standard job by setting ItwhJob on the item-warehouse record in SyteLine",
+  "type": "API_DOCS",
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLItemwhses\nCRITICAL: The endpoint above is RELATIVE — the service path 'CSI/IDORequestService/ido' is prepended automatically. Do NOT repeat the service path in the endpoint or add tenant names, config values, 'api', 'invoke', or extra segments.\nHeaders:\nX-Infor-MongooseConfig: <site>\nContent-Type: application/json\nBody:\nBatch update multiple items in one call:\n{\n  \"IDOName\": \"SLItemwhses\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 2,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ItwhJob\", \"Value\": \"     90001\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Item\", \"Value\": \"ITEM-CODE\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Whse\", \"Value\": \"MAIN\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"_ItemId\", \"Value\": \"PBT=[SLItemwhses]...\"}\n      ]\n    },\n    {\n      \"Action\": 2,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"ItwhJob\", \"Value\": \"     90002\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Item\", \"Value\": \"ITEM-CODE2\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"Whse\", \"Value\": \"MAIN\"},\n        {\"IsNull\": false, \"Modified\": false, \"Name\": \"_ItemId\", \"Value\": \"PBT=[SLItemwhses]...\"}\n      ]\n    }\n  ]\n}\nNOTE: ItwhJob value MUST be left-padded with spaces to 10 chars (e.g., '     90001').\nKey fields Item and Whse MUST be included as non-modified (Modified: false).\n_ItemId from the ItemWhse Load tool MUST be included as non-modified.\nAction 2 = update.\nBatch: include ALL items in one Changes array, each with its own _ItemId.\nCRITICAL: You MUST first use the ItemWhse Load tool to get the _ItemId for each item. Without _ItemId, the update will fail.\nExample Request:\nLink items CH-10000 and SA-SEAT to their standard jobs:\nPOST /update/SLItemwhses with Changes array containing one entry per item, each with _ItemId from the Load tool.",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\nKey Response Fields:\n- Success: Boolean indicating if update succeeded\n- Message: Error message if Success is false\n- Items: Array with updated records showing new ItwhJob values\nAfter successful update, Job field will mirror ItwhJob (auto-derived).\nThis makes the BOM visible in SyteLine Current Operations and Current Materials forms.\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Link items to standard jobs by updating SLItemwhses.ItwhJob (POST only).\nRequires _ItemId from the ItemWhse Load tool — call that FIRST.\nItwhJob must be left-padded to 10 chars. Whse is typically 'MAIN'.\nBatch: ALL items in one Changes array.\nKey fields (Item, Whse, _ItemId) as non-modified.\n\nSITE: <site> placeholder = [TENANT]_DALS from agent input."
+}

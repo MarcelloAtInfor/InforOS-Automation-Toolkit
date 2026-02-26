@@ -1,0 +1,1179 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Infor ION Scripting Model API",
+    "description": "This interface is used by Infor Scripting Model clients",
+    "version": "2026.01.9.17d4ce0"
+  },
+  "servers": [
+    {
+      "url": "https://mingle-ionapi.inforcloudsuite.com/<YOUR_TENANT>/IONSERVICES/scriptingservice/model"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Library Model API"
+    },
+    {
+      "name": "Library Model API V2"
+    },
+    {
+      "name": "Script Model API"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "summary": "Ping the REST interface.",
+        "description": "Can be used as Status/health method to validate the connection.",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/libraries": {
+      "get": {
+        "tags": [
+          "Library Model API"
+        ],
+        "summary": "Get a list of libraries.",
+        "description": "Get a list of libraries and for each: list of versions, last version description, last update datetime, and the last user that did changes.\nIt is possible to filter the response by library name and limit the results to libraries have been updated since a certain date/time.",
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the library. Can be a partial name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updatedAfter",
+            "in": "query",
+            "description": "Value: yyyy-MM-dd'T'HH:mm:ss.SSS'Z' (ISO8601)\nWhen value is set it filters libraries by the 'lastUpdatedOn' property.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of libraries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelLibraryHeader"
+                },
+                "example": [
+                  {
+                    "name": "test_lib",
+                    "lastVersionNumber": "1.0.0",
+                    "lastVersionDescription": "description",
+                    "lastUpdatedOn": "2020-04-03T13:03:37.807Z",
+                    "lastUpdatedBy": "Chris P. Bacon"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Library Model API"
+        ],
+        "summary": "Add a new library.",
+        "description": "Add a new library using a JSON object body with the library description and the library file as a base64 encoded string. \n\"The base64 encoded library file and its filename are set in the object properties 'file' and 'filename'. \n\"The 'filename' should contain the file name and file extension. \n\"The filename and the library content have to match, and be supported by ION Scripting. \n\"When the 'description' parameter is not defined, the description will be derived from the library file contents.",
+        "operationId": "add",
+        "requestBody": {
+          "description": "The JSON model of the library to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryRequest"
+              },
+              "example": {
+                "fileName": "test_lib",
+                "description": "description",
+                "file": "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"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Library details"
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v1/libraries/{name}": {
+      "get": {
+        "tags": [
+          "Library Model API"
+        ],
+        "summary": "Get the details of a library.",
+        "description": "Use the 'version' parameter to get details of a specific library version.",
+        "operationId": "getDetails",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the library. Must be exact match.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Specific version of the library.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Library details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelLibraryDetails"
+                },
+                "example": {
+                  "name": "test_lib",
+                  "description": "description",
+                  "lastUpdatedBy": "Chris P. Bacon",
+                  "lastUpdatedOn": "2020-04-03T14:03:37.807+01:00",
+                  "version": "1.0.0",
+                  "libraryInformation": {
+                    "author": "Scripting",
+                    "authorEmail": "scripting@infor.com",
+                    "longDescription": "",
+                    "homepageUrl": "infor.com",
+                    "license": "BSD",
+                    "status": "OK",
+                    "dependencies": [
+                      {
+                        "libraryName": "test_lib_1",
+                        "libraryStatus": "OK",
+                        "versionSpecifier": "1.0.0",
+                        "versionStatus": "OK"
+                      }
+                    ]
+                  },
+                  "file": "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",
+                  "fileName": "test_lib-1.0.0-py2.py3-none-any.whl"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name or version is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Library Model API"
+        ],
+        "summary": "Update a library.",
+        "description": "Add a new version to an existing library. Existing versions cannot be overwritten. \nUpdate a library with a version using a JSON object body with the library description, \nlibrary file name and the library file as a base64 encoded string. \nThe base64 encoded library file and its filename are set in the object properties 'file' and 'filename'. \nThe 'filename' should contain the file name and file extension. \nThe filename and the library contents have to match, and be supported by ION Scripting. \nThe library 'name' property derived from the 'file' and 'filename' contents must match the 'name' path parameter. \nThe library 'version' property derived from the 'file' and 'filename' contents must not be existing in ION Scripting. \nWhen the 'description' parameter is not set the 'description' will be derived from the library file contents.",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the library to be updated.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The JSON model of the library to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryRequest"
+              },
+              "example": {
+                "fileName": "test_lib",
+                "description": "description",
+                "file": "UEsDBBQAAAAIAEVZh1CTEL3hdQIAAD0EAAAgAAAAdGVzdF9saWItMS4wLjAuZGlzdC1pbmZvL0xJQ0VOU0VdUltv2jAUfudXHPHUSlG39XFvJjHFWogjx5TxGBJDPIU4sp0i/v2OTbq2k5CQz+W7naRmvFl97jw8pI/w/P3HM2xr6/UAq141HdRDC3po9Ztup7qHxgze6uPkjXVPi0Wp7EU7p80A2kGnrDre4Gzrwas2gZNVCswJmq62Z5WANwh3g1FZhwvm6Gs96OEMNcKOtzDpO4Rx5uSvtVWRu3bONLpGPGhNM13U4Gsf+E66Vw4efKdgWc0by8dI0ipUig5C770FV+07M3mwyqGDJmAkONT0Uxs0vLd7fdEzQ1iP0bgAOjl0EHQmcDGtPoV/FW2N07HXrkug1e4eDhZdKDZqCFvo45ux4FQfAhw16o5eP9TFmcAyhkD9HFHkvXbm8tUJRnSa7ICUKu60BiOLjH9U40MljJ9M35trsIY3a3Vw5H4uFhJb9dG8qejlfvnBeJR6lxAOMH5cdW65rkbtRzUHpsI3AfUnOzbQO4+H15j9aGzk+98mfjFyQ6Hia7knggKroBT8lWU0gyWp8L1MYM/khu8k4IQghTwAXwMpDvCLFVkC9HcpaFUBF8C2Zc4o1liR5ruMFS+wwr2CS8jZlkkElRwC4QzFaBXAtlSkG3ySFcuZPCSwZrIImGsEJVASIVm6y4mAcidKXlGkzxC2YMVaIAvd0kI+ISvWgL7iA6oNyfNIRXaoXkR9KS8Pgr1sJGx4nlEsrigqI6uc3qnQVJoTtk0gI1vyQuMWRxQRx2Z1+w2NJeQj+Esl40WwkfJCCnwm6FLIf6t7VtEEiGBVCGQtOMKHOHGDRxDcK+gdJUQNXy6CI+G9q+iHloySHLGqsPx5+GnxF1BLAwQUAAAACABFWYdQ/QB8ozUBAAA+AwAAIQAAAHRlc3RfbGliLTEuMC4wLmRpc3QtaW5mby9NRVRBREFUQaWSyU7DMBRF9/4K/0CitgwLryh0QUqbRkoZto/kNRg8yXYq8vc8dwB1GbFzfO65z7G8xggtRMhe0AdpjeCzfMpK0Ch4xBAzJd/ZL5vmk3zC6l5r8IPgLYbGSxeJsUerMXPQkSfNzvq8sZrN+/hhveD1MWY6vuyNjKf9DDVIJXg40/wz0bs/fyUbNIEq7+sFqxREAlpwUIo9KAhB7iRSfWEimhZbPu9biaZBLgRf4B6VdXT0i+ypMiU2dcHnznm7J5W+18X2jC+UDZXA4fT1ECLqo0tTW3RprokX8crbzoPWSViB6Xq6lKRUA/20Saursfl8NtoYP+N6tHEz2rgdaRTaKdR0w5AeWdpZHti/a6qhGi5KttbJJpEtfsdU2SAxakwPA/xX79Lqbb1i7Ll8KjevJWPsB1BLAwQUAAAACABFWYdQquBG9l8AAABuAAAAHgAAAHRlc3RfbGliLTEuMC4wLmRpc3QtaW5mby9XSEVFTAvPSE3N0Q1LLSrOzM+zUjDUM+ByT81LLUosyS+yUkhKySwuiS8HqVHQMNAzNtYz0+QKys8v0fUs1g0oLUrNyUyyUigpKk3lCklMt1IoqDTSzcvPS9VNzKuEiRgjRLgAUEsDBBQAAAAIAEVZh1CTBtcyAwAAAAEAAAAmAAAAdGVzdF9saWItMS4wLjAuZGlzdC1pbmZvL3RvcF9sZXZlbC50eHTjAgBQSwMEFAAAAAgARVmHUOhGzSL5AAAAhgEAAB8AAAB0ZXN0X2xpYi0xLjAuMC5kaXN0LWluZm8vUkVDT1JEfczBWoIwAADgu8+yGaMEPHQYY6KGgGgpXPiaDIWRA5lQPH1dONr333/FW5VWBYNoqv3JilbB4prLJ29FqL+joL186jPjFX0hfg/PBjFWWZjZjusVdhaXMhN60zWXnbb1edjnqV69A6RZs4l6FG/oHjt4j8dZsiRSPyURDSM8sYxAxgtkzaHw1/Z+ozvo1kEMh04aG2A9a4/jw5JSb1ytwY8T1m93R2nPV/kxKMOc+32HW+zhMs/PQjcXTUcOTAKE/lmVrNOKd7yaqm817pjVS/d09hgUUbt2r/2CCiXM+1AnATnZsfkCYzu7vX24LUCP74iSIHIAmPwCUEsBAhQDFAAAAAgARVmHUJMQveF1AgAAPQQAACAAAAAAAAAAAAAAALSBAAAAAHRlc3RfbGliLTEuMC4wLmRpc3QtaW5mby9MSUNFTlNFUEsBAhQDFAAAAAgARVmHUP0AfKM1AQAAPgMAACEAAAAAAAAAAAAAAKSBswIAAHRlc3RfbGliLTEuMC4wLmRpc3QtaW5mby9NRVRBREFUQVBLAQIUAxQAAAAIAEVZh1Cq4Eb2XwAAAG4AAAAeAAAAAAAAAAAAAACkgScEAAB0ZXN0X2xpYi0xLjAuMC5kaXN0LWluZm8vV0hFRUxQSwECFAMUAAAACABFWYdQkwbXMgMAAAABAAAAJgAAAAAAAAAAAAAApIHCBAAAdGVzdF9saWItMS4wLjAuZGlzdC1pbmZvL3RvcF9sZXZlbC50eHRQSwECFAMUAAAACABFWYdQ6EbNIvkAAACGAQAAHwAAAAAAAAAAAAAAtAEJBQAAdGVzdF9saWItMS4wLjAuZGlzdC1pbmZvL1JFQ09SRFBLBQYAAAAABQAFAIoBAAA/BgAAAAA="
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "New version of library was imported."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Library is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Library Model API"
+        ],
+        "summary": "Delete a library.",
+        "description": "Delete a library or a specific library version.",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Library name. Must be exact match.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Library version.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Library was deleted."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Library name or version is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v2/libraries": {
+      "post": {
+        "tags": [
+          "Library Model API V2"
+        ],
+        "summary": "Upload a new library as multipart form-data.",
+        "description": "Add a new library using a form-data with the library description and the library file as a \"multipart/form-data\". \nThe 'formDataContentDisposition fileDetail' should contain the file name and file extension. \nThe file name and the library content have to match, and be supported by ION Scripting. \nWhen the 'description' parameter is not defined, the description will be derived from the library file contents.",
+        "operationId": "add_1",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Library details"
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v1/scripts": {
+      "get": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Get a list of scripts.",
+        "description": "Get a list of scripts and for each: list of version numbers, last version description, last approved version number, last update datetime, and the last user that did changes.\nIt is possible to filter the response by script name, version status, or return scripts that have been updated since certain date/time.\nFilter according to the versions contained in the script:\n   - Scripts with only a draft version\n   - Scripts with draft and approved versions\n   - Script with only approved versions, and no drafts\n",
+        "operationId": "list_1",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the script. Can be a partial name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionStatus",
+            "in": "query",
+            "description": "Status: 'draft', 'approved_with_draft', 'approved'. String values are case-insensitive.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updatedAfter",
+            "in": "query",
+            "description": "Value: yyyy-MM-dd'T'HH:mm:ss.SSS'Z' (ISO8601)\nWhen value is set it filters scripts by the 'lastUpdatedOn' property.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of scripts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelScriptHeader"
+                },
+                "example": [
+                  {
+                    "name": "Script1",
+                    "description": "example script",
+                    "lastUpdatedOn": "2020-03-13T17:41:44.967Z",
+                    "lastUpdatedBy": "Chris P. Bacon",
+                    "versions": [
+                      4
+                    ],
+                    "lastApprovedVersionNumber": 4
+                  },
+                  {
+                    "name": "Script2",
+                    "description": "another example script",
+                    "lastUpdatedOn": "2020-03-14T19:41:22.967Z",
+                    "lastUpdatedBy": "Jonh Doe",
+                    "versions": [
+                      2
+                    ],
+                    "lastApprovedVersionNumber": 1
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Add a new script.",
+        "description": "Add a new script using a JSON object body with the script details.",
+        "operationId": "add_2",
+        "requestBody": {
+          "description": "The JSON model of the script to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScriptCreateRequest"
+              },
+              "example": {
+                "name": "Script1",
+                "description": "Script description",
+                "documentation": "Script documentation",
+                "scriptCode": "print('hello')",
+                "inputVariables": [
+                  {
+                    "name": "inputVariableName",
+                    "type": "STRING",
+                    "description": "Variable description"
+                  }
+                ],
+                "outputVariables": [
+                  {
+                    "name": "outputVariableName",
+                    "type": "STRING",
+                    "description": "Variable description"
+                  }
+                ],
+                "usedLibraries": [
+                  {
+                    "name": "pyasn",
+                    "version": "1.0"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Script added successfully."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v1/scripts/{name}/approve": {
+      "put": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Approve a script.",
+        "description": "Approve the draft version in a script.\nFor approval to succeed the script must have:\n   - responseCode\n   - valid input and output variable names definition\n   - used libraries must be existing in ION",
+        "operationId": "approve",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Script name. Must be exact match.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Script approved successfully."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v1/scripts/approve": {
+      "put": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Approve multiple scripts.",
+        "description": "Approve multiple scripts. The input is an array with a list of script names. The response is an object containing approval statuses for each script.",
+        "operationId": "approveMultiple",
+        "requestBody": {
+          "description": "Script names. Name must be exact match.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "example": [
+                "Script1",
+                "Script2"
+              ]
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Script approval response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApproveResponse"
+                },
+                "example": {
+                  "Script1": "Successfully approved.",
+                  "Script2": "Name not found."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/v1/scripts/{name}": {
+      "get": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Get the details of a script.",
+        "description": "Get the details of the last version in a script.\nUse the 'versionNumber' parameter to get details of a specific version in a script.\nSet the 'approved' parameter to 'true' to get the details of the last approved version or a specific version number in case it is approved.\nSet 'approved' to 'false' to get the details of the draft version.\nYou can use the 'approved' and 'versionNumber' parameters in combination. Setting approved status and getting the details of a specific version with opposite approved status will return an exception.",
+        "operationId": "getDetail",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the script.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionNumber",
+            "in": "query",
+            "description": "Specific version number in the script.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "approved",
+            "in": "query",
+            "description": "Boolean: 'true' / 'false'.",
+            "allowEmptyValue": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Script details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelScriptDetails"
+                },
+                "example": {
+                  "name": "Script1",
+                  "description": "Script description",
+                  "lastUpdatedOn": "2020-03-11T11:26:08.840Z",
+                  "lastUpdatedBy": "John Smith",
+                  "versionNumber": 1,
+                  "documentation": "Script documentation",
+                  "scriptCode": "print('hello')",
+                  "status": "DRAFT",
+                  "inputVariables": [
+                    {
+                      "name": "inputVariableName",
+                      "type": "STRING",
+                      "description": "Variable description"
+                    }
+                  ],
+                  "outputVariables": [
+                    {
+                      "name": "outputVariableName",
+                      "type": "STRING",
+                      "description": "Variable description"
+                    }
+                  ],
+                  "usedLibraries": [
+                    {
+                      "name": "pyasn",
+                      "version": "1.0"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Update a script.",
+        "description": "Create a draft version or overwrite an existing draft in a script.",
+        "operationId": "update_1",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Script name. Must be exact match.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The JSON model of the script to be updated.\n",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScriptRequest"
+              },
+              "example": {
+                "description": "Script description",
+                "scriptCode": "print('hello')",
+                "documentation": "Script Documentation",
+                "usedLibraries": [
+                  {
+                    "name": "pyasn",
+                    "version": "1.0"
+                  }
+                ],
+                "inputVariables": [
+                  {
+                    "name": "inputVariableName",
+                    "type": "STRING",
+                    "description": "Variable description"
+                  }
+                ],
+                "outputVariables": [
+                  {
+                    "name": "outputVariableName",
+                    "type": "STRING",
+                    "description": "Variable description"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Script updated successfully."
+          },
+          "201": {
+            "description": "Added new version to the script."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name is not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Script Model API"
+        ],
+        "summary": "Delete script.",
+        "description": "Delete a script or a script version. Provide the 'versionNumber' value to delete a specific version in a script.",
+        "operationId": "delete_1",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Script name. Must be exact match.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionNumber",
+            "in": "query",
+            "description": "Specific version number of a script.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Script deleted successfully."
+          },
+          "400": {
+            "description": "Query parameters are invalid."
+          },
+          "401": {
+            "description": "Not authorized."
+          },
+          "404": {
+            "description": "Name is not found."
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LibraryRequest": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "DependencyDto": {
+        "type": "object",
+        "properties": {
+          "libraryName": {
+            "type": "string"
+          },
+          "libraryStatus": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "MISSING"
+            ]
+          },
+          "versionSpecifier": {
+            "type": "string"
+          },
+          "versionStatus": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "MISSING"
+            ]
+          }
+        }
+      },
+      "LibraryInformation": {
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "authorEmail": {
+            "type": "string"
+          },
+          "longDescription": {
+            "type": "string"
+          },
+          "homepageUrl": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "MISSING"
+            ]
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DependencyDto"
+            }
+          }
+        }
+      },
+      "ModelLibraryDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "lastUpdatedBy": {
+            "type": "string"
+          },
+          "lastUpdatedOn": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "libraryInformation": {
+            "$ref": "#/components/schemas/LibraryInformation"
+          },
+          "file": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          }
+        }
+      },
+      "ModelLibraryHeader": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "lastVersionNumber": {
+            "type": "string"
+          },
+          "lastVersionDescription": {
+            "type": "string"
+          },
+          "lastUpdatedOn": {
+            "type": "string"
+          },
+          "lastUpdatedBy": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadRequest": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "File to upload",
+            "format": "binary"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description"
+          }
+        }
+      },
+      "FormDataContentDisposition": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modificationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "readDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "LibraryExportHeaderDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "ScriptCreateRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "scriptCode": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string"
+          },
+          "usedLibraries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryExportHeaderDto"
+            }
+          },
+          "inputVariables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          },
+          "outputVariables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "VariableDetail": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "STRING",
+              "INTEGER",
+              "BINARY",
+              "NUMBER",
+              "BOOLEAN"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          }
+        }
+      },
+      "ApproveResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "Error occurred upon approving the script.",
+              "Script for given identifier %s was not found.",
+              "Script with given identifier is already approved.",
+              "Script is not valid for approval.",
+              "Variable does not comply with requirements for validation.",
+              "Script does not contain any code.",
+              "Missing output variables.",
+              "Missing input variable.",
+              "Missing both input and output variables.",
+              "Script has missing library.",
+              "Approval failed. Library is missing. Please upload the library or remove the dependency.",
+              "Script uses library with missing dependency.",
+              "Script with given identifier is already approved.",
+              "Request payload of lambda deployment has too many libraries. Exceeded 262144000 bytes.",
+              "Variables must be consistent with the rest of the script's versions.\n Make sure that the number of variables, their data-types and their names match previous versions.",
+              "Input and every output variable must be different.",
+              "Script approval timed out."
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "scriptVersionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latestApprovedVersionNumber": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ModelScriptDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "lastUpdatedBy": {
+            "type": "string"
+          },
+          "lastUpdatedOn": {
+            "type": "string"
+          },
+          "versionNumber": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "documentation": {
+            "type": "string"
+          },
+          "scriptCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "APPROVED",
+              "APPROVED_WITH_DRAFT"
+            ]
+          },
+          "inputVariables": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          },
+          "outputVariables": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          },
+          "usedLibraries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryExportHeaderDto"
+            }
+          }
+        }
+      },
+      "ModelScriptHeader": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "lastUpdatedOn": {
+            "type": "string"
+          },
+          "lastUpdatedBy": {
+            "type": "string"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "lastApprovedVersionNumber": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ScriptRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "scriptCode": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string"
+          },
+          "usedLibraries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LibraryExportHeaderDto"
+            }
+          },
+          "inputVariables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          },
+          "outputVariables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariableDetail"
+            }
+          }
+        }
+      }
+    }
+  }
+}

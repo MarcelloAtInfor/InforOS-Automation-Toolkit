@@ -1,0 +1,134 @@
+{
+  "name": "CS_ReorderPoint_Approval",
+  "description": "Inventory reorder point approval: when an item's reorder point changes, require manager approval before committing the change.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLItems",
+    "monitored_field": "ReorderPoint",
+    "workflow_inputs": {
+      "Item": "Item",
+      "Description": "Description",
+      "NewReorderPoint": "ReorderPoint",
+      "OldReorderPoint": "ROUND(E(OldReorderPoint), 2)",
+      "MGConfig": "CONFIGNAME()",
+      "RowPointer": "RowPointer"
+    },
+    "applies_to_initiators": "Form.Items",
+    "access_as": "ue_",
+    "handler_sequence": 230,
+    "handler_description": "ue_ReorderPointApproval"
+  },
+  "variables": [
+    {"name": "Item", "input": true},
+    {"name": "Description", "input": true},
+    {"name": "NewReorderPoint", "type": "DECIMAL", "input": true},
+    {"name": "OldReorderPoint", "type": "DECIMAL", "input": true},
+    {"name": "MGConfig", "input": true},
+    {"name": "RowPointer", "input": true}
+  ],
+  "views": [
+    {
+      "name": "ItemDrillBack",
+      "view_set": "infor.syteline (SyteLineViews)",
+      "view": "ItemView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$Item"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "approval_task",
+      "name": "Reorder Point Review",
+      "message": "Item [Item] ([Description]) reorder point changed from [OldReorderPoint] to [NewReorderPoint]. Approval required.",
+      "distribution": "user1",
+      "send_email": true,
+      "priority": "High",
+      "buttons": [
+        {"label": "Approve", "value": "Approved"},
+        {"label": "Reject", "value": "Rejected"}
+      ],
+      "button_variable": "ApproveReject",
+      "params": [
+        {"label": "Item", "variable": "Item"},
+        {"label": "Description", "variable": "Description"},
+        {"label": "New Reorder Point", "variable": "NewReorderPoint"},
+        {"label": "Old Reorder Point", "variable": "OldReorderPoint"},
+        {"label": "Item Details", "view": "ItemDrillBack"}
+      ],
+      "due_date": {"value": 4, "unit": "HOURS"}
+    },
+    {
+      "type": "subworkflow",
+      "name": "Update Record",
+      "steps": [
+        {
+          "type": "assignment",
+          "name": "SetupFilter",
+          "assignments": [
+            {
+              "variable": "Filter",
+              "expression": "\"RowPointer='\" & [RowPointer] & \"'\"",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        },
+        {
+          "type": "ido_branch",
+          "condition": {
+            "name": "IsApproved",
+            "variable": "ApproveReject",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          "true_assignment": {
+            "name": "SetReorderNew",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "NewReorderPoint"
+          },
+          "false_assignment": {
+            "name": "SetReorderOld",
+            "variable": "UpdatePropertyValue",
+            "from_variable": "OldReorderPoint"
+          }
+        },
+        {
+          "type": "ido_load",
+          "name": "Get Item Record",
+          "ido": "SLItems",
+          "properties": "Item,Description,ReorderPoint,RowPointer",
+          "filter_var": "Filter",
+          "outputs": {"ItemID": "$.Items[0]._ItemId"}
+        },
+        {
+          "type": "ido_update",
+          "name": "Update Item Record",
+          "ido": "SLItems",
+          "changes": [
+            {"property": "ReorderPoint", "value_var": "UpdatePropertyValue"},
+            {"property": "InWorkflow", "value": "0"}
+          ],
+          "item_id_var": "ItemID",
+          "outputs": {"ItemID": "$.RefreshItems[0].ItemId"}
+        }
+      ]
+    },
+    {
+      "type": "notification",
+      "name": "Reorder Point Result",
+      "message": "Item [Item] ([Description]) reorder point change to [NewReorderPoint] has been [ApproveReject].",
+      "distribution": "user1",
+      "propagate_notes": true,
+      "params": [
+        {"label": "Item", "variable": "Item"},
+        {"label": "Description", "variable": "Description"},
+        {"label": "New Reorder Point", "variable": "NewReorderPoint"},
+        {"label": "Status", "variable": "ApproveReject"},
+        {"label": "Item Details", "view": "ItemDrillBack"}
+      ]
+    }
+  ]
+}

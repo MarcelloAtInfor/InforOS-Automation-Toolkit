@@ -1,0 +1,33 @@
+{
+  "vendor": {
+    "name": "TEST_VENDOR_DEMO_2026",
+    "address": "123 Demo Street",
+    "city": "Test City",
+    "state": "IL",
+    "zip": "60601",
+    "phone": "555-0100",
+    "email": "test@demo.com"
+  },
+  "purchaseOrder": {
+    "poNumber": "INV2026001",
+    "orderDate": "20260128",
+    "warehouse": "MAIN",
+    "terms": "N30"
+  },
+  "lineItems": [
+    {
+      "lineNumber": "1",
+      "itemCode": "TESTITEM-A",
+      "description": "Test Item A for Invoice Demo 2026",
+      "quantity": "10",
+      "unitOfMeasure": "EA"
+    },
+    {
+      "lineNumber": "2",
+      "itemCode": "TESTITEM-B",
+      "description": "Test Item B for Invoice Demo 2026",
+      "quantity": "5",
+      "unitOfMeasure": "EA"
+    }
+  ]
+}

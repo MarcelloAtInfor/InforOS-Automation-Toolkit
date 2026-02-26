@@ -1,0 +1,76 @@
+{
+  "variables": [],
+  "views": [],
+  "trees": [],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "colemantask",
+        "sequenceNumber": 2,
+        "name": "Retrain model in main quest",
+        "serializedConfiguration": "{\"commandType\":\"TRAIN_QUEST\",\"encryptedSerializedServiceAccount\":\"<YOUR_SERVICE_ACCOUNT>\",\"colemanQuestName\":\"ItemName_Similarity_V2_CA\",\"questNameVariable\":null,\"ignoreErrors\":false,\"errorCodeVariableName\":null,\"errorMessageVariableName\":null,\"intialCallMaxRetryTimeSeconds\":300}",
+        "colemanCommandConfiguration": {
+          "commandType": "TRAIN_QUEST",
+          "encryptedSerializedServiceAccount": "<YOUR_SERVICE_ACCOUNT>",
+          "colemanQuestName": "ItemName_Similarity_V2_CA",
+          "ignoreErrors": false,
+          "intialCallMaxRetryTimeSeconds": 300
+        }
+      },
+      {
+        "_type": "colemantask",
+        "sequenceNumber": 4,
+        "name": "Update Production lookup",
+        "serializedConfiguration": "{\"commandType\":\"UPDATE_QUEST\",\"encryptedSerializedServiceAccount\":\"<YOUR_SERVICE_ACCOUNT>\",\"colemanQuestName\":\"ItemName_Similarity_V2_CA\",\"questNameVariable\":null,\"ignoreErrors\":false,\"errorCodeVariableName\":null,\"errorMessageVariableName\":null,\"intialCallMaxRetryTimeSeconds\":300}",
+        "colemanCommandConfiguration": {
+          "commandType": "UPDATE_QUEST",
+          "encryptedSerializedServiceAccount": "<YOUR_SERVICE_ACCOUNT>",
+          "colemanQuestName": "ItemName_Similarity_V2_CA",
+          "ignoreErrors": false,
+          "intialCallMaxRetryTimeSeconds": 300
+        }
+      },
+      {
+        "_type": "colemantask",
+        "sequenceNumber": 1,
+        "name": "Reload Data in main quest",
+        "serializedConfiguration": "{\"commandType\":\"RELOAD_DATA\",\"encryptedSerializedServiceAccount\":\"<YOUR_SERVICE_ACCOUNT>\",\"colemanQuestName\":\"ItemName_Similarity_V2_CA\",\"questNameVariable\":null,\"ignoreErrors\":false,\"errorCodeVariableName\":null,\"errorMessageVariableName\":null,\"intialCallMaxRetryTimeSeconds\":300}",
+        "colemanCommandConfiguration": {
+          "commandType": "RELOAD_DATA",
+          "encryptedSerializedServiceAccount": "<YOUR_SERVICE_ACCOUNT>",
+          "colemanQuestName": "ItemName_Similarity_V2_CA",
+          "ignoreErrors": false,
+          "intialCallMaxRetryTimeSeconds": 300
+        }
+      },
+      {
+        "_type": "colemantask",
+        "sequenceNumber": 5,
+        "name": "Update Endpoint",
+        "serializedConfiguration": "{\"commandType\":\"REDEPLOY_ENDPOINT\",\"encryptedSerializedServiceAccount\":\"<YOUR_SERVICE_ACCOUNT>\",\"colemanQuestName\":\"ItemName_Similarity_V2_CA\",\"questNameVariable\":null,\"ignoreErrors\":false,\"errorCodeVariableName\":null,\"errorMessageVariableName\":null,\"intialCallMaxRetryTimeSeconds\":300}",
+        "colemanCommandConfiguration": {
+          "commandType": "REDEPLOY_ENDPOINT",
+          "encryptedSerializedServiceAccount": "<YOUR_SERVICE_ACCOUNT>",
+          "colemanQuestName": "ItemName_Similarity_V2_CA",
+          "ignoreErrors": false,
+          "intialCallMaxRetryTimeSeconds": 300
+        }
+      },
+      {
+        "_type": "wait",
+        "sequenceNumber": 3,
+        "name": "Wait 1",
+        "duration": 1,
+        "waitUnit": "MINUTES"
+      }
+    ]
+  },
+  "name": "CSI_Item_similarity",
+  "description": "Related to Advance Persona",
+  "lastUpdatedBy": "<USER_NAME>",
+  "lastUpdatedOn": "2025-05-05T22:36:37.473Z",
+  "tenant": "<YOUR_TENANT>",
+  "activationDate": "2025-05-05T22:36:42.740Z",
+  "archived": false
+}

@@ -1,0 +1,30 @@
+{
+  "guid": "76ad5987-6071-45b8-a059-a649ded28ecb",
+  "name": "VendorInsert_Tool_v2",
+  "description": "Create a new vendor in SyteLine with comprehensive vendor information",
+  "type": "API_DOCS",
+  "inputs": null,
+  "data": {
+    "servicePath": "CSI/IDORequestService/ido",
+    "api_docs": "Method: POST\nEndpoint: /update/SLVendors\nHeaders:\nX-Infor-MongooseConfig: <site>\nBody:\nThe body contains vendor details in the Changes array:\n{\n  \"IDOName\": \"SLVendors\",\n  \"RefreshAfterSave\": true,\n  \"Changes\": [\n    {\n      \"Action\": 1,\n      \"Properties\": [\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VendNum\", \"Value\": \"DEMO001\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"Name\", \"Value\": \"ACME Corporation\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadAddr_1\", \"Value\": \"123 Main St\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCity\", \"Value\": \"Chicago\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadStateCode\", \"Value\": \"IL\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadZip\", \"Value\": \"60601\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"VadCountry\", \"Value\": \"USA\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"TermsCode\", \"Value\": \"N30\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"CurrCode\", \"Value\": \"USD\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"BankCode\", \"Value\": \"BK1\"},\n        {\"IsNull\": false, \"Modified\": true, \"Name\": \"AutoVoucherMethod\", \"Value\": \"P\"}\n      ]\n    }\n  ]\n}\nNOTE: Action 1 means insert. VendNum must be exactly 7 characters (pad with zeros). All properties above are required.\nExample request:\nPOST /update/SLVendors",
+    "headers": {},
+    "responseInstructions": "The API responds with a JSON object indicating success or failure.\n\nExample successful response:\n{\n  \"Items\": [\n    {\n      \"VendNum\": \"DEMO001\",\n      \"Name\": \"ACME Corporation\",\n      \"_ItemId\": \"PBT=[vendor] ven.DT=[...] ven.ID=[guid]\"\n    }\n  ],\n  \"Success\": true,\n  \"Message\": null\n}\n\nExample error response (duplicate VendNum):\n{\n  \"Success\": false,\n  \"Message\": \"Vendor number already exists\",\n  \"Items\": []\n}\n\nKey Response Fields:\n- Success: Boolean indicating if insert succeeded\n- Message: Error message if Success is false\n- Items: Array with created vendor record (includes _ItemId)\n- _ItemId: Unique identifier for the created vendor\n\nCRITICAL - IF ERROR OCCURS INCLUDE THE BELOW IN RESPONSE\n  ---DEBUG---\n  FULL_URL: [The complete URL that was called]\n  FULL_PAYLOAD: [The exact request body sent (JSON format)]\n  FULL_RESPONSE: [The complete API response received]\n  ---END DEBUG---",
+    "returnDirect": false,
+    "model": {
+      "name": "Claude Sonnet 4.5",
+      "model": "CLAUDE",
+      "version": "claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "status": 1,
+  "ignoreSearch": false,
+  "utterances": [],
+  "stubResponse": "",
+  "instructions": "Use this tool to create a new vendor in SyteLine.\n\nIMPORTANT: Always use VendorSearch_Tool_v2 first to ensure the vendor doesn't already exist!\n\nRequired fields:\n- VendNum: EXACTLY 7 chars, unique (pad with zeros: \"MWF\" \u2192 \"MWF0001\")\n- Name: Vendor name\n- VadAddr_1: Address\n- VadCity, VadStateCode, VadZip: Location\n- VadCountry: Default \"USA\"\n- TermsCode: Payment terms (N30, N45, COD, 2%, 4%, TBD)\n- CurrCode: Default \"USD\"\n- BankCode: Default \"BK1\"\n- AutoVoucherMethod: Default \"P\"\n\nReturns the created vendor with VendNum and _ItemId.\n\nSITE PARAMETER (REQUIRED):\n- The <site> placeholder must be filled with the site value from the agent's input\n- Format: [TENANT]_DALS (e.g., \"<YOUR_SITE>\")",
+  "createdBy": "<USER_GUID_1>",
+  "createdOn": "2026-01-28T17:35:38.314073Z",
+  "updatedBy": "<USER_GUID_1>",
+  "updatedOn": "2026-02-01T04:25:19.970261Z",
+  "gp_config": null,
+  "security": null
+}
