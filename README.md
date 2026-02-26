@@ -1,5 +1,7 @@
 # Infor OS Automation & Demo Projects
 
+> **Note**: The public version of this repository is at [MarcelloAtInfor/InforOS-Automation-Toolkit](https://github.com/MarcelloAtInfor/InforOS-Automation-Toolkit). This private repo is the active working copy with credentials and tenant-specific configuration. Push sanitized updates to the public repo periodically via `git archive`.
+
 A collection of independent but related projects demonstrating automation capabilities on the **Infor OS** (Operating System) platform, targeting **Infor CloudSuite Industrial (SyteLine)**.
 
 Each project uses different combinations of Infor platform services — GenAI agents, RPA workflows, Intelligent Document Processing (IDP), ION integration, and Document Management (IDM) — to automate manufacturing and supply chain operations.

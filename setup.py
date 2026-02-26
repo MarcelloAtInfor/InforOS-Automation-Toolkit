@@ -267,16 +267,21 @@ def step_add_users(token, base_url):
 def step_service_account():
     _print_step(5, TOTAL_STEPS, "Extract service account token")
 
-    print("  The service account token is an encrypted string embedded in")
-    print("  ION workflow definitions. To extract it:")
-    print("    1. Open ION Desk > Connect > Workflows")
-    print("    2. Export any active workflow as JSON")
-    print("    3. Provide the path to the exported JSON file\n")
+    print("  The service account token is an AES-encrypted string needed by")
+    print("  ION workflow API activities. Two ways to obtain it:\n")
+    print("  Option A (recommended): After setup, run:")
+    print("    cd CSIWorkflowGenerator")
+    print("    python scripts/wfgen.py extract-sa <ExistingWorkflowName>\n")
+    print("  Option B: Provide a workflow JSON file obtained via the REST API")
+    print("    (GET /v1/workflows/{name}). Note: ION Desk UI exports XML,")
+    print("    which does NOT include the service account.\n")
 
     while True:
-        choice = _ask("  Enter path to exported workflow JSON (or 'skip' to skip)", "skip")
+        choice = _ask("  Enter path to a workflow JSON file (or 'skip' to configure later)", "skip")
         if choice == "skip":
-            print("  Skipped. You'll need to add service_account to tenant_config.json manually.")
+            print("  Skipped. After setup, run:")
+            print("    cd CSIWorkflowGenerator")
+            print("    python scripts/wfgen.py extract-sa <ExistingWorkflowName>")
             return "<YOUR_SERVICE_ACCOUNT>"
 
         p = Path(choice).expanduser().resolve()
@@ -285,39 +290,45 @@ def step_service_account():
             continue
 
         try:
-            # Use the same extraction logic as CSIWorkflowGenerator
             with open(p, 'r', encoding='utf-8') as f:
                 ref = json.load(f)
 
-            def _find_sa(flowparts):
-                for fp in flowparts:
-                    if fp.get("_type") == "ionapi" and "serviceAccount" in fp:
-                        return fp["serviceAccount"]
-                    if fp.get("_type") == "subworkflow":
-                        found = _find_sa(fp.get("subFlow", {}).get("flowParts", []))
-                        if found:
-                            return found
-                    if fp.get("_type") == "ifthenelse":
-                        for branch_key in ("trueBranch", "falseBranch"):
-                            branch = fp.get(branch_key, {})
-                            found = _find_sa(branch.get("flowParts", []))
-                            if found:
-                                return found
-                    if fp.get("_type") == "parallel":
-                        for seq_flow in fp.get("sequentialFlows", []):
-                            found = _find_sa(seq_flow.get("flowParts", []))
-                            if found:
-                                return found
-                return None
+            # Check top-level field first (API response format)
+            sa = ref.get("serviceAccount")
 
-            sa = _find_sa(ref.get("sequentialFlow", {}).get("flowParts", []))
+            # Then search ionapi flowparts recursively
+            if not sa:
+                def _find_sa(flowparts):
+                    for fp in flowparts:
+                        if fp.get("_type") == "ionapi" and "serviceAccount" in fp:
+                            return fp["serviceAccount"]
+                        if fp.get("_type") == "subworkflow":
+                            found = _find_sa(fp.get("subFlow", {}).get("flowParts", []))
+                            if found:
+                                return found
+                        if fp.get("_type") == "ifthenelse":
+                            for branch_key in ("trueBranch", "falseBranch"):
+                                branch = fp.get(branch_key, {})
+                                found = _find_sa(branch.get("flowParts", []))
+                                if found:
+                                    return found
+                        if fp.get("_type") == "parallel":
+                            for seq_flow in fp.get("sequentialFlows", []):
+                                found = _find_sa(seq_flow.get("flowParts", []))
+                                if found:
+                                    return found
+                    return None
+
+                sa = _find_sa(ref.get("sequentialFlow", {}).get("flowParts", []))
+
             if sa:
                 print(f"  Found service account token ({len(sa)} chars)")
                 print(f"  Preview: {sa[:40]}...")
                 return sa
             else:
-                print("  WARNING: No serviceAccount found in this workflow.")
-                print("  The workflow must contain at least one ION API activity.\n")
+                print("  WARNING: No serviceAccount found in this file.")
+                print("  Ensure the JSON was obtained via the REST API")
+                print("  (GET /v1/workflows/{name}), not an ION Desk UI export.\n")
         except json.JSONDecodeError:
             print("  ERROR: File is not valid JSON.\n")
         except Exception as e:
@@ -387,7 +398,7 @@ def main():
     print("This script will create your tenant_config.json file.")
     print("You'll need:")
     print("  - A .ionapi credentials file (from Infor OS Portal)")
-    print("  - (Optional) An exported ION workflow JSON for service account")
+    print("  - (Optional) A workflow JSON from the REST API for service account")
     print("  - (Optional) Email addresses of workflow approvers")
 
     # Step 1: Locate credentials

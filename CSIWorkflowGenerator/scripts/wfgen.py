@@ -10,6 +10,7 @@ Usage:
     python scripts/wfgen.py aes templates/spec.json [--deploy]
     python scripts/wfgen.py status WorkflowName
     python scripts/wfgen.py delete WorkflowName
+    python scripts/wfgen.py extract-sa WorkflowName [--file path/to/file.json]
 """
 import argparse
 import json
@@ -222,6 +223,15 @@ def cmd_create(args: argparse.Namespace) -> int:
     # Render
     workflow_def, output_path = _render_spec(spec)
 
+    # Warn if ionapi flowparts exist but no service account is configured
+    has_ionapi, has_sa = _check_service_account(workflow_def)
+    if has_ionapi and not has_sa:
+        print("\n[WARN] No service account configured — ionapi flowparts will not")
+        print("  have a serviceAccount. After deployment, either:")
+        print("  1. Upload the service account CSV manually in ION Desk, or")
+        print("  2. Run: python scripts/wfgen.py extract-sa <ExistingWorkflowName>")
+        print("     then re-deploy this workflow.\n")
+
     # Deploy ION workflow
     if not _deploy_ion_workflow(workflow_def, args.activate, args.update):
         return 1
@@ -421,6 +431,129 @@ def cmd_delete(args: argparse.Namespace) -> int:
     return 0
 
 
+def _check_service_account(workflow_def: dict) -> tuple[bool, bool]:
+    """Check ionapi flowparts for service account status.
+
+    Returns:
+        (has_ionapi, has_sa) — whether ionapi flowparts exist and whether
+        any of them include a serviceAccount key.
+    """
+    has_ionapi = False
+    has_sa = False
+
+    def _check(flowparts: list[dict]) -> None:
+        nonlocal has_ionapi, has_sa
+        for fp in flowparts:
+            if fp.get("_type") == "ionapi":
+                has_ionapi = True
+                if "serviceAccount" in fp:
+                    has_sa = True
+            if fp.get("_type") == "subworkflow":
+                _check(fp.get("subFlow", {}).get("flowParts", []))
+            if fp.get("_type") == "ifthenelse":
+                for branch_key in ("trueBranch", "falseBranch"):
+                    _check(fp.get(branch_key, {}).get("flowParts", []))
+            if fp.get("_type") == "parallel":
+                for seq_flow in fp.get("sequentialFlows", []):
+                    _check(seq_flow.get("flowParts", []))
+
+    _check(workflow_def.get("sequentialFlow", {}).get("flowParts", []))
+    return has_ionapi, has_sa
+
+
+def cmd_extract_sa(args: argparse.Namespace) -> int:
+    """Extract service account from an existing workflow and save to tenant_config.json."""
+    print("=" * 60)
+    print("wfgen extract-sa — Extract Service Account")
+    print("=" * 60)
+
+    from src.config.tenant import extract_service_account_from_dict
+
+    # Load workflow JSON
+    if args.file:
+        # From local file
+        p = Path(args.file)
+        if not p.exists():
+            p = PROJECT_ROOT / args.file
+        if not p.exists():
+            print(f"Error: file not found: {args.file}")
+            return 1
+
+        print(f"Source: {p}")
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                workflow = json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"Error: invalid JSON: {e}")
+            return 1
+    else:
+        # From live API
+        if not args.workflow_name:
+            print("Error: provide a workflow name or use --file")
+            return 1
+
+        from scripts.deploy_workflow import get_workflow
+
+        name = args.workflow_name
+        print(f"Fetching workflow: {name}")
+        workflow = get_workflow(name)
+        if workflow is None:
+            print(f"Error: workflow '{name}' not found.")
+            return 1
+        print(f"Fetched: {workflow.get('name', name)}")
+
+    # Extract service account
+    sa = extract_service_account_from_dict(workflow)
+    if sa is None:
+        print("\nNo serviceAccount found in this workflow.")
+        print("The workflow must contain at least one ION API activity with a service account attached.")
+        return 1
+
+    print(f"\nFound service account ({len(sa)} chars)")
+    print(f"Preview: {sa[:50]}...")
+
+    # Update tenant_config.json
+    import os
+
+    # Resolve config path (same logic as shared.tenant)
+    config_path = None
+    env_path = os.environ.get("TENANT_CONFIG")
+    if env_path and Path(env_path).exists():
+        config_path = Path(env_path)
+    else:
+        repo_root = PROJECT_ROOT.parent
+        candidate = repo_root / "tenant_config.json"
+        if candidate.exists():
+            config_path = candidate
+
+    if config_path is None:
+        print("\nError: tenant_config.json not found.")
+        print("Run 'python setup.py' first to create it.")
+        return 1
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    old_sa = config.get("service_account", "")
+    config["service_account"] = sa
+
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=2)
+        f.write("\n")
+
+    # Clear cached config so subsequent commands pick up the new value
+    from shared.tenant import clear_cache
+    clear_cache()
+
+    print(f"\nUpdated: {config_path}")
+    if old_sa and not old_sa.startswith("<"):
+        print(f"  (replaced existing {len(old_sa)}-char token)")
+    else:
+        print(f"  (was: {old_sa[:40] if old_sa else '(empty)'})")
+
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
@@ -478,6 +611,20 @@ def main() -> int:
     p_delete.add_argument("--skip-aes", action="store_true",
                           help="Skip AES handler deactivation")
     p_delete.set_defaults(func=cmd_delete)
+
+    # --- extract-sa ---
+    p_extract = subparsers.add_parser(
+        "extract-sa",
+        help="Extract service account from existing workflow → tenant_config.json",
+    )
+    p_extract.add_argument(
+        "workflow_name", nargs="?", default=None,
+        help="Name of an existing ION workflow to fetch via API",
+    )
+    p_extract.add_argument(
+        "--file", help="Path to a local workflow JSON file (instead of API fetch)",
+    )
+    p_extract.set_defaults(func=cmd_extract_sa)
 
     args = parser.parse_args()
     return args.func(args)

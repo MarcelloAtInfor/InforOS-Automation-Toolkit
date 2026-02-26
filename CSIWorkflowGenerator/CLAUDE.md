@@ -26,7 +26,7 @@ CSIWorkflowGenerator/
     order_line_discount_approval.json  # Order Line Discount spec (with aes_trigger)
     credit_hold_notification.json      # Credit Hold notification-only spec (Phase 6A)
   scripts/
-    wfgen.py                    # Unified CLI: create/render/validate/aes/status/delete
+    wfgen.py                    # Unified CLI: create/render/validate/aes/status/delete/extract-sa
     render_template.py          # Render spec JSON -> ION workflow JSON (with --diff, --deploy)
     validate_spec.py            # Validate spec JSON (structural, referential, tenant, live)
     generate_workflow.py        # Full pipeline: validate + render + deploy
@@ -102,7 +102,34 @@ python scripts/wfgen.py status WorkflowName
 
 # Delete both ION workflow and AES handler
 python scripts/wfgen.py delete WorkflowName
+
+# Extract service account from existing workflow → tenant_config.json
+python scripts/wfgen.py extract-sa ExistingWorkflowName          # from live API
+python scripts/wfgen.py extract-sa --file path/to/workflow.json   # from local file
 ```
+
+## Service Account
+
+ION workflow API activities (ionapi flowparts) require a **service account** — an AES-encrypted credential blob (prefix `aes:`) that authenticates API calls made by the workflow at runtime. This token is generated server-side by the Infor platform and cannot be created locally.
+
+**Key facts:**
+- The encrypted token is **tenant-specific** but **reusable** across all workflows on the same tenant
+- The ION Desk UI exports workflows as **XML** and **strips the service account** — only the REST API (`GET /v1/workflows/{name}`) returns JSON with the `serviceAccount` field
+- Workflows can be deployed without a service account, but ionapi flowparts will fail at runtime
+
+**Two options to obtain a service account:**
+
+1. **Borrow from API** (recommended): Use `wfgen extract-sa` to fetch the encrypted token from any existing workflow on the same tenant that already has a service account:
+   ```bash
+   python scripts/wfgen.py extract-sa CS_Credit_Approval_API_MM
+   ```
+   This fetches the workflow JSON via API, extracts the `serviceAccount` field, and saves it to `tenant_config.json`.
+
+2. **Manual upload**: Deploy the workflow without a service account, then upload the service account CSV file manually in ION Desk (Workflows > select workflow > Service Account).
+
+**Behavior when no service account is configured:**
+- `wfgen render` omits `serviceAccount` from ionapi flowpart JSON (instead of including an empty/placeholder value)
+- `wfgen create` prints a warning but proceeds with deployment — the workflow can still be created, but ionapi steps won't execute until a service account is attached
 
 ## Spec Step Types
 
@@ -247,7 +274,7 @@ resp = requests.post(url, headers=headers, json=payload)
 ### Workflow Builder
 
 - **Dual encoding**: ionapi flowparts maintain both `method` (JSON string with nulls) and `ionApiMethod` (compact dict) in sync.
-- **serviceAccount reuse**: Encrypted tokens extracted from reference workflows. Same tenant = same token.
+- **serviceAccount reuse**: Encrypted tokens extracted from reference workflows via `wfgen extract-sa`. Same tenant = same token. When no SA is configured, ionapi flowparts omit the `serviceAccount` key entirely.
 - **Variable-bound IDO params**: `ido_var`/`properties_var` enable dynamic IDO configuration at runtime.
 - **Distribution uses named user keys** — spec `distribution` field takes individual user keys from tenant config (e.g. `"user1"` or `["user1", "user2"]`). No group abstraction exists yet; IFS group support is a future phase.
 

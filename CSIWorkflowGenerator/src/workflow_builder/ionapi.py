@@ -119,6 +119,15 @@ class ApiInputBody:
         }
 
 
+def _is_placeholder_sa(value: str) -> bool:
+    """Return True if the service account value is empty or a placeholder."""
+    if not value:
+        return True
+    if value.startswith("<"):
+        return True
+    return False
+
+
 def _build_ionapi_method(
     product_logical_id: str,
     operation_proxy_path: str,
@@ -340,12 +349,14 @@ def build_ido_load(
         input_body=input_body,
     )
 
-    return {
+    result = {
         "method": method_str,
-        "serviceAccount": service_account,
         "isCustom": True,
         "ionApiMethod": compact,
     }
+    if not _is_placeholder_sa(service_account):
+        result["serviceAccount"] = service_account
+    return result
 
 
 def build_ido_update(
@@ -423,9 +434,11 @@ def build_ido_update(
         input_body=input_body,
     )
 
-    return {
+    result = {
         "method": method_str,
-        "serviceAccount": service_account,
         "isCustom": True,
         "ionApiMethod": compact,
     }
+    if not _is_placeholder_sa(service_account):
+        result["serviceAccount"] = service_account
+    return result

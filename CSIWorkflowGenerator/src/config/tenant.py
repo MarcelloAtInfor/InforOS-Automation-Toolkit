@@ -64,15 +64,21 @@ class TenantConfig:
         return items
 
 
-def extract_service_account(reference_path: str | Path) -> str:
-    """Extract encrypted serviceAccount token from a reference workflow JSON.
+def extract_service_account_from_dict(workflow: dict) -> str | None:
+    """Extract encrypted serviceAccount token from a workflow dict.
 
-    Utility function — used by setup.py and for manual extraction.
-    Normal config loading uses shared.tenant.get_service_account() instead.
+    Checks top-level ``serviceAccount`` first (API response format),
+    then searches recursively through ionapi flowparts.
+
+    Returns:
+        The token string, or None if not found.
     """
-    with open(reference_path, "r", encoding="utf-8") as f:
-        ref = json.load(f)
+    # 1. Top-level field (present in API GET responses)
+    top = workflow.get("serviceAccount")
+    if top:
+        return top
 
+    # 2. Recursive search through flowparts
     def _find_sa(flowparts: list[dict]) -> str | None:
         for fp in flowparts:
             if fp.get("_type") == "ionapi" and "serviceAccount" in fp:
@@ -94,7 +100,19 @@ def extract_service_account(reference_path: str | Path) -> str:
                         return found
         return None
 
-    sa = _find_sa(ref.get("sequentialFlow", {}).get("flowParts", []))
+    return _find_sa(workflow.get("sequentialFlow", {}).get("flowParts", []))
+
+
+def extract_service_account(reference_path: str | Path) -> str:
+    """Extract encrypted serviceAccount token from a reference workflow JSON file.
+
+    Utility function — used by setup.py and for manual extraction.
+    Normal config loading uses shared.tenant.get_service_account() instead.
+    """
+    with open(reference_path, "r", encoding="utf-8") as f:
+        ref = json.load(f)
+
+    sa = extract_service_account_from_dict(ref)
     if sa is None:
         raise ValueError(f"No serviceAccount found in {reference_path}")
     return sa

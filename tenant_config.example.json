@@ -1,7 +1,7 @@
 {
   "site": "<auto-detected during setup — e.g. TENANTID_DEM_DALS>",
   "logical_id": "lid://infor.syteline.csi/<suffix>",
-  "service_account": "<extracted from your exported ION workflow JSON>",
+  "service_account": "<run: wfgen extract-sa ExistingWorkflowName>",
   "users": {
     "approver1": {
       "guid": "<IFS user GUID — resolved from email during setup>",
