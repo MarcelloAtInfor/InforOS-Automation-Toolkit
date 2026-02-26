@@ -1,6 +1,6 @@
 {
   "name": "CS_POCost_MultiLevel_Approval",
-  "description": "PO cost approval combining parallel ALL_IN (Purchasing + Finance) with multi-level Director escalation and write-back.",
+  "description": "PO cost approval combining parallel ALL_IN (Purchasing + Finance) with multi-level Director escalation and write-back. NOTE: PoCost is SQL-calculated (SP recalc after line save) so AES IdoOnItemUpdate cannot detect changes to it. This template serves as a pattern demo for parallel ALL_IN + multi-level escalation. To make it deployable, retarget the trigger to a line-level IDO property.",
   "aes_trigger": {
     "event": "IdoOnItemUpdate",
     "ido": "SLPos",
@@ -49,7 +49,7 @@
             "type": "approval_task",
             "name": "Purchasing Review",
             "message": "PO [PoNum] for Vendor [VendNum] cost changed from [OldCost] to [NewCost]. Purchasing approval required.",
-            "distribution": "user1",
+            "distribution": "<approver>",
             "priority": "High",
             "buttons": [
               {"label": "Approve", "value": "Approved"},
@@ -71,7 +71,7 @@
             "type": "approval_task",
             "name": "Finance Review",
             "message": "PO [PoNum] for Vendor [VendNum] cost changed from [OldCost] to [NewCost]. Finance approval required.",
-            "distribution": "user1",
+            "distribution": "<approver>",
             "priority": "High",
             "buttons": [
               {"label": "Approve", "value": "Approved"},
@@ -94,7 +94,7 @@
       "type": "approval_task",
       "name": "Director Review",
       "message": "PO [PoNum] for Vendor [VendNum] — cost [NewCost] (was [OldCost]). Purchasing: [PurchasingResult], Finance: [FinanceResult]. Director approval required.",
-      "distribution": "user1",
+      "distribution": "<approver>",
       "priority": "High",
       "buttons": [
         {"label": "Approve", "value": "Approved"},
@@ -172,7 +172,7 @@
       "type": "notification",
       "name": "PO Cost Result",
       "message": "PO [PoNum] for Vendor [VendNum] — cost change to [NewCost] has been [FinalResult].",
-      "distribution": "user1",
+      "distribution": "<approver>",
       "propagate_notes": true,
       "params": [
         {"label": "PO Number", "variable": "PoNum"},

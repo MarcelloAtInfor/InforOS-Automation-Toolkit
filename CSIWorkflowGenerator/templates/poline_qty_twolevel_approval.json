@@ -52,7 +52,7 @@
       "type": "approval_task",
       "name": "Level 1 Review",
       "message": "PO [PoNum] Line [PoLine] — Item [Item] qty changed from [OldQtyOrdered] to [NewQtyOrdered]. Level 1 approval required.",
-      "distribution": "user1",
+      "distribution": "<approver>",
       "priority": "High",
       "buttons": [
         {"label": "Approve", "value": "Approved"},
@@ -85,7 +85,7 @@
           "type": "approval_task",
           "name": "Level 2 Review",
           "message": "PO [PoNum] Line [PoLine] — Item [Item] qty changed from [OldQtyOrdered] to [NewQtyOrdered]. Level 1 APPROVED by reviewer. Level 2 final approval required.",
-          "distribution": "user1",
+          "distribution": "<approver>",
           "priority": "High",
           "buttons": [
             {"label": "Approve", "value": "Approved"},
@@ -181,7 +181,7 @@
       "type": "notification",
       "name": "PO Line Qty Result",
       "message": "PO [PoNum] Line [PoLine] — Item [Item] qty change from [OldQtyOrdered] to [NewQtyOrdered] has been [FinalResult].",
-      "distribution": "user1",
+      "distribution": "<approver>",
       "propagate_notes": true,
       "params": [
         {"label": "PO Number", "variable": "PoNum"},

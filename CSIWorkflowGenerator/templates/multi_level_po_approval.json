@@ -44,7 +44,7 @@
       "type": "approval_task",
       "name": "Supervisor Review",
       "message": "Purchase Order [PoNum] for Vendor [VendNum] has a new amount of [NewAmount] (was [OldAmount]). Supervisor approval required.",
-      "distribution": ["user1", "user2"],
+      "distribution": ["<approver1>", "<approver2>"],
       "priority": "High",
       "buttons": [
         {"label": "Approve", "value": "Approved"},
@@ -73,7 +73,7 @@
           "type": "approval_task",
           "name": "Manager Review",
           "message": "Purchase Order [PoNum] for Vendor [VendNum] — amount [NewAmount] (was [OldAmount]) — approved by supervisor. Manager approval required.",
-          "distribution": ["user3"],
+          "distribution": ["<manager>"],
           "priority": "High",
           "buttons": [
             {"label": "Approve", "value": "Approved"},
@@ -160,7 +160,7 @@
       "type": "notification",
       "name": "PO Approval Result",
       "message": "Purchase Order [PoNum] for Vendor [VendNum] with amount [NewAmount] has been [ApproveReject].",
-      "distribution": ["user1", "user2", "user3"],
+      "distribution": ["<notifier1>", "<notifier2>", "<notifier3>"],
       "propagate_notes": true,
       "params": [
         {"label": "PO Number", "variable": "PoNum"},

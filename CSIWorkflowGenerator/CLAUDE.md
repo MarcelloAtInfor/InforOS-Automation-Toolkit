@@ -227,6 +227,10 @@ resp = requests.post(url, headers=headers, json=payload)
 
 4. **Notification messages cannot reference parallel branch button variables** — Variables set by `button_variable` in parallel branches (e.g. `PurchasingResult`) cause activation error: `PARAMETER_X0_CANNOT_BE_USED_IN_THE_SUMMARY_NOTIFICATION_MESSAGE`. Workaround: show them as task params instead of in `[VarName]` message text.
 
+8. **AES cannot detect SQL-calculated field changes** — `IdoOnItemUpdate` only fires on IDO-layer writes. Fields recalculated by stored procedures after the IDO save (e.g., `PoCost` on `SLPos`, which is recalculated by a SP after PO line saves) are invisible to AES. This is a fundamental platform limitation — no workaround exists at the AES level. To monitor such fields, retarget the trigger to a line-level IDO property that changes through the IDO layer (e.g., `SLPoItems.UnitCost`). The `pocost_multilevel_approval` template demonstrates parallel ALL_IN + multi-level patterns but cannot fire on `PoCost` due to this limitation.
+
+9. **Nullable fields need ROUND() null guard (auto-applied)** — `ROUND(E(param), N)` on a nullable IDO field throws a .NET FormatException when the old value is null/empty. `spec_handler.py` auto-wraps these as `IF(E(param) = "", "0", ROUND(E(param), N))` at build time. Template authors write `"ROUND(E(OldX), 2)"` as normal — the guard is injected transparently.
+
 ### IDO API Quirks
 
 1. **Insert responses don't include RowPointer** — EventHandlers/EventActions inserts return `{"Success": true, "RefreshItems": null}`. Workaround: query by description after insert.
@@ -287,7 +291,8 @@ resp = requests.post(url, headers=headers, json=payload)
 - **Dual encoding**: ionapi flowparts maintain both `method` (JSON string with nulls) and `ionApiMethod` (compact dict) in sync.
 - **serviceAccount reuse**: Encrypted tokens extracted from reference workflows via `wfgen extract-sa`. Same tenant = same token. When no SA is configured, ionapi flowparts omit the `serviceAccount` key entirely.
 - **Variable-bound IDO params**: `ido_var`/`properties_var` enable dynamic IDO configuration at runtime.
-- **Distribution uses named user keys** — spec `distribution` field takes individual user keys from tenant config (e.g. `"user1"` or `["user1", "user2"]`). No group abstraction exists yet; IFS group support is a future phase.
+- **Distribution uses named user keys** — spec `distribution` field takes individual user keys from tenant config (e.g. `"marcello"` or `["marcello", "james"]`). No group abstraction exists yet; IFS group support is a future phase.
+- **Distribution placeholders use angle brackets** — unresolved templates use `"<approver>"`, `"<notifier1>"` etc. (NOT `"user1"`). Angle-bracket format is obviously not a real key and fails validation immediately. The `/parse-workflow` command must resolve to real tenant config keys at spec creation time — never leave placeholders in generated specs.
 
 ## AES Expression Syntax Quick Reference
 

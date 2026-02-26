@@ -46,10 +46,29 @@ from .expressions import (
 # Pattern to detect AES function expressions (CONFIGNAME(), ROUND(...), etc.)
 _FUNCTION_RE = re.compile(r"^[A-Z_]+\(")
 
+# Pattern to detect ROUND(E(...), N) — nullable event params that need an IF() guard
+_ROUND_E_RE = re.compile(r"^ROUND\(E\((\w+)\),\s*(\d+)\)$")
+
 
 def _is_expression(value: str) -> bool:
     """Check if a workflow_inputs value is an AES expression vs a property name."""
     return bool(_FUNCTION_RE.match(value))
+
+
+def _null_guard_expression(value: str) -> str:
+    """Wrap ROUND(E(param), N) with an IF() null guard for nullable fields.
+
+    AES event parameters from nullable IDO fields can be empty/null.
+    ROUND("", N) throws a .NET FormatException. This wraps the expression as:
+      IF(E(param) = "", "0", ROUND(E(param), N))
+
+    Non-matching expressions are returned unchanged.
+    """
+    m = _ROUND_E_RE.match(value)
+    if not m:
+        return value
+    param, decimals = m.group(1), m.group(2)
+    return f'IF(E({param}) = "", "0", ROUND(E({param}), {decimals}))'
 
 
 def _has_ido_update(steps: list) -> bool:
@@ -95,7 +114,7 @@ def _build_input_variables(
     for wf_var, aes_value in workflow_inputs.items():
         data_type = var_types.get(wf_var, "STRING")
         if _is_expression(aes_value):
-            result[wf_var] = (data_type, aes_value)
+            result[wf_var] = (data_type, _null_guard_expression(aes_value))
         else:
             result[wf_var] = (data_type, prop(aes_value))
     return result

@@ -56,7 +56,7 @@
             "type": "approval_task",
             "name": "Discount Review",
             "message": "Please Approve new discount amount of [Discount]% totaling [DiscountAmount] for Customer Order [Order] for Customer [CustNum]",
-            "distribution": ["user5", "user1_email_full", "user4", "user3"],
+            "distribution": ["<approver1>", "<approver2>", "<approver3>", "<approver4>"],
             "priority": "High",
             "buttons": [
               {"label": "Approve", "value": "Approved"},
@@ -171,7 +171,7 @@
           "type": "notification",
           "name": "Notify Results",
           "message": "Customer Order [Order] with new discount of [Discount]% has been [ApproveReject]",
-          "distribution": ["user4", "user5", "user1_email", "user3"],
+          "distribution": ["<notifier1>", "<notifier2>", "<notifier3>", "<notifier4>"],
           "propagate_notes": true,
           "params": [
             {"label": "Approve Reject", "variable": "ApproveReject"},
@@ -187,7 +187,7 @@
           "type": "notification",
           "name": "Notify Timeout",
           "message": "Due to lack of activity, Customer Order [Order] with new discount of [Discount]% has been [ApproveReject].",
-          "distribution": ["user1_email", "user4"],
+          "distribution": ["<timeout_notifier1>", "<timeout_notifier2>"],
           "params": [
             {"label": "Approve Reject", "variable": "ApproveReject"},
             {"label": "CustomerOrder", "tree": "CustomerOrder"},

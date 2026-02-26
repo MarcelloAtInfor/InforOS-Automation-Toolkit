@@ -44,7 +44,7 @@
       "type": "approval_task",
       "name": "Reorder Point Review",
       "message": "Item [Item] ([Description]) reorder point changed from [OldReorderPoint] to [NewReorderPoint]. Approval required.",
-      "distribution": "user1",
+      "distribution": "marcello",
       "send_email": true,
       "priority": "High",
       "buttons": [
@@ -120,7 +120,7 @@
       "type": "notification",
       "name": "Reorder Point Result",
       "message": "Item [Item] ([Description]) reorder point change to [NewReorderPoint] has been [ApproveReject].",
-      "distribution": "user1",
+      "distribution": "marcello",
       "propagate_notes": true,
       "params": [
         {"label": "Item", "variable": "Item"},

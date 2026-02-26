@@ -15,6 +15,65 @@ Use date headers for each session, e.g.:
 - ...
 -->
 
+## Session Date: 2026-02-26 (session 6 — cross-project Action=4 fix + Bug 1 docs)
+
+### What was done
+- **Fixed IDO delete Action=3→4 across all projects** (not just CSIWorkflowGenerator):
+  - `.claude/commands/ido-update.md` — action table, section header, JSON example
+  - `CSIPOAssetCreationTool/Agents&Tools/CLAUDE.md` — field definition
+  - `CSIWorkflowGenerator/reference/PHASE_NOTES.md` — deploy safety note
+- **Documented Bug 1 (PoCost SQL limitation)** — CLAUDE.md gotcha #8, template description updated
+  - AES `IdoOnItemUpdate` cannot detect SQL-calculated fields (PoCost recalculated by SP after line save)
+  - Template preserved as parallel ALL_IN + multi-level pattern demo
+
+- **Fixed Bug 3 (ReorderPoint null guard)** in `spec_handler.py`
+  - Added `_ROUND_E_RE` regex to detect `ROUND(E(...), N)` patterns
+  - Added `_null_guard_expression()` that wraps as `IF(E(param) = "", "0", ROUND(E(param), N))`
+  - Wired into `_build_input_variables()` — applied automatically to all expression-type workflow inputs
+  - Verified: all 3 templates with ROUND(E()) (credit_approval, pocost, order_line_discount) now get the guard
+  - Templates stay clean — authors write `ROUND(E(OldX), 2)`, guard injected at build time
+
+- **Replaced all stale distribution placeholders** across 7 templates
+  - Changed `user1`/`user2`/`user3` and `user5`/`user1_email_full`/`user4` to angle-bracket format: `<approver>`, `<notifier1>`, `<manager>`, etc.
+  - Angle brackets are obviously not real keys — fail validation immediately, force resolution
+  - Live-deployed templates (`shipto`, `credit_hold`, `reorder_point`) already use real keys (`marcello`)
+- **Updated `/parse-workflow` command** to require resolving distribution users at spec creation time
+  - LLM must look up tenant config and ask for real user keys before generating the spec
+  - No more leaving placeholders for someone to find later
+
+- **Redeployed ReorderPoint handler** with null guard fix
+  - `wfgen create templates/reorder_point_approval.json --update --activate` — SUCCESS
+  - ION workflow: `CS_ReorderPoint_Approval` — active
+  - AES handler: `ue_ReorderPointApproval` seq=230 — active, verified
+  - Updated distribution from `user1` to `marcello`
+- **Pushed to private repo** (`d282b23..7665721`) and **synced to public repo** (`InforOS-Automation-Toolkit`)
+
+### All 3 live test bugs — RESOLVED
+| Bug | Issue | Resolution | Commit |
+|-----|-------|------------|--------|
+| 1 | PoCost SQL-calculated field invisible to AES | Documented as platform limitation (CLAUDE.md gotcha #8) | `5fae02b` |
+| 2 | Drillback view generation (viewSetName, LogicalId, viewName) | Fixed in earlier session — live validated | (prior session) |
+| 3 | ReorderPoint null guard — ROUND(E(null)) FormatException | Auto IF() guard in spec_handler.py | `64ede20` |
+
+### Deployed handlers on tenant (current state)
+| Handler | Seq | IDO | Event | Active | Status |
+|---------|-----|-----|-------|--------|--------|
+| ue_CS_OrderLineDiscount_Approval | 201 | SLCoItems | IdoOnItemUpdate | YES | Live — tested working |
+| ue_ReorderPointApproval | 230 | SLItems | IdoOnItemUpdate | YES | Redeployed with null guard — **NEEDS USER TESTING** |
+| ue_ShipToChangeNotification | 231 | SLCos | IdoOnItemUpdate | YES | Redeployed with lock fix — **NEEDS USER TESTING** |
+| ue_POCostMultiLevelApproval | 232 | SLPos | IdoOnItemUpdate | NO | Cannot work (SQL-calc limitation) — inactive |
+| ue_CS_CreditHold_Notification | ? | SLCustomers | IdoOnItemUpdate | YES | Redeployed with lock fix — **NEEDS USER TESTING** |
+
+### Next steps
+- **User validation on live tenant** (3 handlers need testing):
+  1. **ReorderPoint** — Change an item's ReorderPoint (especially from null → a value). Should get approval task in Pulse without FormatException.
+  2. **ShipTo notification** — Change a CO's ship-to address. Should get notification and record should remain editable (no InWorkflow lock).
+  3. **CreditHold notification** — Toggle credit hold flag on a customer. Should get notification and record should remain editable.
+- **Phase 7 (GenAI Platform Tools)** — Port CLI tooling to Infor GenAI platform as agents/tools. Not started.
+- **Phase 8 (GenAI Platform Agent)** — Not started.
+
+---
+
 ## Session Date: 2026-02-26 (session 5 — notification redeploy + IDO delete discovery)
 
 ### What was done

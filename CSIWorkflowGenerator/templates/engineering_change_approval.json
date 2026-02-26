@@ -49,7 +49,7 @@
             "type": "approval_task",
             "name": "Engineering Review",
             "message": "Item [Item] ([Description]) revision changed from [OldRevision] to [NewRevision]. Engineering approval required.",
-            "distribution": ["user1", "user2"],
+            "distribution": ["<approver1>", "<approver2>"],
             "priority": "High",
             "buttons": [
               {"label": "Approve", "value": "Approved"},
@@ -71,7 +71,7 @@
             "type": "approval_task",
             "name": "Quality Review",
             "message": "Item [Item] ([Description]) revision changed from [OldRevision] to [NewRevision]. Quality approval required.",
-            "distribution": ["user3"],
+            "distribution": ["<approver3>"],
             "priority": "High",
             "buttons": [
               {"label": "Approve", "value": "Approved"},
@@ -171,7 +171,7 @@
       "type": "notification",
       "name": "Engineering Change Result",
       "message": "Item [Item] ([Description]) revision change to [NewRevision] has been [ApproveReject].",
-      "distribution": ["user1", "user2", "user3"],
+      "distribution": ["<notifier1>", "<notifier2>", "<notifier3>"],
       "propagate_notes": true,
       "params": [
         {"label": "Item", "variable": "Item"},
