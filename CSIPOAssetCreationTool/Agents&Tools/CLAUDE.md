@@ -335,7 +335,7 @@ curl -X POST https://mingle-ionapi.inforcloudsuite.com/<YOUR_TENANT>/GENAI/chats
     - ✅ `SLPoItems` (Purchase Order Items)
 - `RefreshAfterSave`: Boolean, typically `true` to get updated data back
 - `Changes`: Array of change objects (batch multiple updates in one call)
-- `Action`: Integer, `2` = update, `1` = insert, `3` = delete
+- `Action`: Integer, `1` = insert, `2` = update, `4` = delete (NOT `3` — Action `3` is a no-op that returns success without deleting)
 - `ItemId`: The `_ItemId` value from query results (unique identifier)
 - `Properties`: Array of property changes (can include multiple properties)
 - `IsNull`: Boolean, `false` for value updates

@@ -11,7 +11,7 @@
   "views": [
     {
       "name": "CustomerOrderDrillBack",
-      "view_set": "infor.syteline (SyteLineViews)",
+      "view_set": "",
       "view": "SalesOrderView",
       "params": {
         "AccountingEntity": "",

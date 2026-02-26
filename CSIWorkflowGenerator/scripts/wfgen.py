@@ -186,8 +186,14 @@ def _deploy_aes_handler(handler, update: bool = False) -> bool:
         builder.create(handler)
     except Exception as e:
         if update and "already exists" in str(e):
-            print(f"[SKIP] AES handler already exists — keeping existing handler.")
-            print(f"  (IDO API does not support handler delete/replace yet)")
+            print(f"Handler exists — deleting and recreating (--update)")
+            try:
+                builder.delete_handler(handler.event_name, handler.sequence)
+                print(f"  Deleted existing handler.")
+                builder.create(handler)
+            except Exception as e2:
+                print(f"[ERROR] Delete+recreate failed: {e2}")
+                return False
         else:
             print(f"[ERROR] AES handler creation failed: {e}")
             return False

@@ -1,0 +1,115 @@
+{
+  "variables": [
+    {
+      "name": "CoNum",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "MGConfig",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    },
+    {
+      "name": "CustNum",
+      "dataType": "STRING",
+      "workflowInput": true,
+      "workflowOutput": false,
+      "useValue": false
+    }
+  ],
+  "views": [
+    {
+      "name": "OrderDrillBack",
+      "viewSetName": "infor.syteline (SyteLineViewsCustom)",
+      "viewName": "SalesOrderView",
+      "viewParameters": [
+        {
+          "name": "LogicalId",
+          "value": "lid://infor.syteline.csi"
+        },
+        {
+          "name": "Location",
+          "value": ""
+        },
+        {
+          "variable": "CoNum",
+          "name": "ID1"
+        },
+        {
+          "name": "AccountingEntity",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "trees": [],
+  "sequentialFlow": {
+    "sequenceNumber": 0,
+    "flowParts": [
+      {
+        "_type": "usertask",
+        "sequenceNumber": 1,
+        "name": "Ship-To Change Alert",
+        "parallel": false,
+        "priority": "Medium",
+        "taskMessage": "Customer Order [CoNum] for Customer [CustNum] has had its ship-to address changed.",
+        "taskActionType": "StandardAction",
+        "userTaskType": "NOTIFICATION",
+        "maxEscalationLevel": 1,
+        "distributionComplexity": "Simple",
+        "propagateNotes": false,
+        "parameters": [
+          {
+            "view": "OrderDrillBack",
+            "label": "Order Details",
+            "readOnly": true,
+            "sequenceNumber": 2,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CoNum",
+            "label": "Order Number",
+            "readOnly": true,
+            "sequenceNumber": 0,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          },
+          {
+            "variable": "CustNum",
+            "label": "Customer",
+            "readOnly": true,
+            "sequenceNumber": 1,
+            "completionProperty": "NOT_APPLICABLE",
+            "labels": []
+          }
+        ],
+        "workflowDistributionItems": [
+          {
+            "name": "ad88a88d-c1a7-43a2-a020-71096b886a21",
+            "distributionType": "USER",
+            "description": "Marcello Martins",
+            "sendEmail": true
+          }
+        ],
+        "taskMessages": [],
+        "actionButtons": [],
+        "workflowDecisionTables": [],
+        "userTaskEscalations": [],
+        "reauthentication": false
+      }
+    ]
+  },
+  "name": "CS_ShipTo_Change_Notification_1",
+  "description": "Notification-only workflow: alerts when a customer order's ship-to address sequence is changed.",
+  "lastUpdatedBy": "Marcello Martins",
+  "lastUpdatedOn": "2026-02-26T21:36:49.827Z",
+  "tenant": "SLSGDENA049_DEM",
+  "activationDate": "2026-02-26T21:42:06.453Z",
+  "archived": false
+}

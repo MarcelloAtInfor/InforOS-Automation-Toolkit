@@ -31,7 +31,7 @@
   "views": [
     {
       "name": "CustomerDrillBack",
-      "view_set": "infor.syteline (SyteLineViews)",
+      "view_set": "",
       "view": "CustomerView",
       "params": {
         "AccountingEntity": "",

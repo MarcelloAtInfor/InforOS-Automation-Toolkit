@@ -28,6 +28,8 @@ from .tenant import (
     get_logical_id,
     get_service_account,
     get_users,
+    get_drillback_logical_id,
+    get_drillback_view_set,
 )
 
 __all__ = [
@@ -50,4 +52,6 @@ __all__ = [
     'get_logical_id',
     'get_service_account',
     'get_users',
+    'get_drillback_logical_id',
+    'get_drillback_view_set',
 ]

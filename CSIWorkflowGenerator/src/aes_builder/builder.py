@@ -113,18 +113,32 @@ class AESBuilder:
             raise RuntimeError(f"IDO update failed for {ido_name}: {msg}")
         return data
 
-    def _ido_delete(self, ido_name: str, properties: list[dict]) -> dict:
-        """Delete a record from an IDO. Returns full API response."""
+    def _ido_delete(
+        self,
+        ido_name: str,
+        properties: list[dict],
+        item_id: str | None = None,
+    ) -> dict:
+        """Delete a record from an IDO. Returns full API response.
+
+        Args:
+            ido_name: IDO name.
+            properties: Key properties for record identification.
+            item_id: Optional _ItemId for precise record targeting.
+                Required for multi-table IDOs (e.g. EventActions) where
+                property-based deletes hit SQL column ambiguity.
+        """
         url = f"{IDO_URL()}/update/{ido_name}"
+        change: dict = {
+            "Action": 4,  # Delete (NOT 3 — Action=3 is a no-op)
+            "Properties": properties,
+        }
+        if item_id:
+            change["ItemId"] = item_id
         payload = {
             "IDOName": ido_name,
             "RefreshAfterSave": False,
-            "Changes": [
-                {
-                    "Action": 3,  # Delete
-                    "Properties": properties,
-                }
-            ],
+            "Changes": [change],
         }
         resp = http_post(url, headers=self._headers(), json=payload)
         raise_for_status_with_detail(resp)
@@ -388,13 +402,48 @@ class AESBuilder:
         print(f"  Full response: {json.dumps(response, indent=2)[:2000]}")
         return None
 
-    # NOTE: AES handler/action update-in-place is not yet implemented.
-    # IDO API Action=3 (Delete) silently fails for both EventHandlers and
-    # EventActions — returns success but records persist. The SyteLine UI
-    # uses a confirmation popup when deleting, suggesting a custom method
-    # (stored procedure or IDO method) is required. Research needed.
-
     # ---- Delete methods ----
+
+    def _load_action_item_ids(
+        self, event_handler_row_pointer: str
+    ) -> dict[str, str]:
+        """Load _ItemId for each action under a handler.
+
+        EventActions is a multi-table IDO (EventAction + EventHandler +
+        EventRevision). Property-based deletes hit SQL column ambiguity,
+        so _ItemId is required for reliable deletion.
+
+        Returns:
+            Dict mapping action RowPointer -> _ItemId.
+        """
+        items = self._ido_load(
+            "EventActions",
+            "RowPointer,_ItemId",
+            f"EventHandlerRowPointer = '{event_handler_row_pointer}'",
+        )
+        return {
+            item["RowPointer"]: item["_ItemId"]
+            for item in items
+            if item.get("RowPointer") and item.get("_ItemId")
+        }
+
+    def delete_action(
+        self,
+        action_row_pointer: str,
+        item_id: str,
+    ) -> None:
+        """Delete a single event action by RowPointer + _ItemId.
+
+        Args:
+            action_row_pointer: RowPointer of the action to delete.
+            item_id: _ItemId from IDO load (required for multi-table delete).
+        """
+        self._ido_delete(
+            "EventActions",
+            [{"Name": "RowPointer", "Value": action_row_pointer,
+              "Modified": False, "IsNull": False}],
+            item_id=item_id,
+        )
 
     def delete_handler(
         self,
@@ -424,21 +473,16 @@ class AESBuilder:
                 f"Handler has no RowPointer — cannot delete"
             )
 
-        # Delete actions first
+        # Delete actions first (need _ItemId for multi-table IDO)
         actions = self.load_actions(
             event_handler_row_pointer=target.row_pointer
         )
+        item_ids = self._load_action_item_ids(target.row_pointer)
         for action in actions:
-            if action.row_pointer:
-                self._ido_delete("EventActions", [
-                    {"Name": "RowPointer", "Value": action.row_pointer,
-                     "Modified": False, "IsNull": False},
-                    {"Name": "EventHandlerRowPointer",
-                     "Value": target.row_pointer,
-                     "Modified": False, "IsNull": False},
-                    {"Name": "EvrEventName", "Value": event_name,
-                     "Modified": False, "IsNull": False},
-                ])
+            if action.row_pointer and action.row_pointer in item_ids:
+                self.delete_action(
+                    action.row_pointer, item_ids[action.row_pointer]
+                )
                 print(f"    Deleted action {action.sequence}: "
                       f"{action.action_type}")
 

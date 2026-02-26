@@ -207,6 +207,16 @@ resp = requests.post(url, headers=headers, json=payload)
 
 6. **Standard handler pattern is 5 or 6 actions** — Guard (10), Load old value (20), Set API params (25), Invoke ION API (30), Lock record + revert (40), and optionally Log to notes (50). Action 35 (debug notify) is NOT standard.
 
+7. **Notification-only workflows skip InWorkflow lock (FIXED)** — `spec_handler.py` now detects notification-only specs (no `ido_update` steps in flow, checked recursively) and skips action 40 (InWorkflow=1 + field rollback). Approval workflows with write-back steps still get the lock as before. Without this fix, notification-only workflows permanently locked records since there was no write-back to set InWorkflow back to 0.
+
+### Drillback Views
+
+1. **viewSetName must use `SyteLineViewsCustom`** — Most tenants use custom view sets (e.g. `infor.syteline (SyteLineViewsCustom)`), not the base `SyteLineViews`. Spec templates declare `"view_set": ""` and the renderer auto-injects from `shared.tenant.get_drillback_view_set()`.
+
+2. **LogicalId for drillbacks has NO site suffix** — Drillbacks require `lid://infor.syteline.csi` (no `/dals`). The full logical_id with site suffix breaks drillback resolution. The renderer uses `shared.tenant.get_drillback_logical_id()` which strips the suffix automatically.
+
+3. **Both values are auto-injected** — Same pattern as other tenant values: empty string in spec = inject from tenant config at render time. Override via `drillback_view_set` or `drillback_logical_id` keys in `tenant_config.json`.
+
 ### ION Workflow Quirks
 
 1. **DECIMAL/INTEGER variables need numeric initial values** — ION rejects empty string `''` for non-STRING types. Auto-created variables must set `initialValue` to `"0"` for DECIMAL/INTEGER, `"false"` for BOOLEAN.
@@ -221,13 +231,13 @@ resp = requests.post(url, headers=headers, json=payload)
 
 1. **Insert responses don't include RowPointer** — EventHandlers/EventActions inserts return `{"Success": true, "RefreshItems": null}`. Workaround: query by description after insert.
 
-2. **Delete (Action=3) silently fails on EventHandlers AND EventActions** — returns success but records persist. The SyteLine UI uses a confirmation popup for deletion, suggesting a custom stored procedure or IDO method is required. Research needed. The `--update` flag on `wfgen create` skips AES handler recreation if it already exists.
+2. **IDO delete Action code is 4, NOT 3** — `Action=3` is a no-op (returns success, does nothing). `Action=4` is the real delete. For EventActions (multi-table IDO), include `_ItemId` in the change payload and only use `RowPointer` in Properties — parent table properties (e.g. `EventName` from EventHandler) cause SQL column ambiguity errors. EventHandlers (single-table) deletes work with just key properties.
 
 3. **Sequence numbers 1-124 occupied** on `IdoOnItemUpdate` — use seq >= 200 for custom handlers.
 
 4. **IDO metadata filter field is `CollectionName`** (NOT `IdoName`) when querying `IdoProperties` and `IdoCollections`. Also, the data type field is `DataType` (NOT `PropertyDataType`).
 
-5. **EventActions update requires `_ItemId`** — load the record first to get `_ItemId`, then include it in the update payload. Also requires `EventHandlerRowPointer` and `EvrEventName` as key properties.
+5. **EventActions update/delete requires `_ItemId`** — EventActions is a multi-table IDO (EventAction + EventHandler + EventRevision). For updates, include `_ItemId` in the `ItemId` field of the change payload. For deletes, use `_ItemId` + only `RowPointer` in Properties (parent table properties like `EventName` cause SQL column ambiguity). Load the record first to get `_ItemId`.
 
 6. **Form-to-IDO lookup API** — Resolve a form name to its primary IDO:
    ```

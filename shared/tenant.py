@@ -170,6 +170,30 @@ def get_users():
     return get_tenant_config().get('users', {})
 
 
+def get_drillback_logical_id():
+    """LogicalId for drillback views (no site suffix).
+
+    Uses explicit 'drillback_logical_id' from config, or strips
+    the last path segment from logical_id.
+    """
+    cfg = get_tenant_config()
+    if 'drillback_logical_id' in cfg:
+        return cfg['drillback_logical_id']
+    # Strip site suffix: "lid://infor.syteline.csi/dals" -> "lid://infor.syteline.csi"
+    lid = cfg['logical_id']
+    return lid.rsplit('/', 1)[0] if '/' in lid else lid
+
+
+def get_drillback_view_set():
+    """ViewSetName for drillback views.
+
+    Uses explicit 'drillback_view_set' from config, or defaults
+    to 'infor.syteline (SyteLineViewsCustom)'.
+    """
+    cfg = get_tenant_config()
+    return cfg.get('drillback_view_set', 'infor.syteline (SyteLineViewsCustom)')
+
+
 def clear_cache():
     """Clear the cached config (useful for testing or after config changes)."""
     global _config_cache

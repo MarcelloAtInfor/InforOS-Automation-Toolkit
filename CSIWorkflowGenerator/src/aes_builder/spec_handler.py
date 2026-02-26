@@ -11,7 +11,14 @@ from __future__ import annotations
 
 import re
 
-from src.templates.schema import WorkflowSpec, AesTriggerSpec
+from src.templates.schema import (
+    WorkflowSpec,
+    AesTriggerSpec,
+    IdoUpdateStep,
+    SubworkflowStep,
+    ParallelStep,
+    ConditionStep,
+)
 from .models import EventHandler, EventAction
 from .expressions import (
     ACTION_FINISH,
@@ -43,6 +50,29 @@ _FUNCTION_RE = re.compile(r"^[A-Z_]+\(")
 def _is_expression(value: str) -> bool:
     """Check if a workflow_inputs value is an AES expression vs a property name."""
     return bool(_FUNCTION_RE.match(value))
+
+
+def _has_ido_update(steps: list) -> bool:
+    """Check if any step in the flow (recursively) is an ido_update.
+
+    Notification-only workflows have no ido_update steps — they just send
+    alerts without writing back to the IDO. This is used to decide whether
+    the AES handler should set InWorkflow=1 (lock the record).
+    """
+    for step in steps:
+        if isinstance(step, IdoUpdateStep):
+            return True
+        if isinstance(step, SubworkflowStep):
+            if _has_ido_update(step.steps):
+                return True
+        if isinstance(step, ParallelStep):
+            for branch in step.branches:
+                if _has_ido_update(branch):
+                    return True
+        if isinstance(step, ConditionStep):
+            if _has_ido_update(step.true_steps) or _has_ido_update(step.false_steps):
+                return True
+    return False
 
 
 def _build_input_variables(
@@ -77,13 +107,14 @@ def build_handler_from_spec(
 ) -> EventHandler:
     """Build an EventHandler from a spec's aes_trigger section.
 
-    Generates the 7-action ION API workflow trigger pattern:
+    Generates the ION API workflow trigger pattern:
       10: Finish — skip if monitored field not modified
       20: LoadCollection — get old value of monitored field
       25: SetValues — build ION workflow start JSON payload
       30: InvokeMethod — call ION API to start workflow
       35: Notify — optional debug email (only if notify_email set)
       40: SetValues — set InWorkflow=1 + rollback monitored field
+           (SKIPPED for notification-only workflows — no write-back to unlock)
       50: InvokeMethod — log to notes (only if notes_ido set)
 
     Args:
@@ -178,16 +209,18 @@ def build_handler_from_spec(
         actions.append(action_35)
 
     # Action 40: SetValues — set InWorkflow=1 + rollback field to old value
-    action_40 = EventAction(
-        sequence=40,
-        action_type=ACTION_SET_VALUES,
-        parameters=setpropvalues_params({
-            "InWorkflow": '"1"',
-            field_name: event_param(f"Old{field_name}"),
-        }),
-        description=f"Lock Record & set {field_name} back",
-    )
-    actions.append(action_40)
+    # SKIP for notification-only workflows (no ido_update to set InWorkflow back to 0)
+    if _has_ido_update(spec.flow):
+        action_40 = EventAction(
+            sequence=40,
+            action_type=ACTION_SET_VALUES,
+            parameters=setpropvalues_params({
+                "InWorkflow": '"1"',
+                field_name: event_param(f"Old{field_name}"),
+            }),
+            description=f"Lock Record & set {field_name} back",
+        )
+        actions.append(action_40)
 
     # Action 50: InvokeMethod — log to notes (optional)
     if trigger.notes_ido:

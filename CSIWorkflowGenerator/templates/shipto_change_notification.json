@@ -23,8 +23,8 @@
   "views": [
     {
       "name": "OrderDrillBack",
-      "view_set": "infor.syteline (SyteLineViews)",
-      "view": "CustomerOrderView",
+      "view_set": "",
+      "view": "SalesOrderView",
       "params": {
         "AccountingEntity": "",
         "Location": "",
@@ -38,7 +38,7 @@
       "type": "notification",
       "name": "Ship-To Change Alert",
       "message": "Customer Order [CoNum] for Customer [CustNum] has had its ship-to address changed.",
-      "distribution": "user1",
+      "distribution": "marcello",
       "send_email": true,
       "params": [
         {"label": "Order Number", "variable": "CoNum"},

@@ -37,7 +37,7 @@
   "views": [
     {
       "name": "PODrillBack",
-      "view_set": "infor.syteline (SyteLineViews)",
+      "view_set": "",
       "view": "PurchaseOrderView",
       "params": {
         "AccountingEntity": "",

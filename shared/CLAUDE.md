@@ -16,7 +16,8 @@ Python module providing OAuth 2.0 authentication and Infor OS service URL constr
 |------|---------|
 | `auth.py` | Env-var credential resolution, validation, OAuth 2.0 token generation (password grant), in-memory caching, auto-fetch |
 | `config.py` | Tenant ID lookup and service URL construction (from `iu` field in credentials) |
-| `__init__.py` | Public API — exports all 11 functions |
+| `tenant.py` | Tenant config: site, logical ID, service account, users, drillback helpers |
+| `__init__.py` | Public API — exports all 13 functions |
 
 ## Credential Resolution
 
@@ -70,6 +71,18 @@ On load, credentials are validated for:
 | `GENAI_CHAT_URL()` | Function | → `{base}/GENAI/chatsvc` (agent execution) |
 | `IDP_URL()` | Function | → `{base}/COLEMANDDP/iddpuisvc` (document processing) |
 | `IDO_URL()` | Function | → `{base}/CSI/IDORequestService/ido` (SyteLine data) |
+
+### From `tenant.py`
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| `get_tenant_config()` | Function | Load and validate tenant_config.json → dict |
+| `get_site()` | Function | SyteLine site identifier (X-Infor-MongooseConfig header) |
+| `get_logical_id()` | Function | Full ION logical ID (e.g. `lid://infor.syteline.csi/dals`) |
+| `get_service_account()` | Function | Encrypted service account token for workflow deployment |
+| `get_users()` | Function | User registry dict from tenant config |
+| `get_drillback_logical_id()` | Function | LogicalId for drillback views (strips site suffix from logical_id) |
+| `get_drillback_view_set()` | Function | ViewSetName for drillback views (defaults to `SyteLineViewsCustom`) |
 
 ## Token Management
 

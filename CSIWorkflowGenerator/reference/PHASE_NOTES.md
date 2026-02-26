@@ -279,7 +279,7 @@ Build script (`scripts/build_credit_handler.py`) reconstructing the 7-action cre
 
 - `--deploy`: Deactivates original handler first, creates clone. If creation fails, reactivates original.
 - `--delete`: Deactivates clone and reactivates original.
-- IDO `Action=3` deletes return success but don't remove EventHandler records — use deactivation instead.
+- IDO `Action=3` is a **no-op** (returns success, deletes nothing). Use `Action=4` for real deletes. For multi-table IDOs like EventActions, include `_ItemId` in the payload.
 - Verifies actual stored sequence post-creation (system may auto-assign).
 
 ### Scripts

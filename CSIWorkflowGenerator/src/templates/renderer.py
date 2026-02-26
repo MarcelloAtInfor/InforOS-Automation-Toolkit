@@ -19,6 +19,7 @@ from src.workflow_builder.models import (
     ViewParameter,
 )
 from src.config.tenant import TenantConfig
+from shared.tenant import get_drillback_logical_id, get_drillback_view_set
 
 from .schema import (
     WorkflowSpec,
@@ -171,18 +172,19 @@ def render(spec: WorkflowSpec, tenant: TenantConfig) -> dict:
             )
         )
 
-    # 3. Add views (auto-inject LogicalId from tenant config when empty)
+    # 3. Add views (auto-inject LogicalId and viewSetName from tenant config when empty)
     for view_spec in spec.views:
+        view_set = view_spec.view_set or get_drillback_view_set()
         params = []
         for param_name, param_value in view_spec.params.items():
             if param_value.startswith("$"):
                 params.append(ViewParameter(param_name, variable=param_value[1:]))
             elif param_name == "LogicalId" and not param_value:
-                params.append(ViewParameter(param_name, value=tenant.logical_id))
+                params.append(ViewParameter(param_name, value=get_drillback_logical_id()))
             else:
                 params.append(ViewParameter(param_name, value=param_value))
         builder.add_view(
-            WorkflowView(view_spec.name, view_spec.view_set, view_spec.view, params)
+            WorkflowView(view_spec.name, view_set, view_spec.view, params)
         )
 
     # 4. Add trees

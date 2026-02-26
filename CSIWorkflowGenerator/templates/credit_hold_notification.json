@@ -23,7 +23,7 @@
   "views": [
     {
       "name": "CustomerDrillBack",
-      "view_set": "infor.syteline (SyteLineViews)",
+      "view_set": "",
       "view": "CustomerView",
       "params": {
         "AccountingEntity": "",
@@ -38,7 +38,7 @@
       "type": "notification",
       "name": "Credit Hold Alert",
       "message": "Customer [CustName] (ID: [CustNum]) has been placed on credit hold.",
-      "distribution": "user1",
+      "distribution": "marcello",
       "send_email": true,
       "params": [
         {"label": "Customer", "variable": "CustName"},

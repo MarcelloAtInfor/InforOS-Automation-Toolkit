@@ -1,0 +1,2057 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Portal Administrative API",
+    "termsOfService": "http://swagger.io/terms/",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://springdoc.org"
+    },
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://mingle-ionapi.inforcloudsuite.com/SLSGDENA049_DEM/OSPORTAL/admin",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/v1/widgets/published/{id}": {
+      "get": {
+        "tags": [
+          "Published Widgets"
+        ],
+        "summary": "Gets a published widget",
+        "operationId": "get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exclude_settings",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPublishedWidgetResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Published Widgets"
+        ],
+        "summary": "Updates a published widget",
+        "operationId": "create",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePublishedWidgetRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePublishedWidgetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePublishedWidgetResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/widgets/published": {
+      "get": {
+        "tags": [
+          "Published Widgets"
+        ],
+        "summary": "Lists published widgets",
+        "operationId": "get_1",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "changed_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "standard_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "logical_id_prefix",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPublishedWidgetResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Published Widgets"
+        ],
+        "summary": "Creates a published widget",
+        "operationId": "create_1",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePublishedWidgetRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePublishedWidgetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePublishedWidgetResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/updatefavoriteorder": {
+      "post": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Reorder favorites based on the current request. Internal, do not use. May change without notice.",
+        "operationId": "updateFavoriteOrder",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoFavoriteOrder"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/maintenance": {
+      "post": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Validate if a site has a maintenance window. Internal, do not use. May change without notice.",
+        "operationId": "getMaintenance",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoMaintenanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/getDrillbackURL": {
+      "post": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get drillback URL by request params. Internal, do not use. May change without notice.",
+        "operationId": "getDrillback",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoDrillbackRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoDrillbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoDrillbackResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/favorite": {
+      "post": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Add new favorite based on the current request. Internal, do not use. May change without notice.",
+        "operationId": "createFavorite",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoFavoriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/cache/invalidate": {
+      "post": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Invalidates caches. Internal, do not use. May change without notice.",
+        "operationId": "invalidateCache",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoCacheInvalidationRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoCacheInvalidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoCacheInvalidationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/applications/url/drillback": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Gets relative drillback application URLs for ION Tasks. Internal, do not use. May change without notice.",
+        "operationId": "getUrlDrillback",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillbackListRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillbackListRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillbackListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/applications/url/drillback/alert": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Gets relative drillback application URLs for ION Alerts. Internal, do not use. May change without notice.",
+        "operationId": "getUrlDrillbackAlert",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillbackListAlertRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrillbackListAlertRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrillbackListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/applications/url/absolute": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Gets an absolute application URL for ION Inbox. Internal, do not use. May change without notice.",
+        "operationId": "getAbsoluteUrl",
+        "parameters": [
+          {
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationUrlRequest"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationUrlResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/applications": {
+      "get": {
+        "tags": [
+          "User Data"
+        ],
+        "summary": "Gets user applications",
+        "operationId": "getApplications",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/info/status": {
+      "get": {
+        "tags": [
+          "Admin API Info"
+        ],
+        "operationId": "getStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayResponseGatewayStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/maintenanceapps": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get maintenance applications. Internal, do not use. May change without notice.",
+        "operationId": "getMaintenanceApps",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoMaintenanceAppsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/favorites": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get user favorites based on the current request. Internal, do not use. May change without notice.",
+        "operationId": "listFavorites",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/enrollment/attributevalue": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get enrollment attribute value. Internal, do not use. May change without notice.",
+        "operationId": "getEnrollmentAttribute",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoEnrollmentAttributeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/applications": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get deployment information for the Infor Go applications. Internal, do not use. May change without notice.",
+        "operationId": "getApplications_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoApplicationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/applicationicon/{siteGuid}": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get icon. Internal, do not use. May change without notice.",
+        "operationId": "getApplicationIcon",
+        "parameters": [
+          {
+            "name": "siteGuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/adminsettings": {
+      "get": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Get admin settings. Internal, do not use. May change without notice.",
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoSettingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/go/delete/{favoriteId}": {
+      "delete": {
+        "tags": [
+          "Infor Go"
+        ],
+        "summary": "Delete favorite based on the current request. Internal, do not use. May change without notice.",
+        "operationId": "deleteFavorites",
+        "parameters": [
+          {
+            "name": "favoriteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoFavoriteOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdatePublishedWidgetResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "JsonNode": {},
+      "PublishedWidget": {
+        "type": "object",
+        "properties": {
+          "manifest": {
+            "$ref": "#/components/schemas/PublishedWidgetManifest"
+          },
+          "localization": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WidgetLocalization"
+            }
+          }
+        }
+      },
+      "PublishedWidgetManifest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "standardId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "widgetTitle": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/JsonNode"
+          },
+          "publishedVersion": {
+            "type": "string"
+          },
+          "settingsMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WidgetSetting"
+            }
+          },
+          "settingsMetadataMode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "border": {
+            "type": "string"
+          },
+          "header": {
+            "type": "string"
+          },
+          "titleDisplay": {
+            "type": "string"
+          },
+          "titleLocked": {
+            "type": "boolean"
+          },
+          "catalogTitle": {
+            "type": "boolean"
+          },
+          "isTitleEnabled": {
+            "type": "boolean"
+          },
+          "isSettingsEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdatePublishedWidgetRequest": {
+        "type": "object",
+        "properties": {
+          "widget": {
+            "$ref": "#/components/schemas/PublishedWidget"
+          }
+        }
+      },
+      "WidgetLocalization": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "WidgetSetting": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "defaultValue": {},
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WidgetValueItem"
+            }
+          },
+          "labelId": {
+            "type": "string"
+          },
+          "enabledMode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isUser": {
+            "type": "boolean"
+          },
+          "maxLength": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isEnabledWhenPublished": {
+            "type": "boolean"
+          },
+          "isMandatory": {
+            "type": "boolean"
+          },
+          "isVisible": {
+            "type": "boolean"
+          },
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "isHidden": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WidgetValueItem": {
+        "type": "object",
+        "properties": {
+          "textId": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "CreatePublishedWidgetResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "CreatePublishedWidgetRequest": {
+        "type": "object",
+        "properties": {
+          "widget": {
+            "$ref": "#/components/schemas/PublishedWidget"
+          }
+        }
+      },
+      "GoError": {
+        "type": "object",
+        "properties": {
+          "Severity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Message": {
+            "type": "string"
+          }
+        }
+      },
+      "GoFavorite": {
+        "type": "object",
+        "properties": {
+          "FavoriteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "Displayname": {
+            "type": "string"
+          },
+          "Applicationname": {
+            "type": "string"
+          },
+          "Url": {
+            "type": "string"
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "logicalid": {
+            "type": "string"
+          },
+          "isAbsoluteURL": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GoFavoriteResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "favorite": {
+            "$ref": "#/components/schemas/GoFavorite"
+          }
+        }
+      },
+      "GoFavoriteOrder": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "FavoriteId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GoFavoriteRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Url": {
+            "type": "string"
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationName": {
+            "type": "string"
+          },
+          "RelKey": {
+            "type": "string"
+          },
+          "ApplicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "LogicalId": {
+            "type": "string"
+          },
+          "isAbsoluteURL": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GoMaintenanceResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "MaintenanceScheduled": {
+            "type": "boolean"
+          },
+          "ActivelyUnderMaintenance": {
+            "type": "boolean"
+          },
+          "StartTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "EndTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Type": {
+            "type": "string"
+          }
+        }
+      },
+      "GoDrillbackResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "ApplicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationGuid": {
+            "type": "string"
+          },
+          "DrillbackURL": {
+            "type": "string"
+          },
+          "LogicalId": {
+            "type": "string"
+          }
+        }
+      },
+      "GoDrillbackParameters": {
+        "type": "object",
+        "properties": {
+          "LogicalId": {
+            "type": "string"
+          },
+          "ViewId": {
+            "type": "string"
+          },
+          "AccountingEntity": {
+            "type": "string"
+          },
+          "ApplicationInstanceIdentifier": {
+            "type": "string"
+          },
+          "SiteLogicalId": {
+            "type": "string"
+          },
+          "Location": {
+            "type": "string"
+          },
+          "ID1": {
+            "type": "string"
+          },
+          "ID2": {
+            "type": "string"
+          },
+          "ID3": {
+            "type": "string"
+          },
+          "ID4": {
+            "type": "string"
+          },
+          "ID5": {
+            "type": "string"
+          },
+          "ID6": {
+            "type": "string"
+          },
+          "ID7": {
+            "type": "string"
+          },
+          "ID8": {
+            "type": "string"
+          },
+          "ID9": {
+            "type": "string"
+          },
+          "ID10": {
+            "type": "string"
+          },
+          "ID11": {
+            "type": "string"
+          },
+          "ID12": {
+            "type": "string"
+          },
+          "ID13": {
+            "type": "string"
+          },
+          "ID14": {
+            "type": "string"
+          },
+          "ID15": {
+            "type": "string"
+          },
+          "Parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "GoDrillbackRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "DrillbackRequest": {
+            "$ref": "#/components/schemas/GoDrillbackParameters"
+          },
+          "FullUrl": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GoCacheInvalidationResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          }
+        }
+      },
+      "GoCacheInvalidationRequest": {
+        "type": "object",
+        "properties": {
+          "settings": {
+            "type": "boolean"
+          },
+          "nativeApps": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Drillback": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DrillbackListResponse": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageInfo"
+            }
+          },
+          "t": {
+            "type": "string"
+          },
+          "drillbacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Drillback"
+            }
+          }
+        }
+      },
+      "MessageInfo": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DrillbackListRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "drillbacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillbackRequest"
+            }
+          }
+        }
+      },
+      "DrillbackRequest": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Parameter"
+            }
+          }
+        }
+      },
+      "Parameter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "DrillbackListAlertRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "drillbacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DrillbackRequest"
+            }
+          },
+          "socialObjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialObject"
+            }
+          }
+        }
+      },
+      "SocialObject": {
+        "type": "object",
+        "properties": {
+          "accountingEntity": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "logicalId": {
+            "type": "string"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplicationUrlResponse": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageInfo"
+            }
+          },
+          "t": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "localNetworkAccess": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplicationUrlRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "logicalId": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Parameter"
+            }
+          },
+          "standardParameters": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListPublishedWidgetResponse": {
+        "type": "object",
+        "properties": {
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublishedWidgetInfo"
+            }
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PublishedWidgetInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "standardId": {
+            "type": "string"
+          },
+          "logicalIdPrefix": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "changedBy": {
+            "type": "string"
+          },
+          "changed": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "publishedVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "GetPublishedWidgetResponse": {
+        "type": "object",
+        "properties": {
+          "widget": {
+            "$ref": "#/components/schemas/PublishedWidget"
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "registryId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "logicalId": {
+            "type": "string"
+          },
+          "https": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "context": {
+            "type": "string"
+          },
+          "extUrl": {
+            "type": "string"
+          },
+          "inforGo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customParameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationSetting"
+            }
+          },
+          "settings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationSetting"
+            }
+          },
+          "fallbacks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "drillbackViewFilename": {
+            "type": "string"
+          },
+          "localNetworkAccess": {
+            "type": "string"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ApplicationListResponse": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageInfo"
+            }
+          },
+          "t": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "applications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Application"
+            }
+          }
+        }
+      },
+      "ApplicationSetting": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "excludeUrl": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GatewayResponseGatewayStatus": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/GatewayStatus"
+          }
+        }
+      },
+      "GatewayStatus": {
+        "type": "object",
+        "properties": {
+          "releaseVersion": {
+            "type": "string"
+          },
+          "buildTimestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "GoMaintenanceAppsResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "ApplicationsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoMaintenanceObject"
+            }
+          }
+        }
+      },
+      "GoMaintenanceObject": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "application": {
+            "type": "string"
+          },
+          "eventtype": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          }
+        }
+      },
+      "GoFavoriteListResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "favoriteList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoFavorite"
+            }
+          }
+        }
+      },
+      "GoEnrollmentAttributeResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "attributeValue": {
+            "type": "string"
+          }
+        }
+      },
+      "GoApplication": {
+        "type": "object",
+        "properties": {
+          "ProductName": {
+            "type": "string"
+          },
+          "LogicalId": {
+            "type": "string"
+          },
+          "SiteId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApplicationTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "IconUrl": {
+            "type": "string"
+          },
+          "ApplicationUrl": {
+            "type": "string"
+          },
+          "SiteGuid": {
+            "type": "string"
+          },
+          "FallbackLogicIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ApplicationVersion": {
+            "type": "string"
+          },
+          "DeviceModelSupport": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "DrillbackMethod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Hide": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GoApplicationBase": {
+        "type": "object",
+        "properties": {
+          "ProductName": {
+            "type": "string"
+          },
+          "LogicalId": {
+            "type": "string"
+          }
+        }
+      },
+      "GoApplicationResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "ApplicationSiteList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoApplication"
+            }
+          },
+          "ProvisionedApps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoApplicationBase"
+            }
+          },
+          "NativeApps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoNativeApp"
+            }
+          },
+          "PortalUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "GoNativeApp": {
+        "type": "object",
+        "properties": {
+          "AppSchemaRedirectURL": {
+            "type": "string"
+          },
+          "AppStoreID": {
+            "type": "string"
+          },
+          "DownloadURL": {
+            "type": "string"
+          },
+          "AppIcon": {
+            "type": "string"
+          },
+          "DeviceSupport": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AppType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AppName": {
+            "type": "string"
+          },
+          "AppGuid": {
+            "type": "string"
+          }
+        }
+      },
+      "GoAdminModel": {
+        "type": "object",
+        "properties": {
+          "InActivityTimeOut": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SignoutUrl": {
+            "type": "string"
+          },
+          "FallbackLanguage": {
+            "type": "string"
+          },
+          "LanguageList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoLanguage"
+            }
+          },
+          "MAMSettings": {
+            "$ref": "#/components/schemas/GoMAMSettings"
+          },
+          "Settings": {
+            "$ref": "#/components/schemas/GoSettings"
+          },
+          "wpnsvc": {
+            "type": "string"
+          },
+          "PingFederateHostURL": {
+            "type": "string"
+          },
+          "UseMingleJWTToken": {
+            "type": "boolean"
+          },
+          "EnableMaintenancePage": {
+            "type": "boolean"
+          },
+          "EnableIDM": {
+            "type": "boolean"
+          },
+          "UserPrivacyAccess": {
+            "$ref": "#/components/schemas/GoUserPrivacyAccessSettings"
+          }
+        }
+      },
+      "GoLanguage": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string"
+          },
+          "Value": {
+            "type": "string"
+          }
+        }
+      },
+      "GoMAMSettings": {
+        "type": "object",
+        "properties": {
+          "AppClientId": {
+            "type": "string"
+          },
+          "AdalURL": {
+            "type": "string"
+          },
+          "EnableMAM": {
+            "type": "boolean"
+          },
+          "EnrollmentAttributeID": {
+            "type": "string"
+          },
+          "AllowUnenrolledUsers": {
+            "type": "boolean"
+          },
+          "MAMKey": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ResourceKey": {
+            "type": "string"
+          },
+          "MAMProvider": {
+            "type": "string"
+          }
+        }
+      },
+      "GoSettingResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "AdminModel": {
+            "$ref": "#/components/schemas/GoAdminModel"
+          }
+        }
+      },
+      "GoSettings": {
+        "type": "object",
+        "properties": {
+          "BiometricIdleTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "EnableScreenShotForAndroid": {
+            "type": "boolean"
+          },
+          "EnableGuidedHelp": {
+            "type": "boolean"
+          },
+          "AllowJailBrokenDevices": {
+            "type": "boolean"
+          },
+          "EnablePushNotification": {
+            "type": "boolean"
+          },
+          "InforGoAuthType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "InforGoUserPin": {
+            "type": "boolean"
+          },
+          "EnableDefaultAppForInforGo": {
+            "type": "boolean"
+          },
+          "InforGoDefaultLogicalId": {
+            "type": "string"
+          },
+          "DefaultAppRefreshTime": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GoUserPrivacyAccessSettings": {
+        "type": "object",
+        "properties": {
+          "BlockMicrophone": {
+            "type": "boolean"
+          },
+          "BlockCamera": {
+            "type": "boolean"
+          },
+          "BlockLocation": {
+            "type": "boolean"
+          },
+          "BlockPhotoLibrary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GoFavoriteOrderResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ErrorList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoError"
+            }
+          },
+          "favoriteOrderList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoFavoriteOrder"
+            }
+          }
+        }
+      }
+    }
+  }
+}
