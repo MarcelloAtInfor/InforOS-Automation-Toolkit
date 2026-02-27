@@ -4,10 +4,10 @@ Composes all existing modules: template system, validator, ION deployer,
 and AES handler builder into a single entry point with subcommands.
 
 Usage:
-    python scripts/wfgen.py create templates/spec.json [--live] [--activate]
-    python scripts/wfgen.py render templates/spec.json [--diff ref.json]
-    python scripts/wfgen.py validate templates/spec.json [--live]
-    python scripts/wfgen.py aes templates/spec.json [--deploy]
+    python scripts/wfgen.py create workflow_specs/spec.json [--live] [--activate]
+    python scripts/wfgen.py render workflow_specs/spec.json [--diff ref.json]
+    python scripts/wfgen.py validate workflow_specs/spec.json [--live]
+    python scripts/wfgen.py aes workflow_specs/spec.json [--deploy]
     python scripts/wfgen.py status WorkflowName
     python scripts/wfgen.py delete WorkflowName
     python scripts/wfgen.py extract-sa WorkflowName [--file path/to/file.json]

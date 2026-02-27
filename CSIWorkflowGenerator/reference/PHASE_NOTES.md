@@ -113,7 +113,7 @@ Reduces workflow authoring from ~200 lines of Python to ~117 lines of JSON:
 from src.templates import load_spec, render
 from src.config.tenant import load_default
 
-spec = load_spec("templates/credit_approval.json")
+spec = load_spec("workflow_specs/credit_approval.json")
 tenant = load_default()
 result = render(spec, tenant)  # -> ION workflow dict
 ```
@@ -334,10 +334,10 @@ client.suggest_property("SLCustomers", "CreditLim")
 ### Scripts
 
 ```bash
-python scripts/validate_spec.py templates/credit_approval.json --tenant  # Structural + referential
-python scripts/validate_spec.py templates/credit_approval.json --live    # + live IDO checks
-python scripts/generate_workflow.py templates/spec.json --live --diff ref.json  # Full pipeline
-python scripts/generate_workflow.py templates/spec.json --validate-only --live  # Validate only
+python scripts/validate_spec.py workflow_specs/credit_approval.json --tenant  # Structural + referential
+python scripts/validate_spec.py workflow_specs/credit_approval.json --live    # + live IDO checks
+python scripts/generate_workflow.py workflow_specs/spec.json --live --diff ref.json  # Full pipeline
+python scripts/generate_workflow.py workflow_specs/spec.json --validate-only --live  # Validate only
 ```
 
 ### Slash Command: `/parse-workflow`
@@ -362,10 +362,10 @@ NL-to-spec parsing at `.claude/commands/parse-workflow.md`. Provides structured 
 ### Unified CLI Usage
 
 ```bash
-python scripts/wfgen.py create templates/spec.json --live --activate   # Full pipeline
-python scripts/wfgen.py render templates/spec.json --diff ref.json     # Render + diff
-python scripts/wfgen.py validate templates/spec.json --live            # Validate only
-python scripts/wfgen.py aes templates/spec.json --deploy --diff ref    # AES handler only
+python scripts/wfgen.py create workflow_specs/spec.json --live --activate   # Full pipeline
+python scripts/wfgen.py render workflow_specs/spec.json --diff ref.json     # Render + diff
+python scripts/wfgen.py validate workflow_specs/spec.json --live            # Validate only
+python scripts/wfgen.py aes workflow_specs/spec.json --deploy --diff ref    # AES handler only
 python scripts/wfgen.py status WorkflowName                            # Check status
 python scripts/wfgen.py delete WorkflowName                            # Delete both
 ```

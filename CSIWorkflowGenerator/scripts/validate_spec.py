@@ -1,9 +1,9 @@
 """Validate a workflow spec JSON file.
 
 Usage:
-    python scripts/validate_spec.py templates/credit_approval.json
-    python scripts/validate_spec.py templates/credit_approval.json --tenant
-    python scripts/validate_spec.py templates/credit_approval.json --live
+    python scripts/validate_spec.py workflow_specs/credit_approval.json
+    python scripts/validate_spec.py workflow_specs/credit_approval.json --tenant
+    python scripts/validate_spec.py workflow_specs/credit_approval.json --live
 """
 import sys
 from pathlib import Path

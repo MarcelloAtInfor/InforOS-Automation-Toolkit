@@ -104,7 +104,7 @@ Use date headers for each session, e.g.:
   - No more leaving placeholders for someone to find later
 
 - **Redeployed ReorderPoint handler** with null guard fix
-  - `wfgen create templates/reorder_point_approval.json --update --activate` — SUCCESS
+  - `wfgen create workflow_specs/reorder_point_approval.json --update --activate` — SUCCESS
   - ION workflow: `CS_ReorderPoint_Approval` — active
   - AES handler: `ue_ReorderPointApproval` seq=230 — active, verified
   - Updated distribution from `user1` to `marcello`

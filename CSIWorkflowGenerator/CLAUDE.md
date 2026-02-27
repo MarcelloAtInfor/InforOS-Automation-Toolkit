@@ -20,7 +20,7 @@ CSIWorkflowGenerator/
     CS_Credit_Approval_API.json # Reference ION workflow (simple approval)
     CustomerOrderDiscountWorkflow.json  # Reference ION workflow (advanced patterns)
     AES_ue_CreditLimitWorkflow_API.json # Reference AES handler (7-action pattern)
-  templates/
+  workflow_specs/
     credit_approval.json        # Credit Approval spec (with aes_trigger)
     order_discount.json         # Order Discount spec (parallel timeout pattern)
     order_line_discount_approval.json  # Order Line Discount spec (with aes_trigger)
@@ -84,18 +84,18 @@ The primary entry point for all workflow operations:
 
 ```bash
 # Full pipeline: validate + render + deploy ION workflow + create AES handler
-python scripts/wfgen.py create templates/spec.json --live --activate
-python scripts/wfgen.py create templates/spec.json --update --activate  # delete+recreate on 409
+python scripts/wfgen.py create workflow_specs/spec.json --live --activate
+python scripts/wfgen.py create workflow_specs/spec.json --update --activate  # delete+recreate on 409
 
 # Render only (no deploy)
-python scripts/wfgen.py render templates/spec.json
-python scripts/wfgen.py render templates/spec.json --diff reference/ref.json
+python scripts/wfgen.py render workflow_specs/spec.json
+python scripts/wfgen.py render workflow_specs/spec.json --diff reference/ref.json
 
 # Validate only
-python scripts/wfgen.py validate templates/spec.json --live
+python scripts/wfgen.py validate workflow_specs/spec.json --live
 
 # AES handler only (from spec)
-python scripts/wfgen.py aes templates/spec.json --deploy --diff reference/ref.json
+python scripts/wfgen.py aes workflow_specs/spec.json --deploy --diff reference/ref.json
 
 # Check workflow status
 python scripts/wfgen.py status WorkflowName

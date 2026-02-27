@@ -1,11 +1,11 @@
 """Render a workflow spec JSON into ION workflow JSON.
 
 Usage:
-    python scripts/render_template.py templates/credit_approval.json
-    python scripts/render_template.py templates/credit_approval.json --diff reference/CS_Credit_Approval_API.json
-    python scripts/render_template.py templates/credit_approval.json --deploy
-    python scripts/render_template.py templates/credit_approval.json --deploy --activate
-    python scripts/render_template.py templates/credit_approval.json --name CS_Credit_Approval_v2
+    python scripts/render_template.py workflow_specs/credit_approval.json
+    python scripts/render_template.py workflow_specs/credit_approval.json --diff reference/CS_Credit_Approval_API.json
+    python scripts/render_template.py workflow_specs/credit_approval.json --deploy
+    python scripts/render_template.py workflow_specs/credit_approval.json --deploy --activate
+    python scripts/render_template.py workflow_specs/credit_approval.json --name CS_Credit_Approval_v2
 """
 import json
 import sys

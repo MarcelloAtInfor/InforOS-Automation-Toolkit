@@ -173,7 +173,7 @@ CSIWorkflowGenerator/
     config/
       __init__.py
       tenant.py            # Tenant-specific config (site, user GUIDs, service accounts)
-  templates/
+  workflow_specs/
     credit_approval.yaml
     order_discount.yaml
   scripts/
@@ -430,7 +430,7 @@ CSIWorkflowGenerator/
       validator.py           # JSON schema validation for generated workflows
     orchestrator/
       retry.py               # Retry logic for API calls (429, transient errors)
-  templates/
+  workflow_specs/
     multi_level_po_approval.yaml
     quality_hold_notification.yaml
 ```

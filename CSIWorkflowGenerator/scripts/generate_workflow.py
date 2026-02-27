@@ -3,12 +3,12 @@
 Composes existing modules — no reimplementation.
 
 Usage:
-    python scripts/generate_workflow.py templates/credit_approval.json
-    python scripts/generate_workflow.py templates/credit_approval.json --live
-    python scripts/generate_workflow.py templates/credit_approval.json --diff reference/CS_Credit_Approval_API.json
-    python scripts/generate_workflow.py templates/credit_approval.json --deploy --activate
-    python scripts/generate_workflow.py templates/credit_approval.json --validate-only
-    python scripts/generate_workflow.py templates/credit_approval.json --name CS_Credit_Approval_v3
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json --live
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json --diff reference/CS_Credit_Approval_API.json
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json --deploy --activate
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json --validate-only
+    python scripts/generate_workflow.py workflow_specs/credit_approval.json --name CS_Credit_Approval_v3
 """
 import json
 import sys
