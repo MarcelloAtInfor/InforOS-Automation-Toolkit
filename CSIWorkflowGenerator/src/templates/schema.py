@@ -541,6 +541,8 @@ class AesTriggerSpec:
     notify_email: str | None = None         # optional debug email (action 35)
     notes_ido: str | None = None            # optional notes logging IDO (action 50)
     notes_object_type: str | None = None    # e.g. "customer"
+    lock_record: bool = True                # set InWorkflow=1 to lock record during approval
+    revert_field: bool = False              # revert monitored field to old value while locked
 
     @classmethod
     def from_dict(cls, d: dict) -> AesTriggerSpec:
@@ -557,6 +559,8 @@ class AesTriggerSpec:
             notify_email=d.get("notify_email"),
             notes_ido=d.get("notes_ido"),
             notes_object_type=d.get("notes_object_type"),
+            lock_record=d.get("lock_record", True),
+            revert_field=d.get("revert_field", False),
         )
 
 

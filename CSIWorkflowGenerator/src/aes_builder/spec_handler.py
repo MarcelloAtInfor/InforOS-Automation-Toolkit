@@ -60,7 +60,14 @@ def _null_guard_expression(value: str) -> str:
 
     AES event parameters from nullable IDO fields can be empty/null.
     ROUND("", N) throws a .NET FormatException. This wraps the expression as:
-      IF(E(param) = "", "0", ROUND(E(param), N))
+      ROUND(IF(E(param) = "", 0, E(param)), N)
+
+    IMPORTANT: Two parser constraints discovered from live errors:
+    1. ROUND must be the OUTER function — the parser doesn't recognize ROUND
+       inside IF() argument positions (different token grammar).
+    2. IF branches inside ROUND must use numeric literals (0) not string
+       literals ("0") — ROUND's argument is parsed in a numeric context
+       where StringLiteral is not a valid token.
 
     Non-matching expressions are returned unchanged.
     """
@@ -68,7 +75,7 @@ def _null_guard_expression(value: str) -> str:
     if not m:
         return value
     param, decimals = m.group(1), m.group(2)
-    return f'IF(E({param}) = "", "0", ROUND(E({param}), {decimals}))'
+    return f'ROUND(IF(E({param}) = "", 0, E({param})), {decimals})'
 
 
 def _has_ido_update(steps: list) -> bool:
@@ -227,17 +234,20 @@ def build_handler_from_spec(
         )
         actions.append(action_35)
 
-    # Action 40: SetValues — set InWorkflow=1 + rollback field to old value
-    # SKIP for notification-only workflows (no ido_update to set InWorkflow back to 0)
-    if _has_ido_update(spec.flow):
+    # Action 40: SetValues — set InWorkflow=1 to lock the record
+    # Controlled by two spec flags:
+    #   lock_record (default True) — set InWorkflow=1 to prevent edits during approval
+    #   revert_field (default False) — revert monitored field to old value while locked
+    # SKIP when lock_record=False OR for notification-only workflows (no ido_update to unlock)
+    if trigger.lock_record and _has_ido_update(spec.flow):
+        props = {"InWorkflow": '"1"'}
+        if trigger.revert_field:
+            props[field_name] = f'E(Old{field_name})'
         action_40 = EventAction(
             sequence=40,
             action_type=ACTION_SET_VALUES,
-            parameters=setpropvalues_params({
-                "InWorkflow": '"1"',
-                field_name: event_param(f"Old{field_name}"),
-            }),
-            description=f"Lock Record & set {field_name} back",
+            parameters=setpropvalues_params(props),
+            description="Lock Record" + (" + Revert" if trigger.revert_field else ""),
         )
         actions.append(action_40)
 

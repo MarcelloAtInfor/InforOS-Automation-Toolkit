@@ -313,6 +313,29 @@ def notify_params(
 # -- ION API workflow start helper --
 
 
+def _json_escape_expr(value_expr: str, data_type: str = "STRING") -> str:
+    r"""Wrap an AES value expression with REPLACE to escape double quotes.
+
+    The ION workflow start JSON payload is double-encoded: inner JSON lives
+    inside an outer JSON string.  A raw value like P("Item") returning
+    "SB 2" (with embedded quotes) breaks the outer JSON.
+
+    REPLACE escapes each " as \\\" (four literal chars: \ \ \ ").
+    At the outer JSON level \\\" decodes to \" (escaped backslash + quote),
+    and at the inner JSON level \" decodes to a literal " character.
+
+    AES single-quoted strings are fully literal (no backslash escaping),
+    so '\\\"' is four chars: \ \ \ "
+
+    Numeric expressions (DECIMAL/INTEGER types, ROUND(), etc.) are returned
+    unwrapped — they cannot contain double quotes, and the AES parser does
+    not accept ROUND in REPLACE's first-argument token grammar.
+    """
+    if data_type in ("DECIMAL", "INTEGER", "BOOLEAN") or value_expr.startswith("ROUND("):
+        return value_expr
+    return f"""REPLACE({value_expr}, '"', '\\\\\\"')"""
+
+
 def build_ion_workflow_start_params(
     workflow_name: str,
     logical_id: str,
@@ -357,7 +380,12 @@ def build_ion_workflow_start_params(
         # Close the current literal segment, add placeholder for value
         placeholder_args.append(f"'{prefix}'")
         prefix = ""
-        placeholder_args.append(value_expr)
+        # Wrap value expressions with REPLACE to escape embedded double
+        # quotes for the double-encoded JSON context (inner JSON inside
+        # outer JSON string).  Numeric types and ROUND expressions skip
+        # REPLACE — they can't contain quotes and ROUND is not a valid
+        # token in REPLACE's first-argument grammar.
+        placeholder_args.append(_json_escape_expr(value_expr, data_type))
         prefix = '\\"}'
 
     prefix += ']}","Type":"body"}]'

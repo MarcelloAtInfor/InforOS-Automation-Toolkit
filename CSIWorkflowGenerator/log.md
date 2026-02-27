@@ -15,6 +15,68 @@ Use date headers for each session, e.g.:
 - ...
 -->
 
+## Session Date: 2026-02-26 (session 8 — AES expression parser deep debugging)
+
+### What was done
+- **Fixed Bug 4b: ROUND null guard — "0" string literal invalid in numeric context**
+  - Symptom: After fixing ROUND outside IF, `"0"` (StringLiteral) rejected inside ROUND's argument (numeric context)
+  - Root cause: ROUND's first arg is parsed in numeric context — `StringLiteral` not in expected token set, `IntegerLiteral` IS
+  - Fix: `"0"` → `0` (numeric literal) in `_null_guard_expression()` in `spec_handler.py`
+  - Final expression: `ROUND(IF(E(param) = "", 0, E(param)), N)`
+
+- **Fixed Bug 5: Embedded double quotes in IDO values break JSON payload**
+  - Symptom: Item `"SB 2"` (with quotes in name) causes `Error parsing ION API method parameters: unexpected character S at position 243`
+  - Root cause: SUBSTITUTE concatenates raw P() values into double-encoded JSON. Unescaped `"` in data breaks outer JSON string
+  - Fix: Added `_json_escape_expr()` in `expressions.py` — wraps every SUBSTITUTE value arg with `REPLACE(expr, '"', '\\\"')` (4 literal AES chars: `\`, `\`, `\`, `"`)
+  - Escaping chain: `\\\"` in raw PARM → outer JSON decodes `\\` → `\` and `\"` → `"` → inner JSON sees `\"` as escaped quote
+  - Debug approach: Added temporary notify action 27 to email V(PARM) contents — revealed the raw `"SB 2"` breaking the JSON
+
+- **Fixed Bug 6: Action 40 field revert fails on ERP validation**
+  - Symptom: "Reorder Point must be greater than 0" when handler reverts value (UseReorderPoint unchecked = 0 is invalid)
+  - Fix: Action 40 now ONLY sets `InWorkflow=1` (lock) — does NOT revert the field value. User sees the new value while pending approval. Workflow decides to keep or revert.
+
+- **Deployed handler 3 times** during iterative debugging, each time with `--update` (delete + recreate)
+- Final handler: `ue_ReorderPointApproval` seq=230, 5 actions, active — **NEEDS USER TESTING**
+
+### Discoveries
+- **AES expression parser has context-sensitive token grammars** — different expected-token sets for different parse positions:
+  - SUBSTITUTE arguments (text context): accepts StringLiteral, ROUND, IF, P, E, V, etc.
+  - IF false-branch inside SUBSTITUTE: accepts StringLiteral but NOT ROUND
+  - ROUND first argument (numeric context): accepts IntegerLiteral, RealLiteral, IF, E, P, ROUND, CAST, CEILING, FLOOR, but NOT StringLiteral
+  - The VB.NET syntax checker calls `EventSystem.EventActionParametersCheckSyntax()` server-side
+- **Double-encoded JSON is vulnerable to data injection** — any IDO property value with `"` breaks the outer JSON string. REPLACE with `'\\\"'` escapes for both JSON levels. This affects ALL handlers, not just ReorderPoint.
+- **Approval handlers should lock-only, not revert** — reverting the field can trigger ERP validation rules that don't apply to the new value. Lock-only is safer and shows the user the pending value.
+
+### Next steps
+- **User testing on live tenant**: test ReorderPoint change with `"SB 2"` item (quotes in name) and normal items
+- If REPLACE escaping works, apply it to all other handlers (credit approval, order line discount, etc.)
+- Still need testing: ShipTo notification, CreditHold notification handlers
+- Update CLAUDE.md with new gotchas once fixes are validated
+
+---
+
+## Session Date: 2026-02-26 (session 7 — ROUND/IF nesting fix for AES expression parser)
+
+### What was done
+- **Fixed Bug 4: AES expression parser rejects ROUND inside IF**
+  - Symptom: `[Parsing of Parameters] was not successful` on action 25 (seq=230 ReorderPoint handler)
+  - Root cause: AES parser token grammar doesn't include ROUND in IF() argument positions. ROUND is valid as a top-level SUBSTITUTE argument but NOT nested inside IF().
+  - Fix: Swapped nesting order in `_null_guard_expression()`:
+    - Before: `IF(E(param) = "", "0", ROUND(E(param), N))` — ROUND inside IF = **parse error**
+    - After: `ROUND(IF(E(param) = "", "0", E(param)), N)` — IF inside ROUND = **valid**
+  - One-line change in `src/aes_builder/spec_handler.py`
+  - Updated CLAUDE.md gotcha #9 with nesting constraint
+  - Redeployed handler: `ue_ReorderPointApproval` seq=230 — active, verified
+
+### Discovery
+- **AES expression parser token restrictions are context-sensitive** — ROUND is recognized at certain parse positions (e.g., SUBSTITUTE argument) but not inside IF() false-branch. The parser's expected-token list for IF arguments includes IF, E, P, V, SUBSTITUTE, CONFIGNAME, etc. but NOT ROUND. This isn't documented anywhere — learned from the live parse error.
+
+### Next steps
+- User validation: test ReorderPoint change on live tenant (null→value and value→value transitions)
+- Remaining 2 handlers still need testing: ShipTo notification, CreditHold notification
+
+---
+
 ## Session Date: 2026-02-26 (session 6 — cross-project Action=4 fix + Bug 1 docs)
 
 ### What was done
