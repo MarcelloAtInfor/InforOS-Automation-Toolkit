@@ -15,6 +15,23 @@ Use date headers for each session, e.g.:
 - ...
 -->
 
+## Session Date: 2026-02-26 (session 9 — rename + validation)
+
+### What was done
+- Renamed `templates/` → `workflow_specs/` across entire codebase (10 JSON files, 9 doc/script files, 44 line changes)
+- Updated all references in CLAUDE.md, PHASE_NOTES.md, plan.md, log.md, parse-workflow.md, and 4 script docstrings
+- Verified validate + render work from new path
+- Pushed to both private and public repos
+- Phase 6D (compound conditions) confirmed live validated by user — status updated
+- Confirmed `lock_record` / `revert_field` already fully implemented (schema + spec_handler + docs)
+
+### Status
+- **Phases 0–6E**: All COMPLETE and live validated
+- **Phase 7** (GenAI Platform Tools): Not started — next major milestone
+- **Phase 8** (GenAI Platform Agent): Not started
+
+---
+
 ## Session Date: 2026-02-26 (session 8 — AES expression parser deep debugging)
 
 ### What was done
