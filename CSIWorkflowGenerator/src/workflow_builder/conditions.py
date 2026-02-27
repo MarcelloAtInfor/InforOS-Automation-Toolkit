@@ -34,12 +34,9 @@ Compound condition example (AND/OR):
         </Subcondition>
         <Subcondition>
           <Name>BothApproved</Name>
-          <Type>BooleanCombination</Type>
-          <BooleanOperator>AND</BooleanOperator>
-          <SubconditionNames>
-            <SubconditionName>EngApproved</SubconditionName>
-            <SubconditionName>QualApproved</SubconditionName>
-          </SubconditionNames>
+          <Type>CombinedCondition</Type>
+          <Conditions>EngApproved,QualApproved</Conditions>
+          <ANDOR>AND</ANDOR>
         </Subcondition>
       </Subconditions>
     </Condition>
@@ -51,8 +48,8 @@ VALID_OPERATORS = {
     "NotEqual",
     "GreaterThan",
     "LessThan",
-    "GreaterThanOrEqual",
-    "LessThanOrEqual",
+    "GreaterOrEqual",
+    "LessOrEqual",
 }
 
 
@@ -105,7 +102,7 @@ def build_compound_condition(
 ) -> str:
     """Build a compound XML condition with AND/OR logic.
 
-    Generates a BooleanCombination subcondition that references multiple
+    Generates a CombinedCondition subcondition that references multiple
     AttributeValueComparison subconditions by name.
 
     Args:
@@ -126,7 +123,7 @@ def build_compound_condition(
 
     # Build individual subcondition XML fragments
     subcondition_xml = ""
-    subcondition_names_xml = ""
+    cond_names = []
     for cond in conditions:
         if cond.operator not in VALID_OPERATORS:
             raise ValueError(
@@ -142,19 +139,15 @@ def build_compound_condition(
             f"<Value>{cond.value}</Value>"
             "</Subcondition>"
         )
-        subcondition_names_xml += (
-            f"<SubconditionName>{cond.name}</SubconditionName>"
-        )
+        cond_names.append(cond.name)
 
-    # Build the compound BooleanCombination subcondition
+    # Build the CombinedCondition subcondition (comma-separated name list)
     compound_xml = (
         "<Subcondition>"
         f"<Name>{name}</Name>"
-        "<Type>BooleanCombination</Type>"
-        f"<BooleanOperator>{logic}</BooleanOperator>"
-        "<SubconditionNames>"
-        f"{subcondition_names_xml}"
-        "</SubconditionNames>"
+        "<Type>CombinedCondition</Type>"
+        f"<Conditions>{','.join(cond_names)}</Conditions>"
+        f"<ANDOR>{logic}</ANDOR>"
         "</Subcondition>"
     )
 

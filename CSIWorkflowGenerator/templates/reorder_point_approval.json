@@ -1,6 +1,6 @@
 {
   "name": "CS_ReorderPoint_Approval",
-  "description": "Inventory reorder point approval: when an item's reorder point changes, require manager approval before committing the change.",
+  "description": "Inventory reorder point two-level approval: Level 1 reviews all changes, Level 2 required only when Level 1 approves AND new value >= 100.",
   "aes_trigger": {
     "event": "IdoOnItemUpdate",
     "ido": "SLItems",
@@ -42,8 +42,8 @@
   "flow": [
     {
       "type": "approval_task",
-      "name": "Reorder Point Review",
-      "message": "Item [Item] ([Description]) reorder point changed from [OldReorderPoint] to [NewReorderPoint]. Approval required.",
+      "name": "Level 1 Review",
+      "message": "Item [Item] ([Description]) reorder point changed from [OldReorderPoint] to [NewReorderPoint]. Level 1 approval required.",
       "distribution": "marcello",
       "send_email": true,
       "priority": "High",
@@ -51,7 +51,7 @@
         {"label": "Approve", "value": "Approved"},
         {"label": "Reject", "value": "Rejected"}
       ],
-      "button_variable": "ApproveReject",
+      "button_variable": "Level1Result",
       "params": [
         {"label": "Item", "variable": "Item"},
         {"label": "Description", "variable": "Description"},
@@ -60,6 +60,65 @@
         {"label": "Item Details", "view": "ItemDrillBack"}
       ],
       "due_date": {"value": 4, "unit": "HOURS"}
+    },
+    {
+      "type": "condition",
+      "condition": {
+        "name": "NeedsLevel2",
+        "logic": "AND",
+        "conditions": [
+          {
+            "name": "IsLevel1Approved",
+            "variable": "Level1Result",
+            "operator": "Equal",
+            "value": "Approved"
+          },
+          {
+            "name": "IsHighValue",
+            "variable": "NewReorderPoint",
+            "operator": "GreaterOrEqual",
+            "value": "100"
+          }
+        ]
+      },
+      "true_steps": [
+        {
+          "type": "approval_task",
+          "name": "Level 2 Review",
+          "message": "Item [Item] ([Description]) reorder point changed from [OldReorderPoint] to [NewReorderPoint]. Level 1 APPROVED. High-value change requires Level 2 final approval.",
+          "distribution": "marcello",
+          "send_email": true,
+          "priority": "High",
+          "propagate_notes": true,
+          "buttons": [
+            {"label": "Approve", "value": "Approved"},
+            {"label": "Reject", "value": "Rejected"}
+          ],
+          "button_variable": "FinalResult",
+          "params": [
+            {"label": "Item", "variable": "Item"},
+            {"label": "Description", "variable": "Description"},
+            {"label": "New Reorder Point", "variable": "NewReorderPoint"},
+            {"label": "Old Reorder Point", "variable": "OldReorderPoint"},
+            {"label": "Level 1 Decision", "variable": "Level1Result"},
+            {"label": "Item Details", "view": "ItemDrillBack"}
+          ],
+          "due_date": {"value": 4, "unit": "HOURS"}
+        }
+      ],
+      "false_steps": [
+        {
+          "type": "assignment",
+          "name": "SetFinalFromLevel1",
+          "assignments": [
+            {
+              "variable": "FinalResult",
+              "expression": "[Level1Result]",
+              "assignment_type": "EXPRESSION_ASSIGNMENT"
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "subworkflow",
@@ -79,8 +138,8 @@
         {
           "type": "ido_branch",
           "condition": {
-            "name": "IsApproved",
-            "variable": "ApproveReject",
+            "name": "IsFinalApproved",
+            "variable": "FinalResult",
             "operator": "Equal",
             "value": "Approved"
           },
@@ -119,14 +178,15 @@
     {
       "type": "notification",
       "name": "Reorder Point Result",
-      "message": "Item [Item] ([Description]) reorder point change to [NewReorderPoint] has been [ApproveReject].",
+      "message": "Item [Item] ([Description]) reorder point change to [NewReorderPoint] has been [FinalResult].",
       "distribution": "marcello",
       "propagate_notes": true,
       "params": [
         {"label": "Item", "variable": "Item"},
         {"label": "Description", "variable": "Description"},
         {"label": "New Reorder Point", "variable": "NewReorderPoint"},
-        {"label": "Status", "variable": "ApproveReject"},
+        {"label": "Old Reorder Point", "variable": "OldReorderPoint"},
+        {"label": "Status", "variable": "FinalResult"},
         {"label": "Item Details", "view": "ItemDrillBack"}
       ]
     }

@@ -223,7 +223,7 @@ resp = requests.post(url, headers=headers, json=payload)
 
 2. **Duplicate workflow returns 400, not 409** — Creating a workflow that already exists returns `400 Bad Request` with `"workflow already exists with the same name"` (not 409 Conflict). The `--update` flag handles both.
 
-3. **Compound condition XML (`BooleanCombination`) rejected by ION** — Our `build_compound_condition()` generates XML that ION's activation validator cannot parse. Error: `Cannot invoke "Condition.getUsedSubcondition()" because "cond" is null`. Simple conditions (`AttributeValueComparison`) work. Needs investigation: download a working compound condition from ION Desk UI to compare XML format.
+3. **Compound condition XML uses `CombinedCondition`, not `BooleanCombination` (FIXED)** — ION's compound condition format uses `<Type>CombinedCondition</Type>` with `<Conditions>Name1,Name2</Conditions>` (comma-separated) and `<ANDOR>AND</ANDOR>`. Our original `BooleanCombination` type with `<SubconditionNames>` was rejected. Also discovered `AttributeComparison` type for variable-to-variable comparisons (`<FirstAttributeName>` + `<SecondAttributeName>` instead of `<AttributeName>` + `<Value>`).
 
 4. **Notification messages cannot reference parallel branch button variables** — Variables set by `button_variable` in parallel branches (e.g. `PurchasingResult`) cause activation error: `PARAMETER_X0_CANNOT_BE_USED_IN_THE_SUMMARY_NOTIFICATION_MESSAGE`. Workaround: show them as task params instead of in `[VarName]` message text.
 
@@ -347,7 +347,7 @@ The parent project (`CC_OS_Project/.claude/`) provides reusable commands:
 | 5 | End-to-End Orchestrator CLI | COMPLETE (live validated) |
 | 6A | Notification-Only Pattern | COMPLETE (live validated) |
 | 6B-C | Multi-Level, Parallel ALL_IN | COMPLETE (live validated) |
-| 6D | Compound Conditions | BLOCKED — BooleanCombination XML rejected by ION |
+| 6D | Compound Conditions | COMPLETE (CombinedCondition format fix) — needs live validation |
 | 6E | HTTP Robustness Hardening | COMPLETE (live validated) |
 | 7 | GenAI Platform Tools (Goal 2) | Not started |
 | 8 | GenAI Platform Agent (Goal 2) | Not started |

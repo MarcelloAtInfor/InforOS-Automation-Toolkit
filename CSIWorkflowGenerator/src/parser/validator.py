@@ -60,8 +60,8 @@ VALID_OPERATORS = {
     "NotEqual",
     "GreaterThan",
     "LessThan",
-    "GreaterThanOrEqual",
-    "LessThanOrEqual",
+    "GreaterOrEqual",
+    "LessOrEqual",
 }
 
 VALID_JOIN_TYPES = {"ONE_IN", "ALL_IN"}
