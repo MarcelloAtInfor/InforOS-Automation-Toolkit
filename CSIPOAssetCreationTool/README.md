@@ -1,6 +1,6 @@
-# CSI PO Asset Creation Tool
+﻿# CSI PO Asset Creation Tool
 
-An end-to-end **invoice automation system** for **Infor CloudSuite Industrial (SyteLine)** that combines RPA, GenAI, and Intelligent Document Processing to automatically process vendor invoices — extracting data from PDFs and creating vendors, items, and purchase orders directly in the ERP system. No manual data entry required.
+An end-to-end **invoice automation system** for **Infor CloudSuite Industrial (SyteLine)** that combines RPA, GenAI, and Intelligent Document Processing to automatically process vendor invoices â€” extracting data from PDFs and creating vendors, items, and purchase orders directly in the ERP system. No manual data entry required.
 
 **v1.0 shipped February 2026** with price handling, item sourcing, and debug capabilities.
 
@@ -56,7 +56,7 @@ This project integrates five Infor platform services:
 
 ### GenAI Agent: InvoiceAutomation_Agent_v2
 
-The core processing engine — a GenAI agent orchestrating 9 tools:
+The core processing engine â€” a GenAI agent orchestrating 9 tools:
 
 | Tool | IDO | Purpose |
 |------|-----|---------|
@@ -81,11 +81,11 @@ The core processing engine — a GenAI agent orchestrating 9 tools:
 
 ### RPA: DemoInvoiceLoader
 
-The orchestration layer — 6 XAML workflows built in Infor RPA Studio:
+The orchestration layer â€” 6 XAML workflows built in Infor RPA Studio:
 
 | Workflow | Purpose |
 |----------|---------|
-| `MainPage.xaml` | Entry point — folder watch, file iteration, argument configuration |
+| `MainPage.xaml` | Entry point â€” folder watch, file iteration, argument configuration |
 | `ExtractOCRData.xaml` | IDP document processing trigger and OCR data extraction |
 | `FormatDataForGenAI.xaml` | Transform extracted data into structured JSON for the GenAI agent |
 | `SendToGenAIAgent.xaml` | Call GenAI agent via ION API and handle response |
@@ -104,17 +104,17 @@ Additional supporting workflows for notifications and error handling.
 
 AI-powered extraction using Infor Document Processor:
 
-- **CSI_APInvoice_Extract_V2** — production DPF with 27 fields and 13 line item columns
+- **CSI_APInvoice_Extract_V2** â€” production DPF with 27 fields and 13 line item columns
 - Python scripts for DPF management: list, export, import, create
-- V1 vs V2 analysis documented (V2 recommended — created via UI for reliability)
+- V1 vs V2 analysis documented (V2 recommended â€” created via UI for reliability)
 
 ### ION: Workflow Automation & Pulse Alerts
 
 Integration middleware scripts and workflow definitions:
 
-- **Pulse alerts** — send alerts, notifications, and tasks with details trees
-- **Workflow management** — create, activate, start workflow instances via API
-- **RPA Invoice Notification** — dedicated workflow with drillback links
+- **Pulse alerts** â€” send alerts, notifications, and tasks with details trees
+- **Workflow management** â€” create, activate, start workflow instances via API
+- **RPA Invoice Notification** â€” dedicated workflow with drillback links
 - 6 workflow definitions for reference
 
 ### IDM: Document Management
@@ -142,9 +142,9 @@ Document storage integration (used by RPA for invoice PDF management):
 
 SyteLine IDOs join 10-20+ tables but only write to their primary table. Updates to properties on joined tables return success (200 OK) but silently discard values. Use the system metadata IDOs to diagnose:
 
-- **`IdoCollections`** — look up IDO by name
-- **`IdoTables`** — find tables joined by IDO (`TableType=3` = primary/writable)
-- **`IdoProperties`** — map property to underlying column and table
+- **`IdoCollections`** â€” look up IDO by name
+- **`IdoTables`** â€” find tables joined by IDO (`TableType=3` = primary/writable)
+- **`IdoProperties`** â€” map property to underlying column and table
 
 ### api_docs Formatting
 
@@ -223,12 +223,12 @@ CSIPOAssetCreationTool/
 
 ## Prerequisites
 
-- **Infor CloudSuite Industrial (SyteLine)** — with IDO Request Service access
-- **Infor GenAI Platform** — for agent and tool hosting
-- **Infor RPA Studio** — for workflow editing and deployment
-- **Infor IDP** — for document processor flow configuration
-- **Python 3.8+** — for deployment scripts and utilities
-- **ION API credentials** — `.ionapi` file with saak/sask service account keys
+- **Infor CloudSuite Industrial (SyteLine)** â€” with IDO Request Service access
+- **Infor GenAI Platform** â€” for agent and tool hosting
+- **Infor RPA Studio** â€” for workflow editing and deployment
+- **Infor IDP** â€” for document processor flow configuration
+- **Python 3.8+** â€” for deployment scripts and utilities
+- **ION API credentials** â€” `.ionapi` file with saak/sask service account keys
 
 ## Authentication
 
@@ -302,3 +302,22 @@ Or use the GAF_CLI toolkit (at `../GAF_CLI/`) for spec-based publishing.
 - Expanded IDP flows for additional document types
 - IDM direct integration for automated document archival
 - Multi-tenant deployment across additional SyteLine environments
+
+
+## Agent-Agnostic Usage (Claude + Codex)
+
+This folder is designed to work with both Claude Code and Codex.
+
+Shared guide:
+- AGENT_GUIDE.md
+
+Agent adapter files:
+- AGENTS.md (Codex)
+- CLAUDE.md (Claude)
+
+Read order:
+1. AGENT_GUIDE.md
+2. CLAUDE.md
+3. log.md
+
+

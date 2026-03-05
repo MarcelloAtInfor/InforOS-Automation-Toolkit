@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -18,12 +18,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Applies to EVERY level: root log.md and all subfolder log.md files
 
 ### Git Commits (CRITICAL - NEVER SKIP)
-- **ALWAYS make an atomic git commit at the end of every session** — no exceptions
+- **ALWAYS make an atomic git commit at the end of every session** â€” no exceptions
 - An "atomic commit" means: stage only the files changed during the session, write a clear commit message summarizing the work done, and commit before ending
 - This ensures no work is ever lost between sessions and provides a clean history of changes
 - Commit message should follow the pattern: `<type>: <concise summary>` (e.g., `feat:`, `fix:`, `refactor:`, `docs:`)
 - If multiple logical units of work were done in a session, prefer one commit per logical unit
-- This applies at EVERY level — whether working in root, a subfolder, or across multiple folders
+- This applies at EVERY level â€” whether working in root, a subfolder, or across multiple folders
 
 ## Repository Overview
 
@@ -35,9 +35,9 @@ This is a multi-product demonstration and automation repository for Infor OS (Op
 
 | Folder | Purpose |
 |--------|---------|
-| `CSIPOAssetCreationTool/` | Invoice Automation Enhancement — GenAI + RPA + IDP for SyteLine (v1.0 shipped) |
+| `CSIPOAssetCreationTool/` | Invoice Automation Enhancement â€” GenAI + RPA + IDP for SyteLine (v1.0 shipped) |
 | `BOMGenerator/` | GenAI agent for multi-level Bill of Material creation from natural language |
-| `GAF_CLI/` | GenAI Agent Factory CLI — Python toolkit for publishing, managing, and invoking GenAI tools and agents |
+| `GAF_CLI/` | GenAI Agent Factory CLI â€” Python toolkit for publishing, managing, and invoking GenAI tools and agents |
 | `shared/` | Centralized authentication and configuration utilities |
 
 ### GAF_CLI (GenAI Agent Factory CLI)
@@ -81,7 +81,7 @@ python -m src.cli.invoke_agent "prompt" --json        # Raw JSON output
 **Status**: Stable. Single source of truth for authentication.
 
 **Credential Resolution** (in order):
-1. `IONAPI_FILE` env var → path to `.ionapi` file
+1. `IONAPI_FILE` env var â†’ path to `.ionapi` file
 2. `.ionapi` in current working directory
 
 **Setup**: Set the `IONAPI_FILE` environment variable to point to your `.ionapi` credentials file:
@@ -105,12 +105,12 @@ See `shared/CLAUDE.md` for full API reference, usage patterns, and credential se
 
 **Contains**: 6 CLI commands, GenAI API client, spec validation engine, 7 tool specs + 1 agent spec.
 
-**Note on `shared/` modules**: GAF_CLI has its own `src/shared/` (auth, config, validation, errors, http_client, logging — ~1,150 lines). This is separate from root `shared/` (~300 lines). Both coexist — different import paths (`from src.shared.*` vs `from shared.*`), different design (class-based vs function-based). Both now use `IONAPI_FILE` env var for credential resolution.
+**Note on `shared/` modules**: GAF_CLI has its own `src/shared/` (auth, config, validation, errors, http_client, logging â€” ~1,150 lines). This is separate from root `shared/` (~300 lines). Both coexist â€” different import paths (`from src.shared.*` vs `from shared.*`), different design (class-based vs function-based). Both now use `IONAPI_FILE` env var for credential resolution.
 
 **Status**: Stable. See `GAF_CLI/CLAUDE.md` for full documentation.
 
 ### CSIPOAssetCreationTool/
-**Purpose**: Invoice Automation Enhancement — GenAI-powered invoice processing with RPA, IDP, and SyteLine integration.
+**Purpose**: Invoice Automation Enhancement â€” GenAI-powered invoice processing with RPA, IDP, and SyteLine integration.
 
 **Contains**: Agents&Tools, RPA, ION, IDM, IDP subfolders.
 
@@ -152,7 +152,7 @@ This is a hard requirement, not a suggestion. Infor OS is NOT a typical local de
 **This applies to:**
 - Any work explicitly divided into phases by the user or by planning
 - Multi-step implementations where each step depends on the previous
-- Tool/agent creation workflows (create → test → iterate → next)
+- Tool/agent creation workflows (create â†’ test â†’ iterate â†’ next)
 - Any work involving Infor platform APIs where results can't be verified locally
 
 ### Documentation Standards
@@ -213,3 +213,17 @@ This folder serves as:
 ---
 
 **Note**: This repository is actively developed with frequent discoveries. Always check `log.md` files for latest status and known issues. When in doubt, read the subfolder's documentation first.
+
+## Cross-Agent Compatibility (Claude + Codex)
+
+This repository now supports a shared, agent-agnostic workflow at the parent and subfolder levels.
+
+- Shared human/agent guidance: `AGENT_GUIDE.md`
+- Codex adapter: `AGENTS.md`
+- Claude adapter/reference: `CLAUDE.md`
+
+Manual private->public sync is available from repo root:
+- `powershell -File scripts/sync_public.ps1`
+- `powershell -File scripts/sync_public.ps1 -Apply`
+
+Sync policy is defined in `sync_public.json`.

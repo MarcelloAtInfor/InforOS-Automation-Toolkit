@@ -1,6 +1,6 @@
-# BOM Generator Agent
+﻿# BOM Generator Agent
 
-A GenAI agent that creates realistic multi-level Bill of Material (BOM) data in **Infor CloudSuite Industrial (SyteLine)** from natural language prompts. Powered by the **Infor GenAI Platform** and orchestrating 16 purpose-built tools, it creates all items, standard jobs, routing operations, resource groups, and BOM structures directly in SyteLine — no manual data entry required.
+A GenAI agent that creates realistic multi-level Bill of Material (BOM) data in **Infor CloudSuite Industrial (SyteLine)** from natural language prompts. Powered by the **Infor GenAI Platform** and orchestrating 16 purpose-built tools, it creates all items, standard jobs, routing operations, resource groups, and BOM structures directly in SyteLine â€” no manual data entry required.
 
 > **Example:** *"Create a 3-level BOM for a go-kart with a chassis sub-assembly containing a rear axle assembly"* produces all items, jobs, routings, and material links in SyteLine within minutes.
 
@@ -31,12 +31,12 @@ Natural Language Prompt
 
 The agent handles the complete BOM creation lifecycle:
 
-- **Items** — creates part masters for assemblies and purchased components
-- **Standard Jobs** — creates Type='S' jobs as BOM containers
-- **Routing Operations** — adds manufacturing steps with work centers and time estimates
-- **Resource Groups** — assigns labor/machine resources to each operation
-- **BOM Materials** — links child components to parent assemblies
-- **Item-Job Linkage** — connects items to their standard jobs so BOMs appear in the SyteLine UI
+- **Items** â€” creates part masters for assemblies and purchased components
+- **Standard Jobs** â€” creates Type='S' jobs as BOM containers
+- **Routing Operations** â€” adds manufacturing steps with work centers and time estimates
+- **Resource Groups** â€” assigns labor/machine resources to each operation
+- **BOM Materials** â€” links child components to parent assemblies
+- **Item-Job Linkage** â€” connects items to their standard jobs so BOMs appear in the SyteLine UI
 
 ## Architecture
 
@@ -121,7 +121,7 @@ The ES-T10000 stress test created a **5-level deep BOM** with two branches both 
 
 ### Test Prompt Generator
 
-**`scripts/generate_prompt.py`** — Generates unique, ready-to-use test prompts with dynamic job number allocation.
+**`scripts/generate_prompt.py`** â€” Generates unique, ready-to-use test prompts with dynamic job number allocation.
 
 ```bash
 python generate_prompt.py                          # Random template
@@ -149,7 +149,7 @@ Each run produces a unique item prefix (T01, T02, ...) and queries SLHighKeys fo
 
 ### Automated Test Harness
 
-**`scripts/test_bom_agent.py`** — Runs the BOM Generator Agent end-to-end using the async chat pattern.
+**`scripts/test_bom_agent.py`** â€” Runs the BOM Generator Agent end-to-end using the async chat pattern.
 
 ```bash
 python test_bom_agent.py --case simple -v          # Birdhouse BOM
@@ -167,7 +167,7 @@ Features:
 
 ### BOM Verification
 
-**`scripts/verify_bom.py`** — Recursively walks a BOM tree and validates 7 checks per assembly node.
+**`scripts/verify_bom.py`** â€” Recursively walks a BOM tree and validates 7 checks per assembly node.
 
 ```bash
 python verify_bom.py BH-T03000 --deep     # Recursive verification
@@ -224,11 +224,11 @@ print(result["job_range"])    # e.g., ("BOM0000010", "BOM0000019")
 
 ## Prerequisites
 
-- **Infor CloudSuite Industrial (SyteLine)** — with IDO Request Service access
-- **Infor GenAI Platform** — for agent and tool deployment
-- **GAF_CLI** — Python CLI toolkit for publishing/managing GenAI assets (see `../GAF_CLI/`)
-- **Python 3.8+** — for scripts
-- **ION API credentials** — `.ionapi` file or `IONAPI_FILE` environment variable
+- **Infor CloudSuite Industrial (SyteLine)** â€” with IDO Request Service access
+- **Infor GenAI Platform** â€” for agent and tool deployment
+- **GAF_CLI** â€” Python CLI toolkit for publishing/managing GenAI assets (see `../GAF_CLI/`)
+- **Python 3.8+** â€” for scripts
+- **ION API credentials** â€” `.ionapi` file or `IONAPI_FILE` environment variable
 
 ## Project Structure
 
@@ -295,3 +295,22 @@ Items are created leaf-first, then sub-assemblies, then top-level. This ensures 
 - MRP/planning validation (run planning, verify suggested jobs/POs)
 - Image-to-BOM capability
 - Duplicate material prevention during error recovery
+
+
+## Agent-Agnostic Usage (Claude + Codex)
+
+This folder is designed to work with both Claude Code and Codex.
+
+Shared guide:
+- AGENT_GUIDE.md
+
+Agent adapter files:
+- AGENTS.md (Codex)
+- CLAUDE.md (Claude)
+
+Read order:
+1. AGENT_GUIDE.md
+2. CLAUDE.md
+3. log.md
+
+

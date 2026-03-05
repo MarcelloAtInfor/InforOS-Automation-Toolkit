@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$ConfigPath = "sync_public.json",
     [switch]$Apply
 )

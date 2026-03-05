@@ -24,6 +24,7 @@ Sync configuration is in `sync_public.json` (allowlist + deny globs). Keep secre
 
 ```
 CSIWorkflowGenerator/
+  README.md                     # Human-facing project overview + agent-agnostic usage
   CLAUDE.md                     # This file — project documentation
   log.md                        # Session log / running history
   plan.md                       # Full project plan (Phases 0-8)

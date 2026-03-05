@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOM Generator Agent &mdash; Architecture Diagram</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    min-height: 100vh;
+    padding: 40px;
+    color: #1a1a2e;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+    padding: 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 15px;
+    font-weight: 300;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+  }
+
+  .header .version {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+
+  .content { padding: 50px; }
+
+  /* ── High-Level Flow ── */
+  .flow-section { margin-bottom: 50px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8892a4;
+    margin-bottom: 24px;
+  }
+
+  .high-level-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    padding: 30px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 150px;
+    position: relative;
+  }
+
+  .flow-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 2;
+  }
+
+  .flow-step .label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .flow-step .desc {
+    font-size: 11px;
+    color: #8892a4;
+    max-width: 140px;
+  }
+
+  .flow-arrow {
+    font-size: 28px;
+    color: #c5cad6;
+    margin: 0 8px;
+    margin-bottom: 30px;
+    font-weight: 300;
+  }
+
+  .bg-user { background: linear-gradient(135deg, #00838F, #006064); color: white; }
+  .bg-genai { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: white; }
+  .bg-item { background: linear-gradient(135deg, #E65100, #BF360C); color: white; }
+  .bg-job { background: linear-gradient(135deg, #1976D2, #0D47A1); color: white; }
+  .bg-material { background: linear-gradient(135deg, #388E3C, #1B5E20); color: white; }
+  .bg-erp { background: linear-gradient(135deg, #F57F17, #E65100); color: white; }
+
+  /* ── Detailed Architecture ── */
+  .architecture {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .arch-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .arch-row.full { grid-template-columns: 1fr; }
+
+  .platform-box {
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .platform-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+
+  .platform-box h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .platform-box h3 .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .platform-box .role {
+    font-size: 12px;
+    color: #8892a4;
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+
+  .box-genai { background: #F3E5F5; border: 1px solid #E1BEE7; }
+  .box-genai::before { background: linear-gradient(90deg, #7B1FA2, #AB47BC); }
+  .box-genai h3 .icon { background: #7B1FA2; color: white; }
+
+  .box-erp { background: #FFF3E0; border: 1px solid #FFE0B2; }
+  .box-erp::before { background: linear-gradient(90deg, #E65100, #FF9800); }
+  .box-erp h3 .icon { background: #E65100; color: white; }
+
+  .box-model { background: #E8F5E9; border: 1px solid #C8E6C9; }
+  .box-model::before { background: linear-gradient(90deg, #2E7D32, #66BB6A); }
+  .box-model h3 .icon { background: #2E7D32; color: white; }
+
+  .box-test { background: #E3F2FD; border: 1px solid #BBDEFB; }
+  .box-test::before { background: linear-gradient(90deg, #1976D2, #42A5F5); }
+  .box-test h3 .icon { background: #1976D2; color: white; }
+
+  /* ── 9-Step Creation Order ── */
+  .creation-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+  }
+
+  .creation-step {
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    position: relative;
+  }
+
+  .creation-step .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #7B1FA2;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+  }
+
+  .creation-step .step-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4A148C;
+    margin-bottom: 4px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .creation-step .step-detail {
+    font-size: 10px;
+    color: #7E57C2;
+    line-height: 1.3;
+  }
+
+  .creation-step .step-ido {
+    font-size: 9px;
+    font-weight: 600;
+    color: #9C27B0;
+    margin-top: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Row arrows between step groups */
+  .step-row-label {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #CE93D8;
+    padding: 4px 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-row-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E1BEE7;
+  }
+
+  /* ── Tools Grid ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tool-chip {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .tool-chip .tool-name {
+    font-weight: 600;
+    font-size: 10px;
+    color: #4A148C;
+    display: block;
+  }
+
+  .tool-chip .tool-action {
+    font-size: 9px;
+    color: #999;
+  }
+
+  .tool-chip.tool-light {
+    border-left: 3px solid #66BB6A;
+  }
+
+  .tool-chip.tool-heavy {
+    border-left: 3px solid #EF5350;
+  }
+
+  .tools-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 10px;
+    color: #999;
+  }
+
+  .tools-legend span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  .legend-dot.light { background: #66BB6A; }
+  .legend-dot.heavy { background: #EF5350; }
+
+  /* ── IDO Table ── */
+  .ido-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ido-item {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .ido-item .ido-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: #BF360C;
+  }
+
+  .ido-item .ido-desc {
+    font-size: 10px;
+    color: #999;
+  }
+
+  .ido-group-label {
+    width: 100%;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #E65100;
+    margin-top: 10px;
+    margin-bottom: -4px;
+  }
+
+  .ido-group-label:first-child { margin-top: 0; }
+
+  /* ── BOM Data Model ── */
+  .bom-tree {
+    margin-top: 8px;
+  }
+
+  .tree-node {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    border-left: 3px solid #2E7D32;
+  }
+
+  .tree-node.level-0 { margin-left: 0; border-left-color: #1B5E20; }
+  .tree-node.level-1 { margin-left: 24px; border-left-color: #388E3C; }
+  .tree-node.level-2 { margin-left: 48px; border-left-color: #66BB6A; }
+  .tree-node.level-3 { margin-left: 72px; border-left-color: #A5D6A7; }
+
+  .tree-node .node-name {
+    font-weight: 700;
+    font-size: 12px;
+    color: #1B5E20;
+  }
+
+  .tree-node .node-type {
+    font-size: 9px;
+    font-weight: 600;
+    color: white;
+    background: #388E3C;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+  }
+
+  .tree-node .node-detail {
+    font-size: 10px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  .bom-constraints {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .constraint {
+    background: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 10px;
+    color: #555;
+  }
+
+  .constraint strong {
+    color: #2E7D32;
+    font-weight: 700;
+  }
+
+  /* ── Test Pipeline ── */
+  .test-scripts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .test-script {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+  }
+
+  .test-script .script-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #1976D2;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .test-script .script-name {
+    font-weight: 700;
+    font-size: 12px;
+    color: #0D47A1;
+    margin-bottom: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .test-script .script-desc {
+    font-size: 10px;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  .test-script::after {
+    content: '\2192';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #90CAF9;
+    font-weight: bold;
+    z-index: 1;
+  }
+
+  .test-script:last-child::after { display: none; }
+
+  /* ── Template Grid ── */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .template-chip {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .template-chip .tmpl-name {
+    font-weight: 700;
+    font-size: 11px;
+    color: #0D47A1;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .template-chip .tmpl-desc {
+    font-size: 9px;
+    color: #666;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .complexity-badge {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .complexity-simple { background: #E8F5E9; color: #2E7D32; }
+  .complexity-moderate { background: #FFF3E0; color: #E65100; }
+  .complexity-complex { background: #FCE4EC; color: #C62828; }
+
+  /* ── Architecture Features ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .feature-item {
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+
+  .feature-item h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4A148C;
+    margin-bottom: 4px;
+  }
+
+  .feature-item p {
+    font-size: 10px;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  /* ── Connection Lines ── */
+  .connections {
+    margin-top: 30px;
+    padding: 24px;
+    background: #f8f9fb;
+    border-radius: 12px;
+    border: 1px solid #e9ecf0;
+  }
+
+  .connections h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+  }
+
+  .conn-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .conn-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecf0;
+  }
+
+  .conn-item .from, .conn-item .to {
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .conn-item .arrow-conn {
+    color: #c5cad6;
+    font-size: 14px;
+  }
+
+  .conn-item .via {
+    font-size: 9px;
+    color: #999;
+  }
+
+  .from-genai { background: #F3E5F5; color: #6A1B9A; }
+  .from-test { background: #E3F2FD; color: #1565C0; }
+  .from-prompt { background: #E0F7FA; color: #00838F; }
+  .to-erp { background: #FFF3E0; color: #E65100; }
+  .to-genai { background: #F3E5F5; color: #6A1B9A; }
+  .to-highkeys { background: #FFFDE7; color: #F57F17; }
+  .to-wc { background: #E8F5E9; color: #2E7D32; }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 20px 50px;
+    background: #f8f9fb;
+    border-top: 1px solid #e9ecf0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #8892a4;
+  }
+
+  .footer .tech-stack span {
+    display: inline-block;
+    padding: 3px 10px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  /* ── Print Styles ── */
+  @media print {
+    body { padding: 0; background: white; }
+    .page { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>BOM Generator Agent</h1>
+    <div class="subtitle">Multi-Level Bill of Materials from Natural Language Prompts &mdash; Infor CloudSuite Industrial</div>
+    <div class="version">V1.0 SHIPPED &mdash; 16 Tools + 1 Agent</div>
+  </div>
+
+  <div class="content">
+
+    <!-- High-Level Flow -->
+    <div class="flow-section">
+      <div class="section-title">End-to-End Flow</div>
+      <div class="high-level-flow">
+        <div class="flow-step">
+          <div class="flow-icon bg-user">&#128172;</div>
+          <div class="label">User Prompt</div>
+          <div class="desc">&ldquo;Create a 3-level BOM for a mountain bike&rdquo;</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-genai">&#129504;</div>
+          <div class="label">GenAI Agent</div>
+          <div class="desc">Plans BOM structure &amp; orchestrates 16 tools</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-item">&#128230;</div>
+          <div class="label">Item Master</div>
+          <div class="desc">Creates all parts, sub-assemblies &amp; top-level</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-job">&#9881;</div>
+          <div class="label">Jobs &amp; Routing</div>
+          <div class="desc">Standard jobs, operations &amp; resource groups</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-material">&#128279;</div>
+          <div class="label">BOM Assembly</div>
+          <div class="desc">Materials linked, warehouse jobs assigned</div>
+        </div>
+        <div class="flow-arrow">&#10132;</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-erp">&#127981;</div>
+          <div class="label">SyteLine BOM</div>
+          <div class="desc">Multi-level BOM visible in Current Operations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Architecture -->
+    <div class="flow-section">
+      <div class="section-title">Platform Components</div>
+      <div class="architecture">
+
+        <!-- Row 1: GenAI Agent (Full Width) -->
+        <div class="arch-row full">
+          <div class="platform-box box-genai">
+            <h3><span class="icon">&#129504;</span> GAF_SyteLine_BomGenerator_Agent_v1</h3>
+            <div class="role">GenAI Platform &mdash; Claude 4.5 Sonnet &mdash; Multi-Level BOM Orchestration Engine</div>
+
+            <!-- 9-Step Creation Order -->
+            <div class="creation-steps">
+              <div class="step-row-label">Foundation</div>
+              <div class="creation-step">
+                <div class="step-num">1</div>
+                <div class="step-title">Create Items</div>
+                <div class="step-detail">All parts &amp; assemblies.<br>Batch insert (5/call).<br>Anti-hallucination guard.</div>
+                <div class="step-ido">SLItems</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">2</div>
+                <div class="step-title">Lookup Job #</div>
+                <div class="step-detail">Next BOM prefix number.<br>Self-serve or from prompt.<br>Stale recovery fallback.</div>
+                <div class="step-ido">SLHighKeys</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">3</div>
+                <div class="step-title">Standard Jobs</div>
+                <div class="step-detail">Type=&lsquo;S&rsquo;, Stat=&lsquo;F&rsquo;.<br>One per assembly item.<br>BOM0000001+ format.</div>
+                <div class="step-ido">SLJobs</div>
+              </div>
+
+              <div class="step-row-label">Routing &amp; Resources</div>
+              <div class="creation-step">
+                <div class="step-num">4</div>
+                <div class="step-title">Routing Ops</div>
+                <div class="step-detail">OperNum 10, 20, 30...<br>Work center assignment.<br>Setup &amp; run hours.</div>
+                <div class="step-ido">SLJobRoutes</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">5</div>
+                <div class="step-title">RG Lookup</div>
+                <div class="step-detail">Query actual Rgid values.<br>Never guess from naming.<br>Batch filter supported.</div>
+                <div class="step-ido">SLWcResourceGroups</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">6</div>
+                <div class="step-title">RG Insert</div>
+                <div class="step-detail">Assign resource groups.<br>Case-sensitive Rgid.<br>Atomic batch rollback.</div>
+                <div class="step-ido">SLJrtResourceGroups</div>
+              </div>
+
+              <div class="step-row-label">Finalization</div>
+              <div class="creation-step">
+                <div class="step-num">7</div>
+                <div class="step-title">Schedule Driver</div>
+                <div class="step-detail">Set Setuprgid + SchedDrv.<br>L=Labor, M=Machine.<br>Load &rarr; Update pattern.</div>
+                <div class="step-ido">SLJrtSchs</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">8</div>
+                <div class="step-title">BOM Materials</div>
+                <div class="step-detail">Link children to parents.<br>RefType: I/J/P.<br>Qty per parent assembly.</div>
+                <div class="step-ido">SLJobmatls</div>
+              </div>
+              <div class="creation-step">
+                <div class="step-num">9</div>
+                <div class="step-title">Warehouse Link</div>
+                <div class="step-detail">Set ItwhJob per item.<br>Makes BOM visible in UI.<br>Load &rarr; Update pattern.</div>
+                <div class="step-ido">SLItemwhses</div>
+              </div>
+            </div>
+
+            <!-- 16 Tools -->
+            <div class="tools-grid">
+              <div class="tool-chip tool-light">
+                <span class="tool-name">ItemSearch</span>
+                <span class="tool-action">GET /load/SLItems</span>
+              </div>
+              <div class="tool-chip tool-light">
+                <span class="tool-name">ItemInsert</span>
+                <span class="tool-action">POST /update/SLItems</span>
+              </div>
+              <div class="tool-chip tool-light">
+                <span class="tool-name">JobSearch</span>
+                <span class="tool-action">GET /load/SLJobs</span>
+              </div>
+              <div class="tool-chip tool-light">
+                <span class="tool-name">JobInsert</span>
+                <span class="tool-action">POST /update/SLJobs</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">RoutingSearch</span>
+                <span class="tool-action">GET /load/SLJobRoutes</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">RoutingInsert</span>
+                <span class="tool-action">POST /update/SLJobRoutes</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">MaterialSearch</span>
+                <span class="tool-action">GET /load/SLJobmatls</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">MaterialInsert</span>
+                <span class="tool-action">POST /update/SLJobmatls</span>
+              </div>
+              <div class="tool-chip tool-light">
+                <span class="tool-name">WorkCenterSearch</span>
+                <span class="tool-action">GET /load/SLWcs</span>
+              </div>
+              <div class="tool-chip tool-light">
+                <span class="tool-name">JobNumberLookup</span>
+                <span class="tool-action">GET /load/SLHighKeys</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">ResourceGroupLookup</span>
+                <span class="tool-action">GET /load/SLWcResourceGroups</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">ResourceGroupInsert</span>
+                <span class="tool-action">POST /update/SLJrtResourceGroups</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">JrtSchsLoad</span>
+                <span class="tool-action">GET /load/SLJrtSchs</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">SetuprgidUpdate</span>
+                <span class="tool-action">POST /update/SLJrtSchs</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">ItemWhseLoad</span>
+                <span class="tool-action">GET /load/SLItemwhses</span>
+              </div>
+              <div class="tool-chip tool-heavy">
+                <span class="tool-name">ItemWhseUpdate</span>
+                <span class="tool-action">POST /update/SLItemwhses</span>
+              </div>
+            </div>
+            <div class="tools-legend">
+              <span><span class="legend-dot light"></span> Light (~20-30s)</span>
+              <span><span class="legend-dot heavy"></span> Heavy (~40-50s)</span>
+              <span style="margin-left: auto; color: #7E57C2; font-weight: 500;">Dynamic chunking: ~5 calls/chunk &bull; Weighted budget &bull; Sentinel checkpoints</span>
+            </div>
+
+            <!-- Architecture Features -->
+            <div class="features-grid">
+              <div class="feature-item">
+                <h4>Dynamic Chunking</h4>
+                <p>Weighted tool-call budgets: LIGHT-only chunks get 4 calls, HEAVY chunks get 3. Stays under 240s gateway timeout.</p>
+              </div>
+              <div class="feature-item">
+                <h4>Anti-Hallucination</h4>
+                <p>All tools enforce exact property lists. Relative URLs only. Agent has URL construction rules. 404 = hard stop.</p>
+              </div>
+              <div class="feature-item">
+                <h4>Async Chat Pattern</h4>
+                <p>POST /chat (fire-and-forget) + polling. Eliminates 240s gateway timeout. Agent runs independently on platform.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: SyteLine IDO API + BOM Data Model -->
+        <div class="arch-row">
+
+          <!-- SyteLine IDO API Box -->
+          <div class="platform-box box-erp">
+            <h3><span class="icon">&#128451;</span> SyteLine IDO REST API</h3>
+            <div class="role">CloudSuite Industrial &mdash; ERP Master Data &amp; BOM Structures</div>
+            <div class="ido-list">
+              <div class="ido-group-label">Core BOM Data</div>
+              <div class="ido-item">
+                <div class="ido-name">SLItems</div>
+                <div class="ido-desc">Item master records</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLJobs</div>
+                <div class="ido-desc">Standard jobs (Type=&lsquo;S&rsquo;)</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLJobRoutes</div>
+                <div class="ido-desc">Routing operations</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLJobmatls</div>
+                <div class="ido-desc">BOM materials</div>
+              </div>
+              <div class="ido-group-label">Lookup &amp; Reference</div>
+              <div class="ido-item">
+                <div class="ido-name">SLHighKeys</div>
+                <div class="ido-desc">Job number tracking</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLWcs</div>
+                <div class="ido-desc">88 work centers</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLWcResourceGroups</div>
+                <div class="ido-desc">90 RG mappings</div>
+              </div>
+              <div class="ido-group-label">Configuration</div>
+              <div class="ido-item">
+                <div class="ido-name">SLJrtResourceGroups</div>
+                <div class="ido-desc">Operation resources</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLJrtSchs</div>
+                <div class="ido-desc">Route schedules</div>
+              </div>
+              <div class="ido-item">
+                <div class="ido-name">SLItemwhses</div>
+                <div class="ido-desc">Item-warehouse link</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOM Data Model Box -->
+          <div class="platform-box box-model">
+            <h3><span class="icon">&#127981;</span> BOM Data Model</h3>
+            <div class="role">Standard Job Architecture &mdash; Multi-Level Bill of Materials</div>
+            <div class="bom-tree">
+              <div class="tree-node level-0">
+                <span class="node-name">SLItems</span>
+                <span class="node-type">Master</span>
+                <div class="node-detail">All parts &amp; assemblies (Item, Description, UM, PMTCode)</div>
+              </div>
+              <div class="tree-node level-1">
+                <span class="node-name">SLJobs</span>
+                <span class="node-type">Type='S'</span>
+                <div class="node-detail">Standard Job &mdash; BOM container linking item to routing + materials</div>
+              </div>
+              <div class="tree-node level-2">
+                <span class="node-name">SLJobRoutes</span>
+                <span class="node-type">Operations</span>
+                <div class="node-detail">OperNum 10, 20, 30... with work centers, setup &amp; run hours</div>
+              </div>
+              <div class="tree-node level-3">
+                <span class="node-name">SLJrtResourceGroups + SLJrtSchs</span>
+                <span class="node-type">Resources</span>
+                <div class="node-detail">Resource group per operation, Setuprgid + SchedDrv alignment</div>
+              </div>
+              <div class="tree-node level-2">
+                <span class="node-name">SLJobmatls</span>
+                <span class="node-type">Materials</span>
+                <div class="node-detail">Children linked via OperNum + Sequence. RefType: I/J/P</div>
+              </div>
+            </div>
+            <div class="bom-constraints">
+              <div class="constraint"><strong>Multi-Level:</strong> Parent material RefType=&lsquo;J&rsquo; for sub-assemblies. Build bottom-up (leaves first).</div>
+              <div class="constraint"><strong>Job Format:</strong> BOM prefix, 10 chars total. BOM0000001 through BOM9999999.</div>
+              <div class="constraint"><strong>PMTCode:</strong> M (Manufactured), P (Purchased), T (Transferred) only.</div>
+              <div class="constraint"><strong>ItwhJob:</strong> Must set explicitly &mdash; links item to standard job in UI.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 3: Test Pipeline (Full Width) -->
+        <div class="arch-row full">
+          <div class="platform-box box-test">
+            <h3><span class="icon">&#129514;</span> Test &amp; Automation Pipeline</h3>
+            <div class="role">Automated BOM Generation, Async Execution &amp; Verification Toolchain</div>
+
+            <!-- 3 Scripts -->
+            <div class="test-scripts">
+              <div class="test-script">
+                <div class="script-num">1</div>
+                <div class="script-name">generate_prompt.py</div>
+                <div class="script-desc">Generates unique test prompts with item prefixes (T01, T02...), dynamic BOM job numbers from SLHighKeys, and sentinel tokens for automation.</div>
+              </div>
+              <div class="test-script">
+                <div class="script-num">2</div>
+                <div class="script-name">test_bom_agent.py</div>
+                <div class="script-desc">Multi-turn async test harness. Uses POST /chat + polling to bypass 240s timeout. Sentinel-based checkpoint detection and auto-continuation.</div>
+              </div>
+              <div class="test-script">
+                <div class="script-num">3</div>
+                <div class="script-name">verify_bom.py</div>
+                <div class="script-desc">BOM verification via IDO API. Queries SLItems, SLJobs, SLJobRoutes, SLJobmatls. Deep mode validates full hierarchy. Pass/fail scoring.</div>
+              </div>
+            </div>
+
+            <!-- 8 Templates -->
+            <div class="template-grid">
+              <div class="template-chip">
+                <span class="tmpl-name">Birdhouse</span>
+                <span class="tmpl-desc">Panels, screws, perch</span>
+                <span class="complexity-badge complexity-simple">Simple &bull; 5 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Stool</span>
+                <span class="tmpl-desc">4 legs, round seat</span>
+                <span class="complexity-badge complexity-simple">Simple &bull; 5 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Chair</span>
+                <span class="tmpl-desc">Seat, backrest, 4 legs</span>
+                <span class="complexity-badge complexity-moderate">Moderate &bull; 10 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Desk Lamp</span>
+                <span class="tmpl-desc">Base, arm, shade</span>
+                <span class="complexity-badge complexity-moderate">Moderate &bull; 10 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Bookshelf</span>
+                <span class="tmpl-desc">3-shelf with frame</span>
+                <span class="complexity-badge complexity-moderate">Moderate &bull; 10 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Workbench</span>
+                <span class="tmpl-desc">Steel + drawer sub-assy</span>
+                <span class="complexity-badge complexity-complex">Complex &bull; 20 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Bicycle</span>
+                <span class="tmpl-desc">Wheels + drivetrain</span>
+                <span class="complexity-badge complexity-complex">Complex &bull; 20 jobs</span>
+              </div>
+              <div class="template-chip">
+                <span class="tmpl-name">Go-Kart</span>
+                <span class="tmpl-desc">Chassis, engine, steering</span>
+                <span class="complexity-badge complexity-complex">Complex &bull; 20 jobs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Integration Connections -->
+    <div class="connections">
+      <h3>Integration Points</h3>
+      <div class="conn-grid">
+        <div class="conn-item">
+          <span class="from from-genai">GenAI Agent</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-erp">SyteLine</span>
+          <span class="via">IDO REST API (16 tools)</span>
+        </div>
+        <div class="conn-item">
+          <span class="from from-genai">Agent</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-highkeys">SLHighKeys</span>
+          <span class="via">Dynamic job number lookup</span>
+        </div>
+        <div class="conn-item">
+          <span class="from from-genai">Agent</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-wc">Work Centers</span>
+          <span class="via">Resource group discovery</span>
+        </div>
+        <div class="conn-item">
+          <span class="from from-test">Test Script</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-genai">GenAI</span>
+          <span class="via">Async Chat API + Polling</span>
+        </div>
+        <div class="conn-item">
+          <span class="from from-test">Verify Script</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-erp">SyteLine</span>
+          <span class="via">IDO load queries</span>
+        </div>
+        <div class="conn-item">
+          <span class="from from-prompt">Prompt Gen</span>
+          <span class="arrow-conn">&#10132;</span>
+          <span class="to to-highkeys">SLHighKeys</span>
+          <span class="via">Job number pre-allocation</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>Infor OS Platform &mdash; BOM Generator Agent V1.0</div>
+    <div class="tech-stack">
+      <span>Infor GenAI</span>
+      <span>Claude 4.5 Sonnet</span>
+      <span>SyteLine IDO</span>
+      <span>ION API</span>
+      <span>Python</span>
+      <span>GAF_CLI</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

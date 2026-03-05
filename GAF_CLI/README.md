@@ -1,4 +1,4 @@
-# Infor OS GenAI Agent Factory
+﻿# Infor OS GenAI Agent Factory
 
 A Python CLI toolkit for creating and managing Infor OS GenAI tools and agents programmatically. The Factory Agent uses a two-step DRAFT -> CONFIRM PUBLISH workflow for safe, validated asset creation.
 
@@ -169,7 +169,8 @@ Examples:
 ```
 
 **Key fields:**
-- `name`: Must follow naming convention
+- 
+ame`: Must follow naming convention
 - `type`: `"API_DOCS"` for tools, `"TOOLKIT"` for agents
 - `servicePath`: Relative path (no tenant URL for portability)
 - `instructions`: Brief description (<200 chars recommended)
@@ -178,23 +179,23 @@ Examples:
 
 ```
 agent-factory/
-├── README.md              # This file
-├── CLAUDE.md              # AI assistant rules
-├── requirements.txt       # Python dependencies
-├── docs/
-│   ├── architecture.md    # Factory pattern explanation
-│   └── usage.md           # CLI reference and tutorials
-├── log.md                 # Decision log
-├── specs/
-│   ├── tools/             # Factory Tool specifications
-│   ├── agents/            # Factory Agent specification
-│   └── examples/          # Example specs (HelloWorld)
-├── scripts/
-│   └── smoke_test.py      # End-to-end verification
-└── src/
-    ├── cli/               # CLI scripts
-    ├── infor_os/          # GenAI API client
-    └── shared/            # Config, auth, logging, validation
+â”œâ”€â”€ README.md              # This file
+â”œâ”€â”€ CLAUDE.md              # AI assistant rules
+â”œâ”€â”€ requirements.txt       # Python dependencies
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ architecture.md    # Factory pattern explanation
+â”‚   â””â”€â”€ usage.md           # CLI reference and tutorials
+â”œâ”€â”€ log.md                 # Decision log
+â”œâ”€â”€ specs/
+â”‚   â”œâ”€â”€ tools/             # Factory Tool specifications
+â”‚   â”œâ”€â”€ agents/            # Factory Agent specification
+â”‚   â””â”€â”€ examples/          # Example specs (HelloWorld)
+â”œâ”€â”€ scripts/
+â”‚   â””â”€â”€ smoke_test.py      # End-to-end verification
+â””â”€â”€ src/
+    â”œâ”€â”€ cli/               # CLI scripts
+    â”œâ”€â”€ infor_os/          # GenAI API client
+    â””â”€â”€ shared/            # Config, auth, logging, validation
 ```
 
 ## Documentation
@@ -233,3 +234,22 @@ See [docs/usage.md#common-errors](docs/usage.md#common-errors) for more.
 ## License
 
 [Specify license here]
+
+
+## Agent-Agnostic Usage (Claude + Codex)
+
+This folder is designed to work with both Claude Code and Codex.
+
+Shared guide:
+- AGENT_GUIDE.md
+
+Agent adapter files:
+- AGENTS.md (Codex)
+- CLAUDE.md (Claude)
+
+Read order:
+1. AGENT_GUIDE.md
+2. CLAUDE.md
+3. log.md
+
+

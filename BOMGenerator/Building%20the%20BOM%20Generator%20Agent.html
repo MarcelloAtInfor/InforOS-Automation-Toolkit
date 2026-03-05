@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code &times; Infor OS &mdash; BOM Generator Development Retrospective</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    padding: 40px;
+    color: #e0e0e0;
+  }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #111827;
+    border-radius: 20px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 50px 60px 40px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: 30%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a78bfa;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #f8fafc;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .header h1 span {
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    font-size: 17px;
+    font-weight: 300;
+    color: #94a3b8;
+    line-height: 1.5;
+    max-width: 750px;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .meta-item strong { color: #cbd5e1; font-weight: 600; }
+
+  /* ── Content ── */
+  .content { padding: 50px 60px; }
+
+  .section { margin-bottom: 50px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #6366f1;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.7;
+    max-width: 900px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Stats Banner ── */
+  .stats-banner {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 50px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); }
+
+  .stat-number {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-purple .stat-number { color: #a78bfa; }
+  .stat-blue .stat-number { color: #60a5fa; }
+  .stat-green .stat-number { color: #34d399; }
+  .stat-orange .stat-number { color: #fb923c; }
+  .stat-pink .stat-number { color: #f472b6; }
+  .stat-cyan .stat-number { color: #22d3ee; }
+
+  /* ── Asset Inventory ── */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .asset-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .asset-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .asset-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .asset-card .count {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+  .asset-card p {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  .asset-card ul {
+    list-style: none;
+    margin-top: 10px;
+  }
+
+  .asset-card ul li {
+    font-size: 11px;
+    color: #64748b;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .asset-card ul li:last-child { border-bottom: none; }
+
+  .ac-scripts::before { background: linear-gradient(90deg, #a78bfa, #818cf8); }
+  .ac-scripts .count { background: rgba(139,92,246,0.2); color: #a78bfa; }
+
+  .ac-tools::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .ac-tools .count { background: rgba(245,158,11,0.2); color: #fbbf24; }
+
+  .ac-agent::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+  .ac-agent .count { background: rgba(236,72,153,0.2); color: #f472b6; }
+
+  .ac-discovery::before { background: linear-gradient(90deg, #10b981, #34d399); }
+  .ac-discovery .count { background: rgba(16,185,129,0.2); color: #34d399; }
+
+  .ac-deployed::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .ac-deployed .count { background: rgba(239,68,68,0.2); color: #f87171; }
+
+  .ac-testing::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+  .ac-testing .count { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #6366f1, #a78bfa, #60a5fa, #34d399, #fb923c, #f472b6);
+    border-radius: 2px;
+  }
+
+  .tl-item {
+    position: relative;
+    padding-bottom: 28px;
+  }
+
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-dot {
+    position: absolute;
+    left: -33px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #6366f1;
+    background: #111827;
+    z-index: 2;
+  }
+
+  .tl-item.milestone .tl-dot {
+    width: 16px;
+    height: 16px;
+    left: -35px;
+    background: #6366f1;
+    box-shadow: 0 0 12px rgba(99,102,241,0.4);
+  }
+
+  .tl-item.failure .tl-dot {
+    border-color: #ef4444;
+  }
+
+  .tl-item.success .tl-dot {
+    border-color: #34d399;
+    background: #34d399;
+    box-shadow: 0 0 8px rgba(52,211,153,0.3);
+  }
+
+  .tl-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6366f1;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .tl-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .tl-desc {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  .tl-detail {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #64748b;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 10px 14px;
+    line-height: 1.6;
+  }
+
+  .tl-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .tag-fail { background: rgba(239,68,68,0.2); color: #f87171; }
+  .tag-pass { background: rgba(52,211,153,0.2); color: #34d399; }
+  .tag-fix { background: rgba(251,146,60,0.2); color: #fb923c; }
+  .tag-discovery { background: rgba(96,165,250,0.2); color: #60a5fa; }
+
+  /* ── Process Flow ── */
+  .process-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .process-step {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px 20px;
+    position: relative;
+  }
+
+  .process-step::after {
+    content: '\2192';
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #4b5563;
+  }
+
+  .process-step:last-child::after { display: none; }
+
+  .process-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99,102,241,0.2);
+    color: #818cf8;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .process-step h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+  }
+
+  .process-step p {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ── Strengths / Challenges ── */
+  .sw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .sw-column {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .sw-column h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sw-column h3 .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .strengths h3 { color: #34d399; }
+  .strengths h3 .tag { background: rgba(52,211,153,0.15); color: #34d399; }
+
+  .challenges h3 { color: #fb923c; }
+  .challenges h3 .tag { background: rgba(251,146,60,0.15); color: #fb923c; }
+
+  .sw-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .sw-item:last-child { border-bottom: none; }
+
+  .sw-item h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .sw-item p {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ── Iteration Callout ── */
+  .callout {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px;
+    padding: 28px;
+    margin-top: 30px;
+  }
+
+  .callout h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #a78bfa;
+    margin-bottom: 12px;
+  }
+
+  .callout-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .callout-item {
+    text-align: center;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+  }
+
+  .callout-item .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #c4b5fd;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .callout-item .label {
+    font-size: 11px;
+    color: #8b8bb8;
+    line-height: 1.3;
+  }
+
+  /* ── BOM Evolution ── */
+  .evolution-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .evo-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .evo-card .evo-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  .evo-card .evo-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #a78bfa;
+    margin-bottom: 2px;
+  }
+
+  .evo-card .evo-detail {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  .evo-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #4b5563;
+  }
+
+  /* ── Key Insight Box ── */
+  .insight-box {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 30px;
+    margin-top: 30px;
+  }
+
+  .insight-box h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 16px;
+  }
+
+  .insight-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .insight-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .insight-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99,102,241,0.15);
+    color: #818cf8;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .insight-item h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 2px;
+  }
+
+  .insight-item p {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  /* ── Summary Box ── */
+  .summary-box {
+    background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.05) 100%);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px;
+    padding: 36px;
+    text-align: center;
+  }
+
+  .summary-box h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 12px;
+  }
+
+  .summary-box p {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.8;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .summary-box p strong { color: #c4b5fd; font-weight: 600; }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 24px 60px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #475569;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 0; background: white; color: #1a1a2e; }
+    .page { box-shadow: none; border-radius: 0; background: white; border: none; }
+    .header { background: #1e293b; }
+    .stat-card, .asset-card, .process-step, .sw-column, .callout, .insight-box, .summary-box {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+    .section-title, .tl-title, .asset-card h4, .process-step h4, .sw-item h4, .insight-item h4 { color: #1e293b; }
+    .section-desc, .tl-desc, .asset-card p, .process-step p, .sw-item p, .insight-item p { color: #475569; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ════════════════════════════ HEADER ════════════════════════════ -->
+  <div class="header">
+    <div class="header-badge">DEVELOPMENT RETROSPECTIVE</div>
+    <h1>Building the BOM Generator Agent<br>with <span>Claude Code</span></h1>
+    <div class="subtitle">
+      How an AI coding assistant discovered, built, debugged, and shipped a 16-tool GenAI agent that creates multi-level Bills of Material in Infor SyteLine from natural language &mdash; through 4 failed BOMs, 3 architectural pivots, and 8 tool doublings.
+    </div>
+    <div class="header-meta">
+      <div class="meta-item"><strong>Platform:</strong>&nbsp;Infor OS (CloudSuite Industrial)</div>
+      <div class="meta-item"><strong>Duration:</strong>&nbsp;~3 working days</div>
+      <div class="meta-item"><strong>Milestone:</strong>&nbsp;V1.0 Shipped Feb 12, 2026</div>
+      <div class="meta-item"><strong>AI Tool:</strong>&nbsp;Claude Code (Anthropic CLI)</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════ STATS ════════════════════════════ -->
+    <div class="stats-banner">
+      <div class="stat-card stat-purple">
+        <div class="stat-number">17</div>
+        <div class="stat-label">Deployed Assets</div>
+      </div>
+      <div class="stat-card stat-blue">
+        <div class="stat-number">12</div>
+        <div class="stat-label">Python Scripts</div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-number">10</div>
+        <div class="stat-label">IDO Collections</div>
+      </div>
+      <div class="stat-card stat-orange">
+        <div class="stat-number">9</div>
+        <div class="stat-label">Creation Steps</div>
+      </div>
+      <div class="stat-card stat-pink">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Test Templates</div>
+      </div>
+      <div class="stat-card stat-cyan">
+        <div class="stat-number">88</div>
+        <div class="stat-label">Work Centers</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ WHAT WAS BUILT ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">What Claude Code Built</div>
+      <div class="section-title">Complete Asset Inventory</div>
+      <div class="section-desc">
+        Claude Code was the sole development tool for every artifact in this project &mdash; from the initial IDO metadata discovery queries that revealed SyteLine's BOM data model, through 16 iteratively refined tool specifications, to the automated async test pipeline that validates entire BOM hierarchies end-to-end.
+      </div>
+
+      <div class="asset-grid">
+
+        <div class="asset-card ac-scripts">
+          <h4>Python Scripts <span class="count">12 files</span></h4>
+          <p>IDO discovery, automated testing, BOM verification, prompt generation, and platform investigation scripts.</p>
+          <ul>
+            <li>3 core test pipeline scripts (generate, test, verify)</li>
+            <li>3 IDO field discovery scripts</li>
+            <li>2 resource group investigation scripts</li>
+            <li>1 SLHighKeys discovery script</li>
+            <li>1 BOM prefix auto-registration test</li>
+            <li>1 item-warehouse + work center discovery</li>
+            <li>1 archived async chat smoke test</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-tools">
+          <h4>Tool Specifications <span class="count">16 files</span></h4>
+          <p>JSON definitions for GAF_CLI publishing. Each contains api_docs, responseInstructions, and anti-hallucination constraints.</p>
+          <ul>
+            <li>4 Item tools (Search, Insert)</li>
+            <li>4 Job &amp; Routing tools (Search, Insert)</li>
+            <li>4 Material &amp; WorkCenter tools</li>
+            <li>2 Resource Group tools (Lookup, Insert)</li>
+            <li>2 Schedule &amp; Warehouse tools</li>
+            <li>Plus v1 backup directory for rollback</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-agent">
+          <h4>Agent Specification <span class="count">1 file</span></h4>
+          <p>Orchestration workflow with 9-step creation order, dynamic chunking, weighted tool budgets, and sentinel-based checkpoints.</p>
+          <ul>
+            <li>~900 char instructions field (platform limit)</li>
+            <li>Multi-page workflow with 9 execution steps</li>
+            <li>LIGHT/HEAVY tool call classification</li>
+            <li>Anti-hallucination URL construction rules</li>
+            <li>5-point completion criteria</li>
+            <li>Hard error vs soft error classification</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-discovery">
+          <h4>Discovery Documentation <span class="count">4+ files</span></h4>
+          <p>IDO discovery results, architecture documentation, and project vision documents that captured platform knowledge.</p>
+          <ul>
+            <li>ido_discovery.md &mdash; Full IDO field mapping</li>
+            <li>CLAUDE.md &mdash; 400+ line knowledge base</li>
+            <li>log.md &mdash; 700+ line development narrative</li>
+            <li>BillOfMaterialGenerator.txt &mdash; Future vision</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-deployed">
+          <h4>Production Deployments <span class="count">17 assets</span></h4>
+          <p>Live GenAI tools and agent running on the Infor GenAI platform, creating real BOM data in SyteLine.</p>
+          <ul>
+            <li>16 GenAI API Tools (8 GET + 8 POST)</li>
+            <li>1 GenAI Agent orchestrating all 16</li>
+            <li>Each tool has unique GUID on platform</li>
+            <li>Agent logical ID: lid://infor.syteline.bom-generator-v1</li>
+            <li>Deployed via GAF_CLI (validate &rarr; publish/update)</li>
+          </ul>
+        </div>
+
+        <div class="asset-card ac-testing">
+          <h4>Test Infrastructure <span class="count">3 + 8</span></h4>
+          <p>Automated pipeline: generate unique prompts, execute via async chat, verify BOM hierarchy via IDO queries.</p>
+          <ul>
+            <li>generate_prompt.py &mdash; 8 templates, dynamic job #s</li>
+            <li>test_bom_agent.py &mdash; Async multi-turn harness</li>
+            <li>verify_bom.py &mdash; Deep BOM validation</li>
+            <li>8 built-in templates (simple to 3-level complex)</li>
+            <li>Sentinel-based checkpoint detection</li>
+            <li>Unique item prefixes via local sequence counter</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ DEV PROCESS ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">The Development Process</div>
+      <div class="section-title">Discovery-Driven Development on a Cloud ERP</div>
+      <div class="section-desc">
+        The BOM Generator couldn't be planned upfront. SyteLine's BOM data model &mdash; the fact that BOMs are Standard Jobs, not direct item-material links &mdash; had to be <em>discovered</em> through IDO metadata queries. Each failed BOM attempt revealed new requirements (resource groups, schedule drivers, warehouse linkage) that expanded the tool count from 8 to 16. The development process was fundamentally exploratory: build, deploy, test against the live ERP, discover what's missing, add it, repeat.
+      </div>
+
+      <div class="process-flow">
+        <div class="process-step">
+          <div class="process-num">1</div>
+          <h4>Discover via Metadata</h4>
+          <p>Query IDO metadata system IDOs (IdoCollections, IdoTables, IdoProperties) to discover writable fields, primary tables, and join relationships. Write discovery scripts. Map the domain model that doesn't exist in any public docs.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">2</div>
+          <h4>Build &amp; Deploy Tools</h4>
+          <p>Generate JSON tool specs with api_docs, anti-hallucination constraints, and responseInstructions. Validate via GAF_CLI. Publish to GenAI platform. Each tool = 1 IDO operation. No local runtime &mdash; everything runs in the cloud.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">3</div>
+          <h4>Test via BOM Creation</h4>
+          <p>Send natural language prompts through the GenAI agent. Watch it call tools against live SyteLine. Verify results in ERP. Parse failures: 404s, silent write drops, hallucinated properties, IDO quirks. Each failure teaches.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">4</div>
+          <h4>Fix, Expand, Document</h4>
+          <p>Fix the discovered issue. Add new tools if needed. Update agent workflow. Redeploy. Document the discovery in CLAUDE.md so it's never lost. The knowledge base compounds &mdash; each fix prevents the same class of error forever.</p>
+        </div>
+      </div>
+
+      <!-- Iteration callout -->
+      <div class="callout">
+        <h3>The Cost of Discovery</h3>
+        <div class="callout-grid">
+          <div class="callout-item">
+            <div class="num">4</div>
+            <div class="label">Failed BOMs before first success</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">8&rarr;16</div>
+            <div class="label">Tool count doubled during development</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">6</div>
+            <div class="label">IDO field discovery scripts written</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">3</div>
+            <div class="label">Major architectural pivots</div>
+          </div>
+          <div class="callout-item">
+            <div class="num">10</div>
+            <div class="label">IDO collections discovered &amp; mapped</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ TOOL EVOLUTION ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">Tool Evolution</div>
+      <div class="section-title">From 8 Tools to 16: What Each Failure Taught</div>
+      <div class="section-desc">
+        The agent started with 8 tools covering the basic BOM creation path. Each failed test BOM revealed missing infrastructure that the agent couldn't work around. The tool count doubled not from scope creep, but from progressive discovery of SyteLine's actual requirements vs. its apparent requirements.
+      </div>
+
+      <div class="evolution-grid">
+        <div class="evo-card">
+          <div class="evo-label">Phase 0&ndash;4</div>
+          <div class="evo-value">8</div>
+          <div class="evo-detail">Item + Job + Route + Material<br>(Search + Insert pairs)</div>
+        </div>
+        <div class="evo-arrow">&rarr;</div>
+        <div class="evo-card">
+          <div class="evo-label">+ Resource Groups</div>
+          <div class="evo-value">12</div>
+          <div class="evo-detail">WorkCenterSearch, RG Insert,<br>SetuprgidUpdate, ItemWhseUpdate</div>
+        </div>
+        <div class="evo-arrow">&rarr;</div>
+        <div class="evo-card">
+          <div class="evo-label">+ Tool Split</div>
+          <div class="evo-value">15</div>
+          <div class="evo-detail">JrtSchsLoad, ItemWhseLoad<br>(1 tool = 1 HTTP call rule)</div>
+        </div>
+        <div class="evo-arrow">&rarr;</div>
+        <div class="evo-card">
+          <div class="evo-label">+ Self-Serve</div>
+          <div class="evo-value">16</div>
+          <div class="evo-detail">JobNumberLookup, RG Lookup<br>(eliminates guessing)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ TIMELINE ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">Development Timeline</div>
+      <div class="section-title">Three Days of Discovery, Failure, and Recovery</div>
+      <div class="section-desc">
+        The project compressed what would traditionally be weeks of ERP integration work into 3 days of high-velocity, AI-assisted exploration. Each day had a distinct character: Day 1 was foundational discovery and rapid tool building, Day 2 was dominated by failures that drove architectural pivots, and Day 3 brought the async breakthrough and full automation.
+      </div>
+
+      <div class="timeline">
+
+        <!-- Day 1 -->
+        <div class="tl-item milestone">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 10, 2026 &mdash; Day 1</div>
+          <div class="tl-title">IDO Discovery &amp; Phases 0&ndash;4 <span class="tl-tag tag-discovery">Discovery</span></div>
+          <div class="tl-desc">Project initialized. Claude Code queried IDO metadata system to discover that SyteLine BOMs are Standard Jobs (Type='S'), not direct item-material links. Cataloged 88 work centers. Built and deployed 8 tools + 1 agent across 5 rapid phases in a single session.</div>
+          <div class="tl-detail">The foundational discovery &mdash; that <code>SLBomListing</code> and <code>SLMaterialListing</code> are read-only views and the real write path goes through <code>SLJobs &rarr; SLJobRoutes &rarr; SLJobmatls</code> &mdash; came from querying <code>IdoTables</code> with <code>TableType=3</code>. This single metadata query shaped the entire project architecture.</div>
+        </div>
+
+        <div class="tl-item failure">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 10 (continued)</div>
+          <div class="tl-title">Phase 5 Testing: First Failures <span class="tl-tag tag-fail">Hallucination</span></div>
+          <div class="tl-desc">Agent hallucinated IDO properties ("Source" on SLItems), used invalid PMTCode "B" (only M/P/T valid), tried ProductCode "RM-100" (invalid &mdash; safe default is "FG-100"), and job auto-assign crashed with NextKeys_mst error. Anti-hallucination constraints added to all tool specs.</div>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="tl-item failure">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 11, 2026 &mdash; Day 2</div>
+          <div class="tl-title">TB-10001 Toolbox: URL Hallucination <span class="tl-tag tag-fail">404s</span></div>
+          <div class="tl-desc">The LLM on the Infor platform constructed completely malformed URLs &mdash; injecting tenant names, doubling service paths, using tool names as IDO endpoints. Every API call returned 404. Agent reported false success.</div>
+          <div class="tl-detail">Root cause: the <code>api_docs</code> field used absolute URLs, and the GenAI framework auto-prepends <code>servicePath</code>. The LLM then further embellished the URL with hallucinated segments. Fix: all endpoints changed to relative paths + explicit URL construction rules added to every tool spec and the agent workflow. This was the project's "LLM-to-LLM meta-engineering" moment.</div>
+        </div>
+
+        <div class="tl-item failure">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 11 (continued)</div>
+          <div class="tl-title">GB-10000 Garden Bench: Tool Split Discovery <span class="tl-tag tag-fix">Architecture</span></div>
+          <div class="tl-desc">Two-step tools (GET then POST in one api_docs) only executed Step 1. The GenAI framework reads api_docs, makes one HTTP call, and the tool invocation ends. SetuprgidUpdate and ItemWhseUpdate never POSTed. BOM created but invisible in SyteLine UI.</div>
+          <div class="tl-detail">This revealed a fundamental constraint of the GenAI tool framework: <strong>1 tool = 1 HTTP call</strong>. The solution was splitting two-step operations into separate Load (GET) and Update (POST) tools, with the Load tool returning <code>_ItemId</code> that the Update tool requires. Tool count jumped from 8 to 14.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 11 (continued)</div>
+          <div class="tl-title">Architectural Overhaul: Resource Groups + ItwhJob <span class="tl-tag tag-discovery">Pivot</span></div>
+          <div class="tl-desc">IDO metadata investigation reversed a wrong conclusion about resource group writability. Discovered that SLJrtResourceGroups HAS data (IDO quirk: must specify properties param). Rgid is case-sensitive. ItwhJob must be set explicitly. Without it, BOMs are invisible in the Current Operations form.</div>
+          <div class="tl-detail">The IDO metadata discovery technique (querying <code>IdoCollections</code>, <code>IdoTables</code>, <code>IdoProperties</code>) was elevated to a cross-project best practice after this session. A previous "0 records" conclusion about resource groups was caused by an IDO quirk: one IDO requires the <code>properties</code> param while another breaks if you include it. This kind of per-IDO behavioral variance can only be discovered empirically.</div>
+        </div>
+
+        <div class="tl-item success">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 11 (continued)</div>
+          <div class="tl-title">BH-10000 Birdhouse: FIRST FULL SUCCESS <span class="tl-tag tag-pass">Pass</span></div>
+          <div class="tl-desc">After 4 failed attempts (TB-10001, GB-10000, SK-10000 partial, BOMTEST-001), the birdhouse BOM completed all 3 chunks. All 15 tools executed correctly. Resource groups populated, ItwhJob set, SchedDrv aligned. BOM fully visible in SyteLine UI.</div>
+        </div>
+
+        <div class="tl-item failure">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 11 (continued)</div>
+          <div class="tl-title">SK-10000 Skateboard: Resource Group Naming Failure <span class="tl-tag tag-fix">Hard Error</span></div>
+          <div class="tl-desc">Agent guessed Rgid from naming convention ("PG-300-LRG") but the actual value was "PG-300-MRG". Case-sensitive, atomic batch rollback killed all resource groups. Agent falsely reported "fully functional." New ResourceGroupLookup tool created. Error reclassification: RG failures = hard stop.</div>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 12, 2026 &mdash; Day 3</div>
+          <div class="tl-title">Async Chat Pattern: The 240s Breakthrough <span class="tl-tag tag-discovery">Discovery</span></div>
+          <div class="tl-desc">After BH-T04000 "timed out" at 240.1s, the user checked Chat UI History and found the agent had actually completed successfully. The 240s limit is a <code>chat_sync</code> API gateway constraint, not a model execution limit. Switched to <code>POST /chat</code> (fire-and-forget) + polling. Eliminates the timeout entirely.</div>
+          <div class="tl-detail">Two bugs were discovered during async implementation: (1) Session IDs must be dashless hex (<code>uuid.uuid4().hex</code>), not dashed UUIDs &mdash; the platform stores them dashless but silently accepts dashed ones, causing mismatches on retrieval. (2) Messages aren't stored until the agent finishes (~2-3 min) &mdash; 0 messages during polling is normal, not an error. Pagination is also 1-based (page=0 returns 422).</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 12 (continued)</div>
+          <div class="tl-title">Prompt Generator + JobNumberLookup <span class="tl-tag tag-fix">Self-Serve</span></div>
+          <div class="tl-desc">Created generate_prompt.py with 8 templates and dynamic BOM job number allocation via SLHighKeys API. Built JobNumberLookup_Tool_v1 (tool #16) so the agent can self-serve for ad-hoc users who don't specify job numbers. Confirmed BOM prefix auto-registration in SLHighKeys.</div>
+        </div>
+
+        <div class="tl-item success">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 12 (continued)</div>
+          <div class="tl-title">BH-T03000: First Automated End-to-End Test <span class="tl-tag tag-pass">12/12</span></div>
+          <div class="tl-desc">Full pipeline: generate_prompt.py &rarr; test_bom_agent.py &rarr; verify_bom.py. Birdhouse with 2 sub-assemblies, 3 standard jobs, 12 items. 5 chunks, 958.9s (~16 min). 12/12 verification checks passed. Multi-level BOM with RefType='J' sub-assemblies validated.</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 12 (continued)</div>
+          <div class="tl-title">Weighted Tool Budgets: LIGHT vs HEAVY <span class="tl-tag tag-fix">Optimization</span></div>
+          <div class="tl-desc">BH-T04000 chunk 4 hit 240s with 5 all-HEAVY calls averaging 48s each. Flat budget of 5 calls/chunk was unsafe for heavy operations. Introduced weighted classification: LIGHT-only chunks get 4 calls, HEAVY chunks get 3. Worst case: 3 &times; 50s + finish = 200s (40s margin).</div>
+        </div>
+
+        <div class="tl-item success">
+          <div class="tl-dot"></div>
+          <div class="tl-date">February 12 (continued)</div>
+          <div class="tl-title">ST-10000 Stool: Ad-Hoc Self-Serve Validated <span class="tl-tag tag-pass">16/16</span></div>
+          <div class="tl-desc">Prompt with no job numbers: "Create a BOM for a wooden stool." Agent called JobNumberLookup, allocated BOM0000805-808, reused 5 existing items, created 4 new ones. 8 chunks, ~16 min effective time (excluding 2 platform system errors that the agent recovered from). 16/16 verification checks passed.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ STRENGTHS & CHALLENGES ════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">Analysis</div>
+      <div class="section-title">Strengths &amp; Challenges</div>
+      <div class="section-desc">
+        Building a 16-tool GenAI agent on a proprietary ERP platform with Claude Code surfaced distinct patterns of strength and difficulty. The most impactful strengths were in systematic discovery and iterative recovery; the hardest challenges involved invisible platform behaviors.
+      </div>
+
+      <div class="sw-grid">
+
+        <!-- Strengths -->
+        <div class="sw-column strengths">
+          <h3><span class="tag">Strengths</span> Where Claude Code Excelled</h3>
+
+          <div class="sw-item">
+            <h4>IDO Metadata Reverse Engineering</h4>
+            <p>Claude Code treated SyteLine's metadata system IDOs (IdoCollections, IdoTables, IdoProperties) as queryable databases. By writing discovery scripts that systematically probed which tables were primary (writable) vs. joined (read-only), it mapped a BOM data model that exists in no public documentation. This technique became a cross-project best practice.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Failure-Driven Architecture</h4>
+            <p>Each failed BOM produced a specific, actionable architectural fix: TB-10001's 404s led to URL construction rules, GB-10000's silent failures led to the tool-split pattern, SK-10000's naming guess led to the ResourceGroupLookup tool. Claude Code didn't just fix bugs &mdash; it converted each failure into a reusable constraint that prevented the entire class of error.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Anti-Hallucination Engineering</h4>
+            <p>The project required writing "prompts for another LLM" (the GenAI platform's model interprets tool api_docs). Claude Code developed anti-hallucination patterns: explicit property lists ("ONLY use these exact properties"), URL construction rules ("endpoints MUST be relative"), error severity classification ("404 = HARD STOP"). These patterns were applied consistently across all 16 tools.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Progressive Complexity Management</h4>
+            <p>The agent workflow grew from 3 steps to 9 steps, from 8 tools to 16, from static 3-chunk execution to dynamic weighted chunking. Claude Code managed this complexity growth by introducing abstractions only when needed: tool-call budgets, LIGHT/HEAVY classification, sentinel-based checkpoints, and a 5-point completion criteria.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Automated Test Pipeline Construction</h4>
+            <p>Claude Code built a complete test-to-verify pipeline: unique prompt generation with dynamic job numbers from SLHighKeys, async multi-turn test execution that bypasses the 240s gateway timeout, and deep BOM verification that queries every IDO in the creation chain. The pipeline caught real issues (chunking budget, sentinel format) before they reached production prompts.</p>
+          </div>
+
+        </div>
+
+        <!-- Challenges -->
+        <div class="sw-column challenges">
+          <h3><span class="tag">Challenges</span> Where It Got Difficult</h3>
+
+          <div class="sw-item">
+            <h4>Silent Write Failures</h4>
+            <p>SyteLine returns 200 OK for IDO updates even when the value is silently discarded because the column lives on a joined table, not the primary table. The API gives no error, no warning, and no indication that the write was ignored. The only way to detect this is to read back the record and check. This consumed multiple investigation cycles.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Per-IDO Behavioral Quirks</h4>
+            <p>SLJrtResourceGroups requires the <code>properties</code> parameter to return data (omitting it gives 0 records). SLItemwhses is the exact opposite: including <code>properties</code> returns 0 records, omitting it works. IdoProperties returns 0 records for SLHighKeys but the IDO works fine. Each IDO had unique quirks discoverable only through trial-and-error.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>LLM Non-Determinism in BOM Structure</h4>
+            <p>The same birdhouse prompt produced 2 sub-assemblies in one run (BH-T03000) and 4 sub-assemblies in another (BH-T04000). More sub-assemblies meant more heavy tool calls, pushing chunk 4 past the 240s timeout. The fix required both deterministic prompt templates and weighted tool-call budgeting &mdash; addressing the problem from both sides.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>Platform Transient Errors</h4>
+            <p>The GenAI platform intermittently returns "I'm sorry, a system error has occurred" with no actionable detail. During the ST-10000 stool test, 2 consecutive chunks hit platform system errors. The agent recovered correctly on retry, but the errors added ~490s of wasted time and required the sentinel detection system to handle "UNKNOWN" states gracefully.</p>
+          </div>
+
+          <div class="sw-item">
+            <h4>The 1-Tool-1-Call Constraint</h4>
+            <p>The GenAI framework executes exactly one HTTP call per tool invocation. Tools that need to GET a record's <code>_ItemId</code> before POSTing an update cannot be a single tool &mdash; the GET fires but the POST never does. Discovering this required creating a tool, deploying it, testing it, observing the silent partial execution, and then splitting every two-step tool into separate Load + Update pairs.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ KEY INSIGHTS ════════════════════════════ -->
+    <div class="section">
+      <div class="insight-box">
+        <h3>Key Insights: Building GenAI Agents with Claude Code on Infor OS</h3>
+        <div class="insight-list">
+          <div class="insight-item">
+            <div class="insight-num">1</div>
+            <div>
+              <h4>Every failed BOM is an architecture lesson</h4>
+              <p>The 4 failed BOMs before first success weren't wasted &mdash; each one exposed a gap (URL rules, tool-split pattern, resource group lookup, error classification) that, once fixed, permanently improved the system. The cost of failure was low (test data in a demo tenant); the knowledge gained was permanent.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">2</div>
+            <div>
+              <h4>IDO metadata is the Rosetta Stone</h4>
+              <p>SyteLine's system metadata IDOs (IdoCollections, IdoTables, IdoProperties) are the only reliable way to determine which fields are writable. API documentation, property names, and even successful 200 responses can all be misleading. The metadata discovery pattern should be the first step in any SyteLine integration project.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">3</div>
+            <div>
+              <h4>Anti-hallucination is a first-class concern</h4>
+              <p>When one LLM writes tool definitions that another LLM interprets, hallucination compounds. The agent LLM invents properties, URL segments, and IDO names that look plausible but don't exist. Every tool spec needs explicit "ONLY use these exact values" constraints. This is a design pattern, not an afterthought.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">4</div>
+            <div>
+              <h4>Phased validation is non-negotiable</h4>
+              <p>On a cloud platform with no local runtime, the only way to know if something works is to deploy and test it in the live environment. Building all 16 tools before testing would have created an impossible debugging surface. One phase at a time, with user validation between each, was the only viable approach.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">5</div>
+            <div>
+              <h4>The knowledge base compounds exponentially</h4>
+              <p>By Day 3, the CLAUDE.md file contained 400+ lines of hard-won platform knowledge: IDO quirks, valid property values, naming conventions, error patterns, architectural constraints. Every Claude Code session started by reading this file, avoiding rediscovery of issues that had already been solved. The documentation was not overhead &mdash; it was the primary development accelerator.</p>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-num">6</div>
+            <div>
+              <h4>Async patterns unlock complex agent workflows</h4>
+              <p>The switch from synchronous <code>chat_sync</code> (240s gateway timeout) to asynchronous <code>chat</code> + polling was transformative. It didn't just fix timeouts &mdash; it enabled weighted chunking, longer operations, and graceful recovery from platform errors. Complex agent workflows on the GenAI platform fundamentally require async execution.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════ SUMMARY ════════════════════════════ -->
+    <div class="section">
+      <div class="summary-box">
+        <h3>The Bottom Line</h3>
+        <p>
+          Claude Code built a <strong>16-tool GenAI agent</strong> that creates multi-level Bills of Material in Infor SyteLine from natural language prompts &mdash; a system touching <strong>10 IDO collections</strong>, <strong>88 work centers</strong>, and a <strong>9-step creation dependency chain</strong> &mdash; in approximately <strong>3 working days</strong>. The development was fundamentally <strong>discovery-driven</strong>: SyteLine's BOM data model had to be reverse-engineered through metadata queries, each failed BOM attempt revealed new architectural requirements, and the tool count doubled as hidden platform constraints surfaced. The biggest challenge was <strong>invisible platform behavior</strong> &mdash; silent write failures, per-IDO quirks, and LLM-to-LLM hallucination compounding. The biggest strength was <strong>systematic failure recovery</strong>: Claude Code converted every failed BOM into reusable constraints, anti-hallucination patterns, and documented knowledge that prevented the same class of error from recurring. The result is not just a working agent, but a <strong>comprehensive knowledge base</strong> and <strong>automated test pipeline</strong> that makes the system maintainable and extensible.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>BOM Generator Agent &mdash; Development Retrospective</div>
+    <div>Built with Claude Code (Anthropic) &times; Infor OS Platform</div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿{
+  "public_project_path": "C:/Users/mmartins1/OneDrive - Infor/00_ACTIVE/Dev/InforOS-Automation-Toolkit/CSIWorkflowGenerator",
+  "allow_paths": [
+    "README.md",
+    "CLAUDE.md",
+    "plan.md",
+    "AGENT_GUIDE.md",
+    "AGENTS.md",
+    "scripts",
+    "src",
+    "reference",
+    "workflow_specs"
+  ],
+  "deny_globs": [
+    ".claude/**",
+    "output/**",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.ionapi",
+    "**/tenant_config.json",
+    "**/access_token.txt",
+    "**/token_data.json",
+    "**/.env",
+    "log.md",
+    "**/logs/**",
+    "**/error logs/**",
+    "**/error_logs/**",
+    "**/CHAT_DEBUG_LOG/**",
+    "**/PAST_PROJECTS/**"
+  ]
+}
