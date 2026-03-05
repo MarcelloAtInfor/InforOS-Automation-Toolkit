@@ -1,4 +1,4 @@
-# InvoiceAutomation_Agent_v2 EXTREME Test Prompts
+﻿# InvoiceAutomation_Agent_v2 EXTREME Test Prompts
 
 Edge cases designed to break the system. Copy/paste each prompt exactly.
 
@@ -109,3 +109,4 @@ Edge cases designed to break the system. Copy/paste each prompt exactly.
 ---
 
 *Created: 2026-01-31 - Extreme edge case tests*
+

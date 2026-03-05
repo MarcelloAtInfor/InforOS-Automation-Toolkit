@@ -1,4 +1,4 @@
-# Phase Notes — CSIWorkflowGenerator
+﻿# Phase Notes — CSIWorkflowGenerator
 
 Detailed per-phase documentation moved from CLAUDE.md to reduce context size. See CLAUDE.md for current architecture, key patterns, and active gotchas.
 
@@ -393,3 +393,4 @@ python scripts/wfgen.py delete WorkflowName                            # Delete 
 ```
 
 **`workflow_inputs` value syntax**: Plain property name → auto-wrapped as `P("name")`. AES expression → used as-is.
+

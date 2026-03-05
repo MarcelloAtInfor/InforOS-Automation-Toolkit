@@ -1,4 +1,4 @@
-# CSIWorkflowGenerator - Progress Log
+﻿# CSIWorkflowGenerator - Progress Log
 
 <!--
 Track your development sessions here.
@@ -422,3 +422,4 @@ BROKEN (ReorderPoint):
 1. **Fix drillback generation** (Issue 2) — update renderer LogicalId handling, fix default view set name, validate view names against known list. Save drillback XML to reference/
 2. **Fix AES null guard** (Issue 3) — add IF() guard around ROUND(E(...)) in aes_builder for nullable fields. Test with ReorderPoint handler
 3. **Document AES SQL limitation** (Issue 1) — add to CLAUDE.md Critical Gotchas section
+

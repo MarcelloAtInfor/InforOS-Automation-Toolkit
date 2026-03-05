@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -548,3 +548,4 @@ POST /v1/workflow/start?logicalId=lid://infor.rpa.claudecode
 ---
 
 **Last Updated**: 2026-01-30 - Creative Pulse examples with translations, views, deep trees
+

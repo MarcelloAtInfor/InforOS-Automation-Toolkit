@@ -1,4 +1,4 @@
-# Infor RPA Studio - Activities Reference Guide
+﻿# Infor RPA Studio - Activities Reference Guide
 
 **Version**: Release 2026.x
 **Purpose**: Quick reference for building RPA workflows in Infor RPA Studio
@@ -674,3 +674,4 @@ Response Code Check Pattern:
 ---
 
 *Document generated from Infor Robotic Process Automation User Guide Release 2026.x*
+

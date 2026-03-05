@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -195,3 +195,4 @@ When beginning IDM development in this folder:
 ---
 
 **Note**: This folder is newly initialized. First implementation will establish patterns and structure. Refer to RPA folder for existing IDM integration examples.
+

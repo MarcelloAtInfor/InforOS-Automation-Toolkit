@@ -1,4 +1,4 @@
-# BOM IDO Discovery Results
+﻿# BOM IDO Discovery Results
 
 ## Date: 2026-02-10
 
@@ -146,3 +146,4 @@ Work centers. Key properties:
 
 ### Agent
 - `GAF_SyteLine_BomGenerator_Agent_v1` - Orchestrates all tools
+

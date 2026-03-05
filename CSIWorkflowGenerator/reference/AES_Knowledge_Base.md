@@ -1,4 +1,4 @@
-# AES (Application Event System) Knowledge Base
+﻿# AES (Application Event System) Knowledge Base
 
 > Auto-generated from AES Guide PDF using extract_aes_guide.py
 > Source: AES_Guide.pdf (212 pages)
@@ -12891,3 +12891,4 @@ Wait for Quorum 5-66
 where events can be named 3-33
 Workflow Event Handler Activation form 3-44
 Workflow event handlers 1-12
+

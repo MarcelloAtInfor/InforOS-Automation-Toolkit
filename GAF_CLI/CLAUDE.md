@@ -1,4 +1,4 @@
-# Infor OS GenAI Agent Factory
+﻿# Infor OS GenAI Agent Factory
 
 A Python CLI toolkit for creating and managing Infor OS GenAI tools and agents. The Factory Agent uses a two-step DRAFT -> CONFIRM PUBLISH workflow for safe asset creation.
 
@@ -260,3 +260,4 @@ python -m src.cli.invoke_agent --async "Your prompt here"
 python -m src.cli.invoke_agent --async -a AgentName -i  # Interactive async
 python -m src.cli.invoke_agent --async --poll-interval 15 --max-polls 30 "Prompt"
 ```
+

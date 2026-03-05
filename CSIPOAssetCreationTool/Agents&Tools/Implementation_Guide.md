@@ -1,4 +1,4 @@
-# Infor GenAI - Complete Implementation Guide
+﻿# Infor GenAI - Complete Implementation Guide
 
 ## Overview
 
@@ -392,3 +392,4 @@ different locations or entities within the Chrysler organization.
 
 **Status**: Production-ready implementation validated end-to-end
 **Last Updated**: 2026-01-27
+

@@ -1,4 +1,4 @@
-# IDP (Infor Document Processor)
+﻿# IDP (Infor Document Processor)
 
 This folder contains API documentation and development resources for Infor Document Processor (IDP), an AI-powered intelligent document processing solution.
 
@@ -420,3 +420,4 @@ Both V2 and V3 use `baseModelID: "1b3574e9-5330-43af-a010-0f658d4162cb"` (Infor'
 - `Agents&Tools/CLAUDE.md` - Authentication and ION API patterns
 - `RPA/CLAUDE.md` - RPA integration patterns
 - `IDM/CLAUDE.md` - Document management integration
+

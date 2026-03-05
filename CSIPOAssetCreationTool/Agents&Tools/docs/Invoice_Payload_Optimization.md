@@ -1,4 +1,4 @@
-# Invoice Payload Optimization for 4000 Character Limit
+﻿# Invoice Payload Optimization for 4000 Character Limit
 
 ## Problem Statement
 
@@ -304,3 +304,4 @@ For maximum flexibility:
 ### Medium Invoice (20 lines): ~1,550 chars ✅
 ### Large Invoice (50 lines): ~3,500 chars ✅
 ### Very Large Invoice (60 lines): ~4,100 chars ❌ (need Solution 2)
+

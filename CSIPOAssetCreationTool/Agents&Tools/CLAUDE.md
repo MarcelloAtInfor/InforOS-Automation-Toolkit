@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -485,5 +485,6 @@ previous_sunday = today - timedelta(days=days_back)
 **Ordering**: Use `CoOrderDate DESC` to target most recent orders rather than `DueDate ASC`
 
 **Batch Updates**: Build complete Changes array before calling update tool (not multiple calls)
+
 
 

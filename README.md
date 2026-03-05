@@ -4,7 +4,7 @@
 
 A collection of independent but related projects demonstrating automation capabilities on the **Infor OS** (Operating System) platform, targeting **Infor CloudSuite Industrial (SyteLine)**.
 
-Each project uses different combinations of Infor platform services â€” GenAI agents, RPA workflows, Intelligent Document Processing (IDP), ION integration, and Document Management (IDM) â€” to automate manufacturing and supply chain operations.
+Each project uses different combinations of Infor platform services — GenAI agents, RPA workflows, Intelligent Document Processing (IDP), ION integration, and Document Management (IDM) — to automate manufacturing and supply chain operations.
 
 ---
 
@@ -12,14 +12,14 @@ Each project uses different combinations of Infor platform services â€” Gen
 
 ```
 CC_OS_Project/
-â”œâ”€â”€ BOMGenerator/              # GenAI agent: natural language â†’ multi-level BOMs in SyteLine
-â”œâ”€â”€ CSIPOAssetCreationTool/    # Invoice automation: GenAI + RPA + IDP â†’ vendor/item/PO creation
-â”œâ”€â”€ GAF_CLI/                   # GenAI Agent Factory CLI: publish, manage, invoke GenAI tools & agents
-â”œâ”€â”€ shared/                    # Centralized OAuth 2.0 auth & config (used by all projects)
-â”œâ”€â”€ .claude/                   # Claude Code slash commands & agent definitions
-â”œâ”€â”€ CLAUDE.md                  # Claude Code project instructions (AI assistant context)
-â”œâ”€â”€ README.md                  # This file
-â””â”€â”€ log.md                     # Root-level progress log across all projects
+├── BOMGenerator/              # GenAI agent: natural language → multi-level BOMs in SyteLine
+├── CSIPOAssetCreationTool/    # Invoice automation: GenAI + RPA + IDP → vendor/item/PO creation
+├── GAF_CLI/                   # GenAI Agent Factory CLI: publish, manage, invoke GenAI tools & agents
+├── shared/                    # Centralized OAuth 2.0 auth & config (used by all projects)
+├── .claude/                   # Claude Code slash commands & agent definitions
+├── CLAUDE.md                  # Claude Code project instructions (AI assistant context)
+├── README.md                  # This file
+└── log.md                     # Root-level progress log across all projects
 ```
 
 ---
@@ -54,7 +54,7 @@ CC_OS_Project/
 
 ### CSIPOAssetCreationTool
 
-**What it does**: An end-to-end **invoice automation** system. RPA bots pick up invoice documents, IDP extracts structured data, and a GenAI agent creates or matches vendors, items, and purchase orders in SyteLine â€” automating what would otherwise be manual data entry.
+**What it does**: An end-to-end **invoice automation** system. RPA bots pick up invoice documents, IDP extracts structured data, and a GenAI agent creates or matches vendors, items, and purchase orders in SyteLine — automating what would otherwise be manual data entry.
 
 **Technology stack**:
 - GenAI agents and tools on the Infor GenAI platform (Claude 4.5 Sonnet)
@@ -67,8 +67,8 @@ CC_OS_Project/
 
 | Folder | Contents |
 |--------|----------|
-| `Agents&Tools/` | GenAI agent/tool development â€” InvoiceAutomation_Agent_v2 (7 tools), CustomerSearch, UpdateOrderLineDates |
-| `RPA/` | 25+ RPA workflow projects â€” DemoInvoiceLoader is the GenAI integration reference project |
+| `Agents&Tools/` | GenAI agent/tool development — InvoiceAutomation_Agent_v2 (7 tools), CustomerSearch, UpdateOrderLineDates |
+| `RPA/` | 25+ RPA workflow projects — DemoInvoiceLoader is the GenAI integration reference project |
 | `IDP/` | Document Processor flow management scripts, DPF analysis, V1 vs V2 comparison |
 | `ION/` | ION workflow definitions, API documentation, Pulse alert patterns |
 | `IDM/` | Document Management API patterns and integration guide |
@@ -76,11 +76,11 @@ CC_OS_Project/
 **Cross-project data flow**:
 ```
 Invoice Document
-  â†’ IDM (document storage)
-  â†’ IDP (AI data extraction: vendor, items, prices, quantities)
-  â†’ RPA (orchestration: pick up document, call IDP, call GenAI agent)
-  â†’ GenAI Agent (business logic: match/create vendor, items, PO in SyteLine)
-  â†’ ION (notifications, workflow triggers)
+  → IDM (document storage)
+  → IDP (AI data extraction: vendor, items, prices, quantities)
+  → RPA (orchestration: pick up document, call IDP, call GenAI agent)
+  → GenAI Agent (business logic: match/create vendor, items, PO in SyteLine)
+  → ION (notifications, workflow triggers)
 ```
 
 **Status**: v1.0 shipped (2026-02-03). See `CSIPOAssetCreationTool/CLAUDE.md` for full project documentation.
@@ -97,13 +97,13 @@ Invoice Document
 |------|---------|
 | `auth.py` | OAuth 2.0 token generation (password grant), token loading, auth header construction |
 | `config.py` | Tenant ID lookup, base URL construction, service-specific URL builders |
-| `__init__.py` | Public API â€” exports all functions and constants |
+| `__init__.py` | Public API — exports all functions and constants |
 
 **Service URLs provided**:
-- `IDO_URL()` â€” SyteLine data operations (`/CSI/IDORequestService/ido`)
-- `GENAI_CORE_URL()` â€” GenAI tool/agent management (`/GENAI/coresvc`)
-- `GENAI_CHAT_URL()` â€” GenAI agent execution (`/GENAI/chatsvc`)
-- `IDP_URL()` â€” Document processing (`/COLEMANDDP/iddpuisvc`)
+- `IDO_URL()` — SyteLine data operations (`/CSI/IDORequestService/ido`)
+- `GENAI_CORE_URL()` — GenAI tool/agent management (`/GENAI/coresvc`)
+- `GENAI_CHAT_URL()` — GenAI agent execution (`/GENAI/chatsvc`)
+- `IDP_URL()` — Document processing (`/COLEMANDDP/iddpuisvc`)
 
 **Usage from any project script**:
 ```python
@@ -122,7 +122,7 @@ See `shared/CLAUDE.md` for the complete API reference.
 
 ---
 
-## .claude â€” Claude Code Configuration
+## .claude — Claude Code Configuration
 
 The `.claude/` directory contains slash commands and agent definitions for **Claude Code** (Anthropic's AI coding assistant). These provide domain-specific automation shortcuts for working with this repository.
 
@@ -156,7 +156,7 @@ The `.claude/` directory contains slash commands and agent definitions for **Cla
 
 - **Python 3.9+** with `requests` package
 - **Infor OS tenant** with CloudSuite Industrial (SyteLine) configured
-- **ION API credentials** (`.ionapi` file) â€” obtained from Infor OS Portal:
+- **ION API credentials** (`.ionapi` file) — obtained from Infor OS Portal:
   1. Navigate to **API Gateway > Authorized Apps > Backend Service**
   2. Create a service account and download the `.ionapi` credentials file
 
@@ -171,7 +171,7 @@ The `.claude/` directory contains slash commands and agent definitions for **Cla
    This will:
    - Validate your `.ionapi` credentials and test connectivity
    - Discover available SyteLine sites
-   - Optionally resolve approver users (email â†’ IFS GUID)
+   - Optionally resolve approver users (email → IFS GUID)
    - Optionally extract a service account token from an exported ION workflow
    - Write a `tenant_config.json` file (gitignored) that all projects read from
 
@@ -184,7 +184,7 @@ See `tenant_config.example.json` for the expected config structure.
 
 ### Authentication
 
-All projects use OAuth 2.0 (password grant) via the centralized `shared/` module. Tokens are auto-fetched and cached â€” no manual token management required.
+All projects use OAuth 2.0 (password grant) via the centralized `shared/` module. Tokens are auto-fetched and cached — no manual token management required.
 
 ```python
 from shared.auth import get_auth_headers
@@ -232,8 +232,8 @@ python -m src.cli.invoke_agent "prompt" --async        # Async mode (long-runnin
 
 Each project and subfolder maintains two documentation files:
 
-- **`CLAUDE.md`** â€” Knowledge base: architecture, API patterns, key discoveries, lessons learned. Read this first when working in any folder.
-- **`log.md`** â€” Running history: session-by-session progress log with dates, decisions, and test results.
+- **`CLAUDE.md`** — Knowledge base: architecture, API patterns, key discoveries, lessons learned. Read this first when working in any folder.
+- **`log.md`** — Running history: session-by-session progress log with dates, decisions, and test results.
 
 These files are the primary source of truth for project context. They are updated continuously during development to preserve knowledge across sessions.
 
@@ -253,5 +253,6 @@ Read order:
 1. AGENT_GUIDE.md
 2. CLAUDE.md
 3. log.md
+
 
 

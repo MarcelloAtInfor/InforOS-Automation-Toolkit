@@ -1,4 +1,4 @@
-# Infor RPA Studio Repository - Architectural Guide
+﻿# Infor RPA Studio Repository - Architectural Guide
 
 ### CLAUDE.md
 When the user confirms that changes or discoveries are good/correct, update this CLAUDE.md file with the new information. This ensures future Claude Code sessions have access to accumulated knowledge.
@@ -747,3 +747,4 @@ This is the default input folder for the DemoInvoiceLoader RPA workflow.
 ---
 
 **Note**: This repository requires Infor RPA Studio to open and edit workflows. XAML files can be viewed in text editors but workflow logic is best understood visually in the Studio IDE.
+

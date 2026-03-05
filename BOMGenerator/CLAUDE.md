@@ -1,4 +1,4 @@
-# BOMGenerator - CLAUDE.md
+﻿# BOMGenerator - CLAUDE.md
 
 ## Phased Execution Rule (CRITICAL - NEVER SKIP)
 
@@ -440,3 +440,4 @@ BOMGenerator/
 - Test data cleanup (TEST-BOM-001, BOMTEST-001/003, GB-10000, TB-10001, BH-10000, BH-T03000, BOM-PREFIX-TEST, ST-10000, GK-T09000, ES-T10000 items)
 - Duplicate material cleanup for ES-T10000 (SA-T10-GRIP, SA-T10-HBAR, SA-T10-CELL, SA-T10-BATT have doubled material lines)
 - Broader vision items from `BillOfMaterialGenerator.txt` (transactional data, MRP validation, image-to-BOM)
+

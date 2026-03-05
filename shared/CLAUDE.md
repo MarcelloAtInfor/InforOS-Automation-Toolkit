@@ -1,4 +1,4 @@
-# shared/ — Centralized Authentication & Configuration
+﻿# shared/ — Centralized Authentication & Configuration
 
 ## Purpose
 
@@ -199,3 +199,4 @@ The `.ionapi` file is JSON with these fields:
 *`iu` is not validated as required by auth.py but is required by config.py's `get_base_url()`.
 
 **Security**: This file is gitignored and must never be committed. See root `.gitignore`.
+

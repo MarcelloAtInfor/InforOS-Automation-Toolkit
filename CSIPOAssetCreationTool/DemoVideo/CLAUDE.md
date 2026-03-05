@@ -1,4 +1,4 @@
-# DemoVideo - CLAUDE.md
+﻿# DemoVideo - CLAUDE.md
 
 ## Purpose
 
@@ -182,3 +182,4 @@ Runs the full pipeline: slides -> audio -> video via subprocess.
 - **Phase 4b**: Pronunciation V2 + architecture highlights — COMPLETE
 - **Phase 4c**: Pronunciation V3 + highlight sync + loudness normalization — COMPLETE
 - **Phase 5**: Real screenshots + final polish — COMPLETE
+

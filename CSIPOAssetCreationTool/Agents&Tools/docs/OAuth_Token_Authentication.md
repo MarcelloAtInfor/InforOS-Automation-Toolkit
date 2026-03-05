@@ -1,4 +1,4 @@
-# Infor ION API - OAuth Token Authentication Guide
+﻿# Infor ION API - OAuth Token Authentication Guide
 
 ## Problem
 When calling Infor ION API endpoints, you need a valid OAuth 2.0 access token. Tokens expire after 2 hours (7200 seconds), requiring periodic renewal.
@@ -156,3 +156,4 @@ This will:
 **The key insight**: Infor ION API service accounts require **password** grant type using the `saak` (username) and `sask` (password) fields from the `.ionapi` file, NOT the client_credentials grant type typically used for service-to-service authentication.
 
 This authentication pattern is specific to Infor's implementation and differs from standard OAuth 2.0 client credentials flow.
+

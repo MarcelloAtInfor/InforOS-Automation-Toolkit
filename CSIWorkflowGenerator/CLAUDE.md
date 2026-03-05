@@ -1,4 +1,4 @@
-# CLAUDE.md — CSIWorkflowGenerator
+﻿# CLAUDE.md — CSIWorkflowGenerator
 
 ## Project Overview
 
@@ -368,3 +368,4 @@ The parent project (`CC_OS_Project/.claude/`) provides reusable commands:
 | 6E | HTTP Robustness Hardening | COMPLETE (live validated) |
 | 7 | GenAI Platform Tools (Goal 2) | Not started |
 | 8 | GenAI Platform Agent (Goal 2) | Not started |
+

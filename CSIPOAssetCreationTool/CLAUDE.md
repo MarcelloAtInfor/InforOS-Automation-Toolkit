@@ -1,4 +1,4 @@
-# CSIPOAssetCreationTool - CLAUDE.md
+﻿# CSIPOAssetCreationTool - CLAUDE.md
 
 ## Project Overview
 
@@ -221,3 +221,4 @@ When working with Infor CloudSuite Industrial data:
 ## GAF_CLI
 
 GAF_CLI (GenAI Agent Factory CLI) is used for publishing tools and agents. It lives at `../GAF_CLI` (sibling directory at repo root). See the root repository `CLAUDE.md` for full GAF_CLI documentation and commands.
+

@@ -1,4 +1,4 @@
-# Invoice Automation Agent v2 - Fixes Applied
+﻿# Invoice Automation Agent v2 - Fixes Applied
 
 ## Date: 2026-01-28
 
@@ -273,3 +273,4 @@ Use the same test input that revealed these issues:
 
 **Status**: All fixes applied and ready for testing
 **Last Updated**: 2026-01-28
+
