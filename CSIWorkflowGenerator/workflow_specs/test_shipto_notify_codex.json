@@ -1,0 +1,50 @@
+{
+  "name": "CS_Test_ShipTo_Notify_Codex",
+  "description": "Codex test example: notification workflow for customer order ship-to changes.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCos",
+    "monitored_field": "CustSeq",
+    "workflow_inputs": {
+      "CoNum": "CoNum",
+      "CustNum": "CustNum",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.CustomerOrders",
+    "access_as": "ue_",
+    "handler_sequence": 243,
+    "handler_description": "ue_Test_ShipTo_Notify_Codex"
+  },
+  "variables": [
+    {"name": "CoNum", "type": "STRING", "input": true},
+    {"name": "CustNum", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true}
+  ],
+  "views": [
+    {
+      "name": "OrderDrillBack",
+      "view_set": "",
+      "view": "SalesOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "notification",
+      "name": "Ship-To Change Alert",
+      "message": "TEST: Customer Order [CoNum] for [CustNum] had ship-to sequence changed.",
+      "distribution": "marcello",
+      "send_email": true,
+      "params": [
+        {"label": "Order Number", "variable": "CoNum"},
+        {"label": "Customer", "variable": "CustNum"},
+        {"label": "Order Details", "view": "OrderDrillBack"}
+      ]
+    }
+  ]
+}

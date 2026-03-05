@@ -1,0 +1,50 @@
+{
+  "name": "CS_Test_CreditHold_Notify_Codex",
+  "description": "Codex test example: notification workflow for customer credit hold changes.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCustomers",
+    "monitored_field": "CreditHold",
+    "workflow_inputs": {
+      "CustNum": "CustNum",
+      "CustName": "Name",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.Customers",
+    "access_as": "ue_",
+    "handler_sequence": 242,
+    "handler_description": "ue_Test_CreditHold_Notify_Codex"
+  },
+  "variables": [
+    {"name": "CustNum", "type": "STRING", "input": true},
+    {"name": "CustName", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true}
+  ],
+  "views": [
+    {
+      "name": "CustomerDrillBack",
+      "view_set": "",
+      "view": "CustomerView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CustNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "notification",
+      "name": "Credit Hold Change Alert",
+      "message": "TEST: Customer [CustName] ([CustNum]) credit hold status changed.",
+      "distribution": "marcello",
+      "send_email": true,
+      "params": [
+        {"label": "Customer", "variable": "CustName"},
+        {"label": "Customer ID", "variable": "CustNum"},
+        {"label": "Customer Details", "view": "CustomerDrillBack"}
+      ]
+    }
+  ]
+}

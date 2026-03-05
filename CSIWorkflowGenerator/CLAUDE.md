@@ -7,6 +7,19 @@ CSIWorkflowGenerator automates CSI (CloudSuite Industrial) workflow creation by 
 **Goal 1** (current): Claude Code + local Python scripts create complete workflows.
 **Goal 2** (future): Port tooling to Infor GenAI platform as agents/tools.
 
+## Cross-Agent Compatibility (Claude + Codex)
+
+This project uses `AGENT_GUIDE.md` as the shared, agent-neutral operating guide. Agent-specific files (`AGENTS.md`, `CLAUDE.md`) act as adapters on top of that shared guide.
+
+Private repo is the source of truth. Public repo sync is manual via:
+
+```bash
+pwsh -File scripts/sync_public.ps1           # dry-run preview
+pwsh -File scripts/sync_public.ps1 -Apply    # copy allowed files to public toolkit
+```
+
+Sync configuration is in `sync_public.json` (allowlist + deny globs). Keep secrets and local runtime artifacts out of public sync.
+
 ## Architecture
 
 ```
@@ -25,6 +38,8 @@ CSIWorkflowGenerator/
     order_discount.json         # Order Discount spec (parallel timeout pattern)
     order_line_discount_approval.json  # Order Line Discount spec (with aes_trigger)
     credit_hold_notification.json      # Credit Hold notification-only spec (Phase 6A)
+    test_credit_hold_notify_codex.json # Codex test notification spec (deployed 2026-03-05)
+    test_shipto_notify_codex.json      # Codex test notification spec (deployed 2026-03-05)
   scripts/
     wfgen.py                    # Unified CLI: create/render/validate/aes/status/delete/extract-sa
     render_template.py          # Render spec JSON -> ION workflow JSON (with --diff, --deploy)
@@ -297,6 +312,7 @@ resp = requests.post(url, headers=headers, json=payload)
 - **Variable-bound IDO params**: `ido_var`/`properties_var` enable dynamic IDO configuration at runtime.
 - **Distribution uses named user keys** — spec `distribution` field takes individual user keys from tenant config (e.g. `"marcello"` or `["marcello", "james"]`). No group abstraction exists yet; IFS group support is a future phase.
 - **Distribution placeholders use angle brackets** — unresolved templates use `"<approver>"`, `"<notifier1>"` etc. (NOT `"user1"`). Angle-bracket format is obviously not a real key and fails validation immediately. The `/parse-workflow` command must resolve to real tenant config keys at spec creation time — never leave placeholders in generated specs.
+- **Public repo safety model** — keep workflow specs/examples tenant-agnostic in git (placeholders are intentional). Inject tenant-specific values only at execution time via `tenant_config.json`, `wfgen extract-sa`, and secured runtime config. Never commit real service accounts, emails, IDs, or environment secrets.
 
 ## AES Expression Syntax Quick Reference
 

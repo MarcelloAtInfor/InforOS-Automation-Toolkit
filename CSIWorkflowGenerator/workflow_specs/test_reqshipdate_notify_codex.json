@@ -1,0 +1,53 @@
+{
+  "name": "CS_Test_ShipToState_Notify_Codex",
+  "description": "Codex test example: notification workflow for customer order ship-to state changes.",
+  "aes_trigger": {
+    "event": "IdoOnItemUpdate",
+    "ido": "SLCos",
+    "monitored_field": "ShipToState",
+    "workflow_inputs": {
+      "CoNum": "CoNum",
+      "CustNum": "CustNum",
+      "ShipToState": "ShipToState",
+      "MGConfig": "CONFIGNAME()"
+    },
+    "applies_to_initiators": "Form.CustomerOrders",
+    "access_as": "ue_",
+    "handler_sequence": 244,
+    "handler_description": "ue_Test_ShipToState_Notify_Codex"
+  },
+  "variables": [
+    {"name": "CoNum", "type": "STRING", "input": true},
+    {"name": "CustNum", "type": "STRING", "input": true},
+    {"name": "ShipToState", "type": "STRING", "input": true},
+    {"name": "MGConfig", "type": "STRING", "input": true}
+  ],
+  "views": [
+    {
+      "name": "OrderDrillBack",
+      "view_set": "",
+      "view": "SalesOrderView",
+      "params": {
+        "AccountingEntity": "",
+        "Location": "",
+        "LogicalId": "",
+        "ID1": "$CoNum"
+      }
+    }
+  ],
+  "flow": [
+    {
+      "type": "notification",
+      "name": "Ship-To State Change Alert",
+      "message": "TEST: Customer Order [CoNum] ship-to state changed to [ShipToState].",
+      "distribution": "marcello",
+      "send_email": true,
+      "params": [
+        {"label": "Order Number", "variable": "CoNum"},
+        {"label": "Customer", "variable": "CustNum"},
+        {"label": "Ship-To State", "variable": "ShipToState"},
+        {"label": "Order Details", "view": "OrderDrillBack"}
+      ]
+    }
+  ]
+}
