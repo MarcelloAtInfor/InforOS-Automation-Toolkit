@@ -134,6 +134,9 @@ def load_default() -> TenantConfig:
         users[key] = UserEntry(
             guid=user_data["guid"],
             description=user_data["name"],
+            send_email=bool(
+                user_data.get("send_email", user_data.get("sendEmail", False))
+            ),
         )
 
     return TenantConfig(

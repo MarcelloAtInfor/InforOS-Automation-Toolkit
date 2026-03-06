@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://infor.local/cc-os-project/tools/commands/manifest.schema.json",
+  "title": "Agent-Agnostic Command Manifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "generated_on",
+    "commands"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "generated_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/command"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "arg": {
+      "type": "object",
+      "required": [
+        "name",
+        "type",
+        "required"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "array",
+            "object"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": {},
+        "enum": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "command": {
+      "type": "object",
+      "required": [
+        "id",
+        "description",
+        "entrypoint",
+        "status",
+        "args",
+        "output",
+        "adapter_support"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9\\-]*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 5
+        },
+        "entrypoint": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "pilot",
+            "active",
+            "deprecated"
+          ]
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "port",
+            "merge",
+            "defer",
+            "retire"
+          ]
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arg"
+          }
+        },
+        "output": {
+          "type": "object",
+          "required": [
+            "mode",
+            "schema_ref"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "json",
+                "table",
+                "text"
+              ]
+            },
+            "schema_ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "adapter_support": {
+          "type": "object",
+          "required": [
+            "claude",
+            "codex"
+          ],
+          "properties": {
+            "claude": {
+              "type": "boolean"
+            },
+            "codex": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

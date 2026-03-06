@@ -116,8 +116,9 @@ python scripts/wfgen.py aes workflow_specs/spec.json --deploy --diff reference/r
 # Check workflow status
 python scripts/wfgen.py status WorkflowName
 
-# Delete both ION workflow and AES handler
-python scripts/wfgen.py delete WorkflowName
+# Delete both ION workflow and matching AES handler(s)
+python scripts/wfgen.py delete WorkflowName --spec workflow_specs/spec.json
+python scripts/wfgen.py delete WorkflowName --handler HandlerDescription
 
 # Extract service account from existing workflow → tenant_config.json
 python scripts/wfgen.py extract-sa ExistingWorkflowName          # from live API
@@ -188,6 +189,8 @@ Specs can declare an `aes_trigger` section to auto-generate the 7-action ION API
 
 **`workflow_inputs` value syntax**: Plain property name (`"CustNum"`) -> auto-wrapped as `P("CustNum")`. AES expression (`"CONFIGNAME()"`) -> used as-is.
 
+**`guard_condition` syntax**: Optional extra AES boolean expression evaluated alongside `PROPERTYMODIFIED(monitored_field)`. Preferred form is a bare boolean expression such as `P("Stat") = "O"`. `CONDITION(...)` wrappers are also tolerated and normalized during handler generation.
+
 ## IDO Query Patterns
 
 ```python
@@ -240,6 +243,8 @@ resp = requests.post(url, headers=headers, json=payload)
 2. **Duplicate workflow returns 400, not 409** — Creating a workflow that already exists returns `400 Bad Request` with `"workflow already exists with the same name"` (not 409 Conflict). The `--update` flag handles both.
 
 3. **Compound condition XML uses `CombinedCondition`, not `BooleanCombination` (FIXED)** — ION's compound condition format uses `<Type>CombinedCondition</Type>` with `<Conditions>Name1,Name2</Conditions>` (comma-separated) and `<ANDOR>AND</ANDOR>`. Our original `BooleanCombination` type with `<SubconditionNames>` was rejected. Also discovered `AttributeComparison` type for variable-to-variable comparisons (`<FirstAttributeName>` + `<SecondAttributeName>` instead of `<AttributeName>` + `<Value>`).
+
+5. **Condition XML text is escaped automatically (FIXED)** — Condition names, variable names, and literal values are XML-escaped in `workflow_builder/conditions.py`. Values containing `&`, `<`, or `>` now render to valid XML instead of breaking workflow activation.
 
 4. **Notification messages cannot reference parallel branch button variables** — Variables set by `button_variable` in parallel branches (e.g. `PurchasingResult`) cause activation error: `PARAMETER_X0_CANNOT_BE_USED_IN_THE_SUMMARY_NOTIFICATION_MESSAGE`. Workaround: show them as task params instead of in `[VarName]` message text.
 
@@ -312,6 +317,7 @@ resp = requests.post(url, headers=headers, json=payload)
 - **serviceAccount reuse**: Encrypted tokens extracted from reference workflows via `wfgen extract-sa`. Same tenant = same token. When no SA is configured, ionapi flowparts omit the `serviceAccount` key entirely.
 - **Variable-bound IDO params**: `ido_var`/`properties_var` enable dynamic IDO configuration at runtime.
 - **Distribution uses named user keys** — spec `distribution` field takes individual user keys from tenant config (e.g. `"marcello"` or `["marcello", "james"]`). No group abstraction exists yet; IFS group support is a future phase.
+- **Per-user tenant email defaults are honored** — `tenant_config.json` user entries can set `send_email` (or `sendEmail`) and `load_default()` carries that into `DistributionItem.sendEmail` unless the workflow step overrides with `send_email: true`.
 - **Distribution placeholders use angle brackets** — unresolved templates use `"<approver>"`, `"<notifier1>"` etc. (NOT `"user1"`). Angle-bracket format is obviously not a real key and fails validation immediately. The `/parse-workflow` command must resolve to real tenant config keys at spec creation time — never leave placeholders in generated specs.
 - **Public repo safety model** — keep workflow specs/examples tenant-agnostic in git (placeholders are intentional). Inject tenant-specific values only at execution time via `tenant_config.json`, `wfgen extract-sa`, and secured runtime config. Never commit real service accounts, emails, IDs, or environment secrets.
 
@@ -368,4 +374,8 @@ The parent project (`CC_OS_Project/.claude/`) provides reusable commands:
 | 6E | HTTP Robustness Hardening | COMPLETE (live validated) |
 | 7 | GenAI Platform Tools (Goal 2) | Not started |
 | 8 | GenAI Platform Agent (Goal 2) | Not started |
+
+## Current Known Gaps (reviewed 2026-03-06)
+
+- No unresolved code-generation gaps remain from the 2026-03-06 review pass. Next work should focus on the GenAI platform/tooling phase and any new issues found during that port.
 

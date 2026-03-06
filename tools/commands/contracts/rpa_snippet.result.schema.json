@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Command Result Envelope",
+  "type": "object",
+  "required": ["status", "command", "message", "data", "errors"],
+  "properties": {
+    "status": {"type": "string", "enum": ["ok", "planned", "error"]},
+    "command": {"type": "string"},
+    "message": {"type": "string"},
+    "data": {},
+    "errors": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

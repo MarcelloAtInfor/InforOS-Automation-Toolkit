@@ -9,7 +9,8 @@ Usage:
     python scripts/wfgen.py validate workflow_specs/spec.json [--live]
     python scripts/wfgen.py aes workflow_specs/spec.json [--deploy]
     python scripts/wfgen.py status WorkflowName
-    python scripts/wfgen.py delete WorkflowName
+    python scripts/wfgen.py delete WorkflowName [--spec workflow_specs/spec.json]
+    python scripts/wfgen.py delete WorkflowName [--handler HandlerDescription]
     python scripts/wfgen.py extract-sa WorkflowName [--file path/to/file.json]
 """
 import argparse
@@ -390,34 +391,108 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _resolve_delete_handler_description(
+    workflow_name: str,
+    spec_path: str | None,
+    handler_description: str | None,
+) -> tuple[str | None, str]:
+    """Resolve AES handler description for delete operations.
+
+    Resolution order:
+      1. Spec-derived handler description (`--spec`)
+      2. Explicit handler description (`--handler`)
+      3. Legacy fallback: `ue_<WorkflowName>`
+
+    Returns:
+        Tuple of (handler_description_or_none, resolution_label).
+        A None description means "do not attempt AES delete".
+    """
+    if spec_path:
+        spec_file = Path(spec_path)
+        if not spec_file.exists():
+            spec_file = PROJECT_ROOT / spec_path
+        if not spec_file.exists():
+            raise FileNotFoundError(f"Spec file not found: {spec_path}")
+        spec = load_spec(spec_file)
+        if spec.name != workflow_name:
+            print(
+                f"[WARN] Spec workflow name '{spec.name}' does not match "
+                f"delete target '{workflow_name}'."
+            )
+        if not spec.aes_trigger:
+            print("Spec has no aes_trigger section; skipping AES handler deletion.")
+            return None, "spec-no-aes"
+        desc = spec.aes_trigger.handler_description or f"ue_{spec.name}"
+        return desc, "spec"
+
+    if handler_description:
+        return handler_description, "explicit"
+
+    return f"ue_{workflow_name}", "fallback"
+
+
 def cmd_delete(args: argparse.Namespace) -> int:
-    """Delete ION workflow and optionally deactivate AES handler."""
+    """Delete ION workflow and optionally delete matching AES handler(s)."""
     print("=" * 60)
     print("wfgen delete")
     print("=" * 60)
 
     name = args.workflow_name
 
-    # Try to find and deactivate AES handler by description pattern
+    # Try to find and delete AES handler(s) by exact description
     if not args.skip_aes:
         from src.aes_builder import AESBuilder
         builder = AESBuilder()
-        handler_desc = f"ue_{name}"
+        try:
+            handler_desc, resolution = _resolve_delete_handler_description(
+                workflow_name=name,
+                spec_path=args.spec,
+                handler_description=args.handler,
+            )
+        except Exception as e:
+            print(f"\n[ERROR] Could not resolve AES handler description: {e}")
+            return 1
 
-        print(f"\nLooking for AES handler: {handler_desc}")
-        handlers = builder.load_handlers(
-            description_filter=f"%{handler_desc}%",
-        )
-        if handlers:
-            h = handlers[0]
-            print(f"  Found: {h.description} (event={h.event_name}, seq={h.sequence})")
-            try:
-                builder.set_handler_active(h.event_name, h.sequence, active=False)
-                print(f"  Deactivated AES handler.")
-            except Exception as e:
-                print(f"  [WARN] Could not deactivate handler: {e}")
+        if handler_desc is None:
+            resolution = resolution or "none"
+            print(f"\nAES handler resolution: {resolution}")
         else:
-            print(f"  No AES handler found matching '{handler_desc}'.")
+            print(f"\nAES handler resolution: {resolution}")
+            print(f"Looking for AES handler: {handler_desc}")
+
+        if handler_desc is None:
+            handlers = []
+        else:
+            handlers = builder.load_handlers(
+                description_filter=handler_desc,
+            )
+        if handlers:
+            print(f"  Found {len(handlers)} handler(s). Deleting...")
+            delete_errors = 0
+            for h in handlers:
+                print(
+                    f"    - {h.description} (event={h.event_name}, seq={h.sequence})"
+                )
+                try:
+                    builder.delete_handler(h.event_name, h.sequence)
+                except Exception as e:
+                    delete_errors += 1
+                    print(f"      [WARN] Could not delete handler: {e}")
+            if delete_errors:
+                print(
+                    f"  [WARN] Failed to delete {delete_errors} of "
+                    f"{len(handlers)} handler(s)."
+                )
+            else:
+                print(f"  Deleted all matching AES handler(s).")
+        else:
+            if handler_desc is not None:
+                print(f"  No AES handler found matching '{handler_desc}'.")
+                if resolution == "fallback":
+                    print(
+                        "  [WARN] This may be a custom handler name. "
+                        "Retry with --spec or --handler."
+                    )
 
     # Delete ION workflow
     from scripts.deploy_workflow import delete_workflow
@@ -619,10 +694,21 @@ def main() -> int:
     p_status.set_defaults(func=cmd_status)
 
     # --- delete ---
-    p_delete = subparsers.add_parser("delete", help="Delete ION workflow + deactivate AES handler")
+    p_delete = subparsers.add_parser(
+        "delete", help="Delete ION workflow + delete matching AES handler(s)"
+    )
     p_delete.add_argument("workflow_name", help="ION workflow name")
+    delete_group = p_delete.add_mutually_exclusive_group()
+    delete_group.add_argument(
+        "--spec",
+        help="Spec JSON used to resolve the AES handler description",
+    )
+    delete_group.add_argument(
+        "--handler",
+        help="Exact AES handler description to delete",
+    )
     p_delete.add_argument("--skip-aes", action="store_true",
-                          help="Skip AES handler deactivation")
+                          help="Skip AES handler deletion")
     p_delete.set_defaults(func=cmd_delete)
 
     # --- extract-sa ---

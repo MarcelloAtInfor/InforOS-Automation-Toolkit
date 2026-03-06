@@ -16,6 +16,8 @@ CC_OS_Project/
 ├── CSIPOAssetCreationTool/    # Invoice automation: GenAI + RPA + IDP → vendor/item/PO creation
 ├── GAF_CLI/                   # GenAI Agent Factory CLI: publish, manage, invoke GenAI tools & agents
 ├── shared/                    # Centralized OAuth 2.0 auth & config (used by all projects)
+├── MEMORY.md                  # Commit-safe durable repository memory for humans/agents
+├── memory/                    # Local daily memory scaffold (README tracked; daily files ignored)
 ├── .claude/                   # Claude Code slash commands & agent definitions
 ├── CLAUDE.md                  # Claude Code project instructions (AI assistant context)
 ├── README.md                  # This file
@@ -137,6 +139,7 @@ The `.claude/` directory contains slash commands and agent definitions for **Cla
 | `/ido-update` | SyteLine record insert/update/delete |
 | `/infor-auth` | Generate and manage ION API OAuth tokens |
 | `/send-pulse` | Send ION Pulse notifications |
+| `/memory-manager` | Manage shared and local repo memory files |
 | `/rpa-snippet` | Generate RPA XAML workflow snippets |
 
 **Agent definitions** (specialized Claude Code behaviors):
@@ -147,6 +150,79 @@ The `.claude/` directory contains slash commands and agent definitions for **Cla
 | `infor-agent-builder` | Guide for creating new GenAI agent specs |
 | `idp-flow-manager` | IDP Document Processor flow management |
 | `ion-workflow-builder` | ION workflow creation assistance |
+
+---
+
+## Agent-Agnostic Commands (Claude + Codex)
+
+Shared command core now lives in:
+- `tools/commands/`
+
+Key files:
+- `tools/commands/commands.json` - command manifest
+- `tools/commands/manifest.schema.json` - manifest schema
+- `tools/commands/validate_manifest.py` - schema validator
+- `tools/commands/verify_setup.py` - preflight verifier
+
+Run setup checks:
+```bash
+python tools/commands/validate_manifest.py
+python tools/commands/verify_setup.py
+```
+
+Pilot and active command examples:
+```bash
+python tools/commands/query_ido.py --ido-name SLItems --record-cap 5 --output-mode table
+python tools/commands/ido_lookup.py --mode properties --collection-name SLPOs --output-mode table
+python tools/commands/list_genai_assets.py --asset-type API_DOCS --prefix GAF --output-mode table
+python tools/commands/memory_manager.py status
+python tools/commands/memory_manager.py search --query "workflow approval" --output-mode table
+```
+
+Thin adapters:
+- Claude command adapters: `.claude/commands/*.md`
+- Claude agent adapters: `.claude/agents/*.md`
+- Shared agent playbooks: `tools/commands/playbooks/*.md`
+
+---
+
+## Workspace Memory Layer
+
+The repo now includes a lightweight file-backed memory model intended for both
+private local use and the public repository.
+
+Memory layers:
+
+- `CLAUDE.md` - durable agent-facing rules, architecture, and confirmed patterns
+- `log.md` - session-by-session progress history
+- `MEMORY.md` - durable repository memory that is safe to commit and safe to sync publicly
+- `MEMORY.local.md` - optional local durable memory for one machine or one user; gitignored
+- `memory/YYYY-MM-DD.md` - optional local daily notes; gitignored
+
+The shared CLI for these files is:
+
+```bash
+python tools/commands/memory_manager.py status
+python tools/commands/memory_manager.py capture --target daily --text "Investigated workflow builder edge case"
+python tools/commands/memory_manager.py capture --target shared --text "Use tools/commands for reusable cross-agent utilities"
+python tools/commands/memory_manager.py search --query "cross-agent utilities" --output-mode table
+python tools/commands/memory_manager.py get --path MEMORY.md --from 1 --lines 20
+python tools/commands/memory_manager.py promote --source memory/2026-03-06.md --target shared --text "Shared command patterns belong in MEMORY.md"
+```
+
+Design goals:
+
+- Markdown remains the source of truth
+- No external service or embedding dependency is required
+- Shared memory stays commit-safe
+- Personal and daily memory stay local by default
+
+Promotion cadence:
+
+- Review recent daily memory at the start of a new session only when continuing prior work.
+- Promote durable notes at major phase boundaries or session closeout.
+- Do not promote after every small step.
+- By default, review only the current daily file and at most the two most recent prior daily files.
 
 ---
 

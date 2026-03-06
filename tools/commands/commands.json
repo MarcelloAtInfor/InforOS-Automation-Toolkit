@@ -1,0 +1,303 @@
+{
+  "manifest_version": "0.1.0",
+  "generated_on": "2026-03-05",
+  "commands": [
+    {
+      "id": "query-ido",
+      "description": "Query records from SyteLine IDO collections with filter/order/recordCap controls.",
+      "entrypoint": "tools/commands/query_ido.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "shared/auth.py",
+        "shared/config.py"
+      ],
+      "args": [
+        {
+          "name": "ido_name",
+          "type": "string",
+          "required": true,
+          "description": "Exact case-sensitive IDO name."
+        },
+        {
+          "name": "properties",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "filter",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "orderby",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "record_cap",
+          "type": "integer",
+          "required": false,
+          "default": 100
+        },
+        {
+          "name": "output_mode",
+          "type": "string",
+          "required": false,
+          "default": "table",
+          "enum": [
+            "table",
+            "json"
+          ]
+        }
+      ],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/query_ido.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      },
+      "examples": [
+        "python tools/commands/query_ido.py --ido-name SLVendors --properties VendNum,Name --filter \"Name LIKE '%Corp%'\"",
+        "python tools/commands/query_ido.py --ido-name IdoProperties --filter \"CollectionName='SLPOs'\" --output-mode json"
+      ]
+    },
+    {
+      "id": "ido-lookup",
+      "description": "Discover IDOs and metadata using IdoCollections, IdoProperties, and IdoTables.",
+      "entrypoint": "tools/commands/ido_lookup.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "tools/commands/query_ido.py"
+      ],
+      "args": [
+        {
+          "name": "mode",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "collections",
+            "properties",
+            "tables"
+          ]
+        },
+        {
+          "name": "keyword",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "collection_name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "output_mode",
+          "type": "string",
+          "required": false,
+          "default": "table",
+          "enum": [
+            "table",
+            "json"
+          ]
+        }
+      ],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/ido_lookup.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "ido-update",
+      "description": "Create, update, or delete IDO records using POST /update with validated Action codes.",
+      "entrypoint": "tools/commands/ido_update.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "shared/auth.py",
+        "shared/config.py"
+      ],
+      "args": [],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/ido_update.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "infor-auth",
+      "description": "Validate and expose current auth configuration and token acquisition readiness.",
+      "entrypoint": "tools/commands/infor_auth.py",
+      "status": "active",
+      "disposition": "merge",
+      "dependencies": [
+        "shared/auth.py"
+      ],
+      "args": [],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/infor_auth.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "list-genai-assets",
+      "description": "List deployed GenAI tools and agents with optional filters.",
+      "entrypoint": "tools/commands/list_genai_assets.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "GAF_CLI",
+        "shared/auth.py",
+        "shared/config.py"
+      ],
+      "args": [],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/list_genai_assets.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "deploy-genai-asset",
+      "description": "Deploy, update, enable, disable, or delete a GenAI tool/agent from spec.",
+      "entrypoint": "tools/commands/deploy_genai_asset.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "GAF_CLI",
+        "shared/auth.py",
+        "shared/config.py"
+      ],
+      "args": [],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/deploy_genai_asset.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "send-pulse",
+      "description": "Send Pulse alerts, notifications, or tasks with payload validation.",
+      "entrypoint": "tools/commands/send_pulse.py",
+      "status": "active",
+      "disposition": "port",
+      "dependencies": [
+        "shared/auth.py",
+        "shared/config.py"
+      ],
+      "args": [],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/send_pulse.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "rpa-snippet",
+      "description": "Generate reusable RPA XAML snippets for common activity patterns.",
+      "entrypoint": "tools/commands/rpa_snippet.py",
+      "status": "planned",
+      "disposition": "defer",
+      "dependencies": [],
+      "args": [],
+      "output": {
+        "mode": "text",
+        "schema_ref": "tools/commands/contracts/rpa_snippet.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      }
+    },
+    {
+      "id": "memory-manager",
+      "description": "Manage durable and daily repo memory files with local search and safe reads.",
+      "entrypoint": "tools/commands/memory_manager.py",
+      "status": "active",
+      "disposition": "merge",
+      "dependencies": [
+        "MEMORY.md",
+        "memory/README.md"
+      ],
+      "args": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": false,
+          "description": "Subcommand: status, capture, search, get, or promote."
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "required": false,
+          "description": "Search text used with the search action."
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "required": false,
+          "description": "Managed memory file path used with the get action."
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": false,
+          "description": "Capture target: daily, shared, or local.",
+          "enum": [
+            "daily",
+            "shared",
+            "local"
+          ]
+        },
+        {
+          "name": "output_mode",
+          "type": "string",
+          "required": false,
+          "default": "json",
+          "enum": [
+            "table",
+            "json"
+          ]
+        }
+      ],
+      "output": {
+        "mode": "json",
+        "schema_ref": "tools/commands/contracts/memory_manager.result.schema.json"
+      },
+      "adapter_support": {
+        "claude": true,
+        "codex": true
+      },
+      "examples": [
+        "python tools/commands/memory_manager.py status",
+        "python tools/commands/memory_manager.py capture --target daily --text \"Investigated GenAI timeout behavior\"",
+        "python tools/commands/memory_manager.py search --query \"timeout behavior\" --output-mode table",
+        "python tools/commands/memory_manager.py get --path MEMORY.md --from 1 --lines 20",
+        "python tools/commands/memory_manager.py promote --source memory/2026-03-06.md --target shared --text \"Query IDO quirks belong in shared command docs\""
+      ]
+    }
+  ]
+}

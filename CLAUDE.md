@@ -39,6 +39,7 @@ This is a multi-product demonstration and automation repository for Infor OS (Op
 | `BOMGenerator/` | GenAI agent for multi-level Bill of Material creation from natural language |
 | `GAF_CLI/` | GenAI Agent Factory CLI — Python toolkit for publishing, managing, and invoking GenAI tools and agents |
 | `shared/` | Centralized authentication and configuration utilities |
+| `tools/commands/` | Agent-agnostic shared command layer scaffold (manifest + command entrypoints for Claude/Codex adapters) |
 
 ### GAF_CLI (GenAI Agent Factory CLI)
 **Location**: `./GAF_CLI` (internal to this repository)
@@ -174,6 +175,46 @@ This is a hard requirement, not a suggestion. Infor OS is NOT a typical local de
 - Use session dates as headers (e.g., `## Session Date: 2026-01-28`)
 - Log serves as running history across sessions
 
+## Workspace Memory Layer
+
+Use the repo memory layers intentionally:
+
+- `CLAUDE.md`: durable agent-facing rules, architecture, and confirmed patterns
+- `log.md`: session-by-session execution history
+- `MEMORY.md`: durable repository memory that is safe to commit and safe to sync publicly
+- `MEMORY.local.md`: optional local-only durable memory; never commit
+- `memory/YYYY-MM-DD.md`: optional local daily notes; never commit
+
+Guidance:
+- Put durable repo rules and architectural truths in `CLAUDE.md`.
+- Put completed work and chronological session history in `log.md`.
+- Put durable working memory that is helpful but not instruction-like in `MEMORY.md`.
+- Put personal preferences or machine-specific notes in `MEMORY.local.md`.
+- Put short-lived investigation notes in `memory/YYYY-MM-DD.md`.
+
+Memory promotion cadence:
+- Review recent daily memory at the start of a new session only when continuing related work.
+- Promote durable notes at major phase boundaries and before ending a substantial session.
+- Do not promote after every small task or minor edit.
+- Default review window is bounded to the current daily file plus at most the two most recent prior daily files.
+- Use `MEMORY.md` only for commit-safe durable memory that can live in the public repo.
+- Use `MEMORY.local.md` for local-only durable memory.
+
+Session closeout checklist:
+- Update `log.md` with what was done, validation, and next steps.
+- Promote durable findings from daily memory when warranted.
+- Update `CLAUDE.md` only if the session established durable new rules or patterns.
+- Keep closeout bounded; do not scan broad history unless the session materially changed project context.
+
+Shared CLI:
+```bash
+python tools/commands/memory_manager.py status
+python tools/commands/memory_manager.py capture --target daily --text "Investigated issue X"
+python tools/commands/memory_manager.py search --query "issue X" --output-mode table
+python tools/commands/memory_manager.py get --path MEMORY.md --from 1 --lines 20
+python tools/commands/memory_manager.py promote --source memory/2026-03-06.md --target shared --text "Durable insight"
+```
+
 ## Navigation Guide
 
 ### When Starting Work in a Subfolder:
@@ -221,6 +262,9 @@ This repository now supports a shared, agent-agnostic workflow at the parent and
 - Shared human/agent guidance: `AGENT_GUIDE.md`
 - Codex adapter: `AGENTS.md`
 - Claude adapter/reference: `CLAUDE.md`
+- Shared command scaffold: `tools/commands/` (`commands.json`, `manifest.schema.json`, `validate_manifest.py`, `verify_setup.py`)
+  - Active commands: `query_ido.py`, `ido_lookup.py`, `infor_auth.py`, `ido_update.py`, `list_genai_assets.py`, `deploy_genai_asset.py`, `send_pulse.py`, `memory_manager.py`
+  - Shared playbooks: `tools/commands/playbooks/*.md` with thin adapters in `.claude/agents/*.md`
 
 Manual private->public sync is available from repo root:
 - `powershell -File scripts/sync_public.ps1`

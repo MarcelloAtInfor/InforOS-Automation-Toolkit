@@ -32,7 +32,8 @@ python scripts/wfgen.py create workflow_specs/<spec>.json --live --activate
 python scripts/wfgen.py render workflow_specs/<spec>.json
 python scripts/wfgen.py validate workflow_specs/<spec>.json --live
 python scripts/wfgen.py status <WorkflowName>
-python scripts/wfgen.py delete <WorkflowName>
+python scripts/wfgen.py delete <WorkflowName> --spec workflow_specs/<spec>.json
+python scripts/wfgen.py delete <WorkflowName> --handler <HandlerDescription>
 ```
 
 ## Private -> Public Sync

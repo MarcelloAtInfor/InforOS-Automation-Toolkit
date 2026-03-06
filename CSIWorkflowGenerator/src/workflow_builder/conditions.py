@@ -43,6 +43,8 @@ Compound condition example (AND/OR):
 """
 from __future__ import annotations
 
+from xml.sax.saxutils import escape
+
 VALID_OPERATORS = {
     "Equal",
     "NotEqual",
@@ -51,6 +53,11 @@ VALID_OPERATORS = {
     "GreaterOrEqual",
     "LessOrEqual",
 }
+
+
+def _xml_text(value: str) -> str:
+    """Escape text for safe inclusion in XML element bodies."""
+    return escape(str(value))
 
 
 def build_condition(
@@ -78,14 +85,14 @@ def build_condition(
     return (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<Condition version="1.0">'
-        f"<UsedSubcondition>{name}</UsedSubcondition>"
+        f"<UsedSubcondition>{_xml_text(name)}</UsedSubcondition>"
         "<Subconditions>"
         "<Subcondition>"
-        f"<Name>{name}</Name>"
+        f"<Name>{_xml_text(name)}</Name>"
         "<Type>AttributeValueComparison</Type>"
-        f"<AttributeName>{variable}</AttributeName>"
-        f"<ComparisonOperator>{operator}</ComparisonOperator>"
-        f"<Value>{value}</Value>"
+        f"<AttributeName>{_xml_text(variable)}</AttributeName>"
+        f"<ComparisonOperator>{_xml_text(operator)}</ComparisonOperator>"
+        f"<Value>{_xml_text(value)}</Value>"
         "</Subcondition>"
         "</Subconditions>"
         "</Condition>"
@@ -132,11 +139,11 @@ def build_compound_condition(
             )
         subcondition_xml += (
             "<Subcondition>"
-            f"<Name>{cond.name}</Name>"
+            f"<Name>{_xml_text(cond.name)}</Name>"
             "<Type>AttributeValueComparison</Type>"
-            f"<AttributeName>{cond.variable}</AttributeName>"
-            f"<ComparisonOperator>{cond.operator}</ComparisonOperator>"
-            f"<Value>{cond.value}</Value>"
+            f"<AttributeName>{_xml_text(cond.variable)}</AttributeName>"
+            f"<ComparisonOperator>{_xml_text(cond.operator)}</ComparisonOperator>"
+            f"<Value>{_xml_text(cond.value)}</Value>"
             "</Subcondition>"
         )
         cond_names.append(cond.name)
@@ -144,17 +151,17 @@ def build_compound_condition(
     # Build the CombinedCondition subcondition (comma-separated name list)
     compound_xml = (
         "<Subcondition>"
-        f"<Name>{name}</Name>"
+        f"<Name>{_xml_text(name)}</Name>"
         "<Type>CombinedCondition</Type>"
-        f"<Conditions>{','.join(cond_names)}</Conditions>"
-        f"<ANDOR>{logic}</ANDOR>"
+        f"<Conditions>{_xml_text(','.join(cond_names))}</Conditions>"
+        f"<ANDOR>{_xml_text(logic)}</ANDOR>"
         "</Subcondition>"
     )
 
     return (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<Condition version="1.0">'
-        f"<UsedSubcondition>{name}</UsedSubcondition>"
+        f"<UsedSubcondition>{_xml_text(name)}</UsedSubcondition>"
         "<Subconditions>"
         f"{subcondition_xml}"
         f"{compound_xml}"

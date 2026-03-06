@@ -49,6 +49,9 @@ _FUNCTION_RE = re.compile(r"^[A-Z_]+\(")
 # Pattern to detect ROUND(E(...), N) — nullable event params that need an IF() guard
 _ROUND_E_RE = re.compile(r"^ROUND\(E\((\w+)\),\s*(\d+)\)$")
 
+# Pattern to detect an already-wrapped CONDITION(...) guard expression
+_CONDITION_WRAPPER_RE = re.compile(r"^CONDITION\((.*)\)$", re.DOTALL)
+
 
 def _is_expression(value: str) -> bool:
     """Check if a workflow_inputs value is an AES expression vs a property name."""
@@ -76,6 +79,28 @@ def _null_guard_expression(value: str) -> str:
         return value
     param, decimals = m.group(1), m.group(2)
     return f'ROUND(IF(E({param}) = "", 0, E({param})), {decimals})'
+
+
+def _normalize_guard_condition(value: str | None) -> str | None:
+    """Normalize guard_condition to a bare AES boolean expression."""
+    if value is None:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+    m = _CONDITION_WRAPPER_RE.match(value)
+    if m:
+        return m.group(1).strip()
+    return value
+
+
+def _build_finish_guard(trigger: AesTriggerSpec) -> str:
+    """Build the action-10 finish condition for the handler."""
+    modified_expr = property_modified(trigger.monitored_field)
+    extra_guard = _normalize_guard_condition(trigger.guard_condition)
+    if not extra_guard:
+        return not_condition(modified_expr)
+    return f"CONDITION(NOT ({modified_expr} AND ({extra_guard})))"
 
 
 def _has_ido_update(steps: list) -> bool:
@@ -167,10 +192,7 @@ def build_handler_from_spec(
     action_10 = EventAction(
         sequence=10,
         action_type=ACTION_FINISH,
-        parameters=finish_with_result(
-            not_condition(property_modified(field_name)),
-            finish_msg,
-        ),
+        parameters=finish_with_result(_build_finish_guard(trigger), finish_msg),
         description=f"Finish - {finish_msg}.",
     )
     actions.append(action_10)
