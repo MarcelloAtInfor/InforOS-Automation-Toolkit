@@ -1,0 +1,144 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="vendorAddress" Type="InArgument(x:String)" />
+    <x:Property Name="vendorCity" Type="InArgument(x:String)" />
+    <x:Property Name="vendorState" Type="InArgument(x:String)" />
+    <x:Property Name="vendorZip" Type="InArgument(x:String)" />
+    <x:Property Name="vendorPhone" Type="InArgument(x:String)" />
+    <x:Property Name="vendorEmail" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddress" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddressLine1" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorCity" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorState" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorZip" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorHouseNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorStreetCore" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorPhone" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedVendorEmail" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Normalize Vendor Fields" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Assign DisplayName="Normalize Vendor Name" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorName]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(vendorName Is Nothing, "", System.Text.RegularExpressions.Regex.Replace(vendorName.Trim().ToUpper(), "\s+", " "))]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor Address Line 1" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorAddressLine1]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace((" " + System.Text.RegularExpressions.Regex.Replace(If(vendorAddress Is Nothing, "", vendorAddress.Trim().ToUpper()), "[^A-Z0-9\s]", " ") + " ").Replace(" NORTH ", " N ").Replace(" SOUTH ", " S ").Replace(" EAST ", " E ").Replace(" WEST ", " W ").Replace(" STREET ", " ST ").Replace(" ROAD ", " RD ").Replace(" AVENUE ", " AVE ").Replace(" DRIVE ", " DR ").Replace(" LANE ", " LN ").Replace(" BOULEVARD ", " BLVD ").Replace(" COURT ", " CT "), "\s+", " ").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor City" sap2010:WorkflowViewState.IdRef="Assign_2A">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorCity]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(vendorCity Is Nothing, "", vendorCity.Trim().ToUpper()), "\s+", " ").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor State" sap2010:WorkflowViewState.IdRef="Assign_2B">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorState]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(vendorState Is Nothing, "", vendorState.Trim().ToUpper())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor Zip" sap2010:WorkflowViewState.IdRef="Assign_2C">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorZip]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(vendorZip Is Nothing, "", vendorZip.Trim()), "[^0-9]", "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor Address" sap2010:WorkflowViewState.IdRef="Assign_2D">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorAddress]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[(normalizedVendorAddressLine1+" "+normalizedVendorCity+" "+normalizedVendorState+" "+normalizedVendorZip).Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize House Number" sap2010:WorkflowViewState.IdRef="Assign_2E">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorHouseNumber]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Match(normalizedVendorAddressLine1, "^\d+").Value]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Street Core" sap2010:WorkflowViewState.IdRef="Assign_2F">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorStreetCore]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(normalizedVendorAddressLine1, "^\d+\s*", "").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor Phone" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorPhone]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(vendorPhone Is Nothing, "", vendorPhone), "[^0-9]", "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Vendor Email" sap2010:WorkflowViewState.IdRef="Assign_4">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedVendorEmail]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(vendorEmail Is Nothing, "", vendorEmail.Trim().ToLower())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Normalized Vendor Fields" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  NormalizeVendorFields:&quot;+System.Environment.NewLine+&quot;    Name: &quot;+normalizedVendorName+System.Environment.NewLine+&quot;    AddressLine1: &quot;+normalizedVendorAddressLine1+System.Environment.NewLine+&quot;    City: &quot;+normalizedVendorCity+System.Environment.NewLine+&quot;    State: &quot;+normalizedVendorState+System.Environment.NewLine+&quot;    Zip: &quot;+normalizedVendorZip+System.Environment.NewLine+&quot;    HouseNumber: &quot;+normalizedVendorHouseNumber+System.Environment.NewLine+&quot;    StreetCore: &quot;+normalizedVendorStreetCore+System.Environment.NewLine+&quot;    FullAddress: &quot;+normalizedVendorAddress+System.Environment.NewLine+&quot;    Phone: &quot;+normalizedVendorPhone+System.Environment.NewLine+&quot;    Email: &quot;+normalizedVendorEmail]" Source="[logFile]" />
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,120" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,512">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,592" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

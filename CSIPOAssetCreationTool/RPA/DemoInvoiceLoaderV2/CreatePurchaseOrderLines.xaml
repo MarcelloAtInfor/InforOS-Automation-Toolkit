@@ -1,0 +1,138 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="purchaseOrderNumber" Type="InArgument(x:String)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="dueDate" Type="InArgument(x:String)" />
+    <x:Property Name="lineItemsJson" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="createStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="createResponseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="createErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="createdLineCount" Type="OutArgument(x:Int32)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Create Purchase Order Lines" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JArray" Name="items" />
+      <Variable x:TypeArguments="x:String" Name="changeFragments" Default="" />
+      <Variable x:TypeArguments="x:String" Name="requestJson" />
+      <Variable x:TypeArguments="x:String" Name="defaultDueDate" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="updateOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="updateStatus" />
+      <Variable x:TypeArguments="x:String" Name="updateError" />
+      <Variable x:TypeArguments="x:String" Name="updateResponseJson" />
+      <Variable x:TypeArguments="x:String" Name="lineNumberValue" />
+      <Variable x:TypeArguments="x:String" Name="itemCodeValue" />
+      <Variable x:TypeArguments="x:String" Name="quantityValue" />
+      <Variable x:TypeArguments="x:String" Name="uomValue" />
+      <Variable x:TypeArguments="x:String" Name="priceValue" />
+      <Variable x:TypeArguments="x:String" Name="lineDueDateValue" />
+      <Variable x:TypeArguments="x:String" Name="changeFragment" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdLineCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[defaultDueDate]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(dueDate), System.DateTime.Today.AddDays(30).ToString("yyyy-MM-dd"), dueDate.Trim())]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="njl:JArray">[items]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(String.IsNullOrWhiteSpace(lineItemsJson), New JArray(), JArray.Parse(lineItemsJson))]</InArgument></Assign.Value></Assign>
+    <If Condition="[items.Count = 0]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["No line items were supplied for PO line creation."]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <ForEach x:TypeArguments="njl:JToken" Values="[items]">
+            <ActivityAction x:TypeArguments="njl:JToken">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="njl:JToken" Name="lineItem" />
+              </ActivityAction.Argument>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[lineNumberValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("lineNumber") IsNot Nothing, lineItem("lineNumber").ToString().Trim(), (createdLineCount + 1).ToString())]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemCodeValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("itemCode") IsNot Nothing, lineItem("itemCode").ToString().Trim().ToUpper(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[quantityValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("quantity") IsNot Nothing, lineItem("quantity").ToString().Replace(",","").Trim(), "1")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[uomValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("unitOfMeasure") IsNot Nothing, lineItem("unitOfMeasure").ToString().Trim().ToUpper(), "EA")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[priceValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("unitPrice") IsNot Nothing, lineItem("unitPrice").ToString().Replace("$","").Replace(",","").Trim(), "0.00")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[lineDueDateValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("dueDate") IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(lineItem("dueDate").ToString()), lineItem("dueDate").ToString().Trim(), defaultDueDate)]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[quantityValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(quantityValue.Contains("."), quantityValue, quantityValue + ".00")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[changeFragment]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""Action"":1,""Properties"":[{""IsNull"":false,""Modified"":true,""Name"":""PoNum"",""Value"":""" + purchaseOrderNumber.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""PoLine"",""Value"":""" + lineNumberValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""Item"",""Value"":""" + itemCodeValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""QtyOrderedConv"",""Value"":""" + quantityValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""UM"",""Value"":""" + uomValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""Stat"",""Value"":""O""},{""IsNull"":false,""Modified"":true,""Name"":""DueDate"",""Value"":""" + lineDueDateValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""Whse"",""Value"":""" + If(String.IsNullOrWhiteSpace(warehouse), "MAIN", warehouse.Replace("""","")) + """},{""IsNull"":false,""Modified"":true,""Name"":""ItemCostConv"",""Value"":""" + priceValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""PlanCostConv"",""Value"":""" + priceValue.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""UnitMatCostConv"",""Value"":""" + priceValue.Replace("""","") + """}]}"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[changeFragments]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[changeFragments + If(changeFragments = "", "", ",") + changeFragment]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdLineCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[createdLineCount + 1]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </ActivityAction>
+          </ForEach>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[requestJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""IDOName"":""SLPoItems"",""RefreshAfterSave"":true,""Changes"":[" + changeFragments + "]}"]</InArgument></Assign.Value></Assign>
+          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLPoItems&quot;},{&quot;requestJson&quot;,requestJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Execute PO Line Insert" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[updateOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoUpdate.xaml&quot;]" />
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("responseJson"), updateOutputDict("responseJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("operationStatus"), updateOutputDict("operationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("errorMessage"), updateOutputDict("errorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[updateResponseJson]</InArgument></Assign.Value></Assign>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log PO Line Create Summary" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  CreatePurchaseOrderLines:&quot;+System.Environment.NewLine+&quot;    PoNum: &quot;+purchaseOrderNumber+System.Environment.NewLine+&quot;    LineCount: &quot;+createdLineCount.ToString()+System.Environment.NewLine+&quot;    Status: &quot;+updateStatus+If(updateError.Length &gt; 0, System.Environment.NewLine+&quot;    Error: &quot;+updateError, &quot;&quot;)]" Source="[logFile]" />
+          <If Condition="[updateStatus = &quot;SUCCESS&quot;]">
+            <If.Then>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+            </If.Then>
+            <If.Else>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[updateError]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,120" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,248" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1660" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1740" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

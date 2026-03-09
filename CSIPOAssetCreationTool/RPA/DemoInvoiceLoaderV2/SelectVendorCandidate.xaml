@@ -1,0 +1,245 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="candidateResponseJson" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorName" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddress" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddressLine1" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorCity" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorState" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorZip" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorHouseNumber" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorStreetCore" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorEmail" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorPhone" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="selectionStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="selectedVendorNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="selectedVendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="selectionDecisionJson" Type="OutArgument(x:String)" />
+    <x:Property Name="selectionErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="createRequired" Type="OutArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>System.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Select Vendor Candidate" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JObject" Name="parsed" />
+      <Variable x:TypeArguments="njl:JArray" Name="items" />
+      <Variable x:TypeArguments="x:Int32" Name="bestScore" Default="-1" />
+      <Variable x:TypeArguments="x:Int32" Name="tieCount" Default="0" />
+      <Variable x:TypeArguments="x:String" Name="bestDecision" />
+      <Variable x:TypeArguments="x:String" Name="bestVend" />
+      <Variable x:TypeArguments="x:String" Name="bestName" />
+      <Variable x:TypeArguments="x:String" Name="bestJson" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="scoreDict" />
+      <Variable x:TypeArguments="x:String" Name="scoreJson" />
+      <Variable x:TypeArguments="njl:JObject" Name="scoreObj" />
+      <Variable x:TypeArguments="x:Int32" Name="scoreVal" />
+      <Variable x:TypeArguments="x:Boolean" Name="rejected" />
+      <Variable x:TypeArguments="x:String" Name="decision" />
+      <Variable x:TypeArguments="x:String" Name="vend" />
+      <Variable x:TypeArguments="x:String" Name="nameVal" />
+      <Variable x:TypeArguments="x:String" Name="addr1" />
+      <Variable x:TypeArguments="x:String" Name="city" />
+      <Variable x:TypeArguments="x:String" Name="stateVal" />
+      <Variable x:TypeArguments="x:String" Name="zip" />
+      <Variable x:TypeArguments="x:String" Name="phone" />
+      <Variable x:TypeArguments="x:String" Name="email" />
+    </Sequence.Variables>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:String">[selectionErrorMessage]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:Boolean">[createRequired]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:Boolean">[False]</InArgument></Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:String">[selectedVendorNumber]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:String">[selectedVendorName]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To><OutArgument x:TypeArguments="x:String">[selectionDecisionJson]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+    </Assign>
+    <If Condition="[String.IsNullOrWhiteSpace(candidateResponseJson)]">
+      <If.Then>
+        <Sequence>
+          <Assign>
+            <Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To>
+            <Assign.Value><InArgument x:TypeArguments="x:String">["NOT_FOUND"]</InArgument></Assign.Value>
+          </Assign>
+          <Assign>
+            <Assign.To><OutArgument x:TypeArguments="x:Boolean">[createRequired]</OutArgument></Assign.To>
+            <Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value>
+          </Assign>
+          <Assign>
+            <Assign.To><OutArgument x:TypeArguments="x:String">[selectionErrorMessage]</OutArgument></Assign.To>
+            <Assign.Value><InArgument x:TypeArguments="x:String">["Vendor search response was empty."]</InArgument></Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <Assign>
+            <Assign.To><OutArgument x:TypeArguments="njl:JObject">[parsed]</OutArgument></Assign.To>
+            <Assign.Value><InArgument x:TypeArguments="njl:JObject">[JObject.Parse(candidateResponseJson)]</InArgument></Assign.Value>
+          </Assign>
+          <Assign>
+            <Assign.To><OutArgument x:TypeArguments="njl:JArray">[items]</OutArgument></Assign.To>
+            <Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(parsed("Items") IsNot Nothing AndAlso TypeOf parsed("Items") Is JArray, CType(parsed("Items"), JArray), New JArray())]</InArgument></Assign.Value>
+          </Assign>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Candidate Count" Line="[System.Environment.NewLine+&quot;  SelectVendorCandidate: Candidate count = &quot;+items.Count.ToString()]" Source="[logFile]" />
+          <If Condition="[items.Count = 0]">
+            <If.Then>
+              <Sequence>
+                <Assign>
+                  <Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To>
+                  <Assign.Value><InArgument x:TypeArguments="x:String">["NOT_FOUND"]</InArgument></Assign.Value>
+                </Assign>
+                <Assign>
+                  <Assign.To><OutArgument x:TypeArguments="x:Boolean">[createRequired]</OutArgument></Assign.To>
+                  <Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value>
+                </Assign>
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <Sequence>
+                <ForEach x:TypeArguments="njl:JToken" Values="[items]">
+                  <ActivityAction x:TypeArguments="njl:JToken">
+                    <ActivityAction.Argument>
+                      <DelegateInArgument x:TypeArguments="njl:JToken" Name="candidate" />
+                    </ActivityAction.Argument>
+                    <Sequence>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[vend]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("VendNum") IsNot Nothing, candidate("VendNum").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[nameVal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("Name") IsNot Nothing, candidate("Name").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[addr1]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("VadAddr_1") IsNot Nothing, candidate("VadAddr_1").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[city]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("VadCity") IsNot Nothing, candidate("VadCity").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[stateVal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("VadState") IsNot Nothing, candidate("VadState").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[zip]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("VadZip") IsNot Nothing, candidate("VadZip").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[phone]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("Phone") IsNot Nothing, candidate("Phone").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[email]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(candidate("ExternalEmailAddr") IsNot Nothing, candidate("ExternalEmailAddr").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;normalizedVendorName&quot;,normalizedVendorName},{&quot;normalizedVendorAddress&quot;,normalizedVendorAddress},{&quot;normalizedVendorAddressLine1&quot;,normalizedVendorAddressLine1},{&quot;normalizedVendorCity&quot;,normalizedVendorCity},{&quot;normalizedVendorState&quot;,normalizedVendorState},{&quot;normalizedVendorZip&quot;,normalizedVendorZip},{&quot;normalizedVendorHouseNumber&quot;,normalizedVendorHouseNumber},{&quot;normalizedVendorStreetCore&quot;,normalizedVendorStreetCore},{&quot;normalizedVendorEmail&quot;,normalizedVendorEmail},{&quot;normalizedVendorPhone&quot;,normalizedVendorPhone},{&quot;candidateVendNum&quot;,vend},{&quot;candidateName&quot;,nameVal},{&quot;candidateAddressLine1&quot;,addr1},{&quot;candidateCity&quot;,city},{&quot;candidateState&quot;,stateVal},{&quot;candidateZip&quot;,zip},{&quot;candidatePhone&quot;,phone},{&quot;candidateEmail&quot;,email},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[scoreDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ScoreVendorCandidates.xaml&quot;]" />
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[scoreJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(scoreDict IsNot Nothing AndAlso scoreDict.ContainsKey("decisionJson"), scoreDict("decisionJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="njl:JObject">[scoreObj]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JObject">[If(String.IsNullOrWhiteSpace(scoreJson), New JObject(), JObject.Parse(scoreJson))]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[scoreVal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(scoreObj("scoreValue") IsNot Nothing, CInt(scoreObj("scoreValue").ToString()), -1)]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[rejected]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[If(scoreObj("rejected") IsNot Nothing, CBool(scoreObj("rejected").ToString()), True)]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[decision]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(scoreObj("decision") IsNot Nothing, scoreObj("decision").ToString(), "")]</InArgument></Assign.Value></Assign>
+                      <If Condition="[Not rejected]">
+                        <If.Then>
+                          <Sequence>
+                            <If Condition="[scoreVal &gt; bestScore]">
+                              <If.Then>
+                                <Sequence>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[bestScore]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[scoreVal]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[bestDecision]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[decision]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[bestVend]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[vend]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[bestName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[nameVal]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[bestJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[scoreJson]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[tieCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[1]</InArgument></Assign.Value></Assign>
+                                </Sequence>
+                              </If.Then>
+                              <If.Else>
+                                <If Condition="[scoreVal = bestScore]">
+                                  <If.Then>
+                                    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[tieCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[tieCount + 1]</InArgument></Assign.Value></Assign>
+                                  </If.Then>
+                                </If>
+                              </If.Else>
+                            </If>
+                          </Sequence>
+                        </If.Then>
+                      </If>
+                    </Sequence>
+                  </ActivityAction>
+                </ForEach>
+                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Selector Summary" Line="[System.Environment.NewLine+&quot;  SelectVendorCandidate Summary:&quot;+System.Environment.NewLine+&quot;    BestScore: &quot;+bestScore.ToString()+System.Environment.NewLine+&quot;    BestDecision: &quot;+If(bestDecision Is Nothing, &quot;&quot;, bestDecision)+System.Environment.NewLine+&quot;    BestVendor: &quot;+If(bestVend Is Nothing, &quot;&quot;, bestVend)+System.Environment.NewLine+&quot;    TieCount: &quot;+tieCount.ToString()]" Source="[logFile]" />
+                <If Condition="[bestScore &lt; 0]">
+                  <If.Then>
+                    <Sequence>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["NOT_FOUND"]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[createRequired]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value></Assign>
+                    </Sequence>
+                  </If.Then>
+                  <If.Else>
+                    <If Condition="[tieCount &gt; 1 OrElse bestDecision = &quot;ambiguous_existing&quot;]">
+                      <If.Then>
+                        <Sequence>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["AMBIGUOUS"]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Vendor candidates remain ambiguous after deterministic scoring."]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionDecisionJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[bestJson]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SELECTED"]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[bestVend]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[bestName]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionDecisionJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[bestJson]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                  </If.Else>
+                </If>
+              </Sequence>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="600,2000" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="640,2080" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

@@ -1,0 +1,168 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="candidateResponseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="searchStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="searchErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Search Vendor Candidates" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="queryProperties" Default="VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,Phone,ExternalEmailAddr,_ItemId" />
+      <Variable x:TypeArguments="x:String" Name="queryFilter" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadResponse" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadStatus" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadError" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="idoLoadOutputDict" />
+    </Sequence.Variables>
+    <Assign DisplayName="Init Search Status" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["PENDING"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Init Search Error" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[searchErrorMessage]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Build Exact Name Filter" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[queryFilter]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["Name = '"+If(vendorName Is Nothing, "", vendorName.Replace("'", "''").Trim())+"'"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLVendors&quot;},{&quot;properties&quot;,queryProperties},{&quot;filter&quot;,queryFilter},{&quot;orderBy&quot;,&quot;VendNum ASC&quot;},{&quot;recordCap&quot;,&quot;50&quot;},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Execute Vendor Load" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[idoLoadOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoLoad.xaml&quot;]" />
+    <Assign DisplayName="Read Response Json" sap2010:WorkflowViewState.IdRef="Assign_4">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[idoLoadResponse]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("responseJson"), idoLoadOutputDict("responseJson").ToString(), "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Read Load Status" sap2010:WorkflowViewState.IdRef="Assign_5">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[idoLoadStatus]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("operationStatus"), idoLoadOutputDict("operationStatus").ToString(), "FAILED")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Read Load Error" sap2010:WorkflowViewState.IdRef="Assign_6">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[idoLoadError]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("errorMessage"), idoLoadOutputDict("errorMessage").ToString(), "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Output Candidate Response Json" sap2010:WorkflowViewState.IdRef="Assign_7">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[candidateResponseJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[idoLoadResponse]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Search Summary" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  SearchVendorCandidates:&quot;+System.Environment.NewLine+&quot;    Filter: &quot;+queryFilter+System.Environment.NewLine+&quot;    Status: &quot;+idoLoadStatus+If(idoLoadError.Length &gt; 0, System.Environment.NewLine+&quot;    Error: &quot;+idoLoadError, &quot;&quot;)]" Source="[logFile]" />
+    <If Condition="[idoLoadStatus = &quot;SUCCESS&quot;]" DisplayName="Check Search Success" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <Assign DisplayName="Set Search Success" sap2010:WorkflowViewState.IdRef="Assign_8">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Then>
+      <If.Else>
+        <Sequence DisplayName="Handle Search Failure" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Assign DisplayName="Set Search Failed" sap2010:WorkflowViewState.IdRef="Assign_9">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign DisplayName="Set Search Error" sap2010:WorkflowViewState.IdRef="Assign_10">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[searchErrorMessage]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">[idoLoadError]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,120" />
+      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_9" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="200,60" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="222,184">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,332" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1264">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1344" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

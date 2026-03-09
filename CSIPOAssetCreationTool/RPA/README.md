@@ -2,6 +2,10 @@
 
 Folder documentation for RPA.
 
+Notable invoice projects:
+- `DemoInvoiceLoader/` - original GenAI-driven invoice automation flow
+- `DemoInvoiceLoaderV2/` - deterministic rewrite published as `DemoInvoiceLoader_V4`
+
 ## Agent-Agnostic Usage (Claude + Codex)
 
 This folder is designed to work with both Claude Code and Codex.

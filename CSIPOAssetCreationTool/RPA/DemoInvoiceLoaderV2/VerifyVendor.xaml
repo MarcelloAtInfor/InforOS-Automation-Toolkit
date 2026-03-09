@@ -1,0 +1,110 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="vendorNumber" Type="InArgument(x:String)" />
+    <x:Property Name="expectedVendorState" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="verificationStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="verificationResponseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="verificationErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Verify Vendor" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="queryFilter" />
+      <Variable x:TypeArguments="x:String" Name="queryResponseJson" />
+      <Variable x:TypeArguments="x:String" Name="queryStatus" />
+      <Variable x:TypeArguments="x:String" Name="queryError" />
+      <Variable x:TypeArguments="x:String" Name="returnedVendorNumber" />
+      <Variable x:TypeArguments="x:String" Name="returnedVendorState" />
+      <Variable x:TypeArguments="x:Int32" Name="matchedRowCount" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="loadOutputDict" />
+      <Variable x:TypeArguments="njl:JObject" Name="parsed" />
+      <Variable x:TypeArguments="njl:JArray" Name="items" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[matchedRowCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[returnedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[returnedVendorState]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[queryFilter]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["VendNum = '"+If(vendorNumber Is Nothing, "", vendorNumber.Replace("'", "''").Trim())+"'"]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLVendors&quot;},{&quot;properties&quot;,&quot;VendNum,Name,VadAddr_1,VadCity,VadState,VadZip,Phone,ExternalEmailAddr,_ItemId&quot;},{&quot;filter&quot;,queryFilter},{&quot;orderBy&quot;,&quot;VendNum ASC&quot;},{&quot;recordCap&quot;,&quot;1&quot;},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Execute Verify Vendor Load" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[loadOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoLoad.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[queryResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(loadOutputDict IsNot Nothing AndAlso loadOutputDict.ContainsKey("responseJson"), loadOutputDict("responseJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[queryStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(loadOutputDict IsNot Nothing AndAlso loadOutputDict.ContainsKey("operationStatus"), loadOutputDict("operationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[queryError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(loadOutputDict IsNot Nothing AndAlso loadOutputDict.ContainsKey("errorMessage"), loadOutputDict("errorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[queryResponseJson]</InArgument></Assign.Value></Assign>
+    <If Condition="[queryStatus = &quot;SUCCESS&quot; AndAlso Not String.IsNullOrWhiteSpace(queryResponseJson)]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="njl:JObject">[parsed]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JObject">[JObject.Parse(queryResponseJson)]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="njl:JArray">[items]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(parsed("Items") IsNot Nothing AndAlso TypeOf parsed("Items") Is JArray, CType(parsed("Items"), JArray), New JArray())]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[matchedRowCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[items.Count]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[returnedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(items.Count &gt; 0 AndAlso items(0)("VendNum") IsNot Nothing, items(0)("VendNum").ToString().Trim(), "")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[returnedVendorState]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(items.Count &gt; 0 AndAlso items(0)("VadState") IsNot Nothing, items(0)("VadState").ToString().Trim(), "")]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+    </If>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Verify Summary" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  VerifyVendor:&quot;+System.Environment.NewLine+&quot;    VendNum: &quot;+vendorNumber+System.Environment.NewLine+&quot;    ExpectedState: &quot;+If(expectedVendorState Is Nothing, &quot;&quot;, expectedVendorState)+System.Environment.NewLine+&quot;    MatchedRows: &quot;+matchedRowCount.ToString()+System.Environment.NewLine+&quot;    ReturnedVend: &quot;+returnedVendorNumber+System.Environment.NewLine+&quot;    ReturnedState: &quot;+returnedVendorState+System.Environment.NewLine+&quot;    Status: &quot;+queryStatus+If(queryError.Length &gt; 0, System.Environment.NewLine+&quot;    Error: &quot;+queryError, &quot;&quot;)]" Source="[logFile]" />
+    <If Condition="[queryStatus = &quot;SUCCESS&quot; AndAlso matchedRowCount &gt; 0 AndAlso (String.IsNullOrWhiteSpace(vendorNumber) OrElse String.Equals(returnedVendorNumber, vendorNumber.Trim(), StringComparison.OrdinalIgnoreCase)) AndAlso (String.IsNullOrWhiteSpace(expectedVendorState) OrElse String.Equals(returnedVendorState, expectedVendorState.Trim(), StringComparison.OrdinalIgnoreCase))]">
+      <If.Then>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verificationErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(queryStatus = "SUCCESS", If(matchedRowCount &lt;= 0, "Vendor verification query returned no matching vendor row.", If(Not String.IsNullOrWhiteSpace(expectedVendorState) AndAlso Not String.Equals(returnedVendorState, expectedVendorState.Trim(), StringComparison.OrdinalIgnoreCase), "Vendor verification returned unexpected state: "+returnedVendorState, "Vendor verification returned an unexpected vendor number: "+returnedVendorNumber)), queryError)]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,140" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,248" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1080" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1160" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

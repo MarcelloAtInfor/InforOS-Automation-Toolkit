@@ -1,0 +1,331 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="ocrJsonText" Type="InArgument(x:String)" />
+    <x:Property Name="defaultWarehouse" Type="InArgument(x:String)" />
+    <x:Property Name="defaultTerms" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="formatStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="formatErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorAddress" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorCity" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorState" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorZip" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorPhone" Type="OutArgument(x:String)" />
+    <x:Property Name="vendorEmail" Type="OutArgument(x:String)" />
+    <x:Property Name="purchaseOrderNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="orderDate" Type="OutArgument(x:String)" />
+    <x:Property Name="warehouse" Type="OutArgument(x:String)" />
+    <x:Property Name="termsCode" Type="OutArgument(x:String)" />
+    <x:Property Name="salesTax" Type="OutArgument(x:String)" />
+    <x:Property Name="lineItemsJson" Type="OutArgument(x:String)" />
+    <x:Property Name="normalizedLineCount" Type="OutArgument(x:Int32)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="Format Invoice Data">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="njl:JToken" Name="effectiveOcrJsonResponse" />
+      <Variable x:TypeArguments="njl:JToken" Name="tempToken" />
+      <Variable x:TypeArguments="x:String" Name="vendorAddressRaw" />
+      <Variable x:TypeArguments="njl:JArray" Name="tableRows" />
+      <Variable x:TypeArguments="x:String" Name="lineItemFragments" />
+      <Variable x:TypeArguments="x:String" Name="rawLineItemsJson" />
+      <Variable x:TypeArguments="x:String" Name="lineItemCode" />
+      <Variable x:TypeArguments="x:String" Name="lineDescription" />
+      <Variable x:TypeArguments="x:String" Name="lineQuantity" />
+      <Variable x:TypeArguments="x:String" Name="lineUom" />
+      <Variable x:TypeArguments="x:String" Name="lineNumberValue" />
+      <Variable x:TypeArguments="x:String" Name="lineUnitPrice" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="normalizeLineOutput" />
+      <Variable x:TypeArguments="x:String" Name="lineNormalizationStatus" />
+      <Variable x:TypeArguments="x:String" Name="lineNormalizationError" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[warehouse]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(defaultWarehouse), "MAIN", defaultWarehouse.Trim())]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[termsCode]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(defaultTerms), "N30", defaultTerms.Trim())]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[If(String.IsNullOrWhiteSpace(ocrJsonText), Nothing, JToken.Parse(ocrJsonText))]</InArgument></Assign.Value>
+        </Assign>
+        <If Condition="[effectiveOcrJsonResponse Is Nothing]">
+          <If.Then>
+            <Sequence>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">["No OCR JSON payload was supplied to FormatInvoiceData."]</InArgument></Assign.Value>
+              </Assign>
+              <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Missing OCR Payload" Line="[System.Environment.NewLine+&quot;  FormatInvoiceData:&quot;+System.Environment.NewLine+&quot;    Status: FAILED&quot;+System.Environment.NewLine+&quot;    Error: &quot;+formatErrorMessage]" Source="[logFile]" />
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <Sequence>
+
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Vendor Name')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorName]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing, tempToken.ToString().Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Purchase Order Number')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[purchaseOrderNumber]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing, tempToken.ToString().Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Vendor Address')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorAddressRaw]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing, tempToken.ToString().Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorAddress]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrEmpty(vendorAddressRaw) AndAlso vendorAddressRaw.Split(","c).Length &gt;= 3, String.Join(", ", vendorAddressRaw.Split(","c).Take(vendorAddressRaw.Split(","c).Length - 2)).Trim(), vendorAddressRaw)]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorCity]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrEmpty(vendorAddressRaw) AndAlso vendorAddressRaw.Split(","c).Length &gt;= 3, vendorAddressRaw.Split(","c)(vendorAddressRaw.Split(","c).Length - 2).Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorState]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrEmpty(vendorAddressRaw) AndAlso vendorAddressRaw.Split(","c).Length &gt;= 3 AndAlso vendorAddressRaw.Split(","c)(vendorAddressRaw.Split(","c).Length - 1).Trim().Split(New Char() {" "c}, StringSplitOptions.RemoveEmptyEntries).Length &gt;= 1, vendorAddressRaw.Split(","c)(vendorAddressRaw.Split(","c).Length - 1).Trim().Split(New Char() {" "c}, StringSplitOptions.RemoveEmptyEntries)(0).Trim().ToUpper(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorZip]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrEmpty(vendorAddressRaw) AndAlso vendorAddressRaw.Split(","c).Length &gt;= 3 AndAlso vendorAddressRaw.Split(","c)(vendorAddressRaw.Split(","c).Length - 1).Trim().Split(New Char() {" "c}, StringSplitOptions.RemoveEmptyEntries).Length &gt;= 2, vendorAddressRaw.Split(","c)(vendorAddressRaw.Split(","c).Length - 1).Trim().Split(New Char() {" "c}, StringSplitOptions.RemoveEmptyEntries)(1).Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Vendor Phone Number')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorPhone]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing, tempToken.ToString().Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Vendor Email Address')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[vendorEmail]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing, tempToken.ToString().Trim(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='Order Date')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[orderDate]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(tempToken.ToString()), tempToken.ToString().Trim(), System.DateTime.Today.ToString("yyyy-MM-dd"))]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JToken">[tempToken]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JToken">[effectiveOcrJsonResponse.SelectToken("$.ExtractionData[?(@.FieldName=='VAT/Tax Amount')].FieldValue")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[salesTax]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(tempToken IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(tempToken.ToString()), tempToken.ToString().Replace("$","").Replace(",","").Trim(), "0.00")]</InArgument></Assign.Value>
+        </Assign>
+
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="njl:JArray">[tableRows]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(effectiveOcrJsonResponse("TableDetection") IsNot Nothing AndAlso CType(effectiveOcrJsonResponse("TableDetection"), JArray).Count &gt; 0 AndAlso effectiveOcrJsonResponse("TableDetection")(0)("TableRows") IsNot Nothing, CType(effectiveOcrJsonResponse("TableDetection")(0)("TableRows"), JArray), New JArray())]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[lineItemFragments]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+        </Assign>
+        <ForEach x:TypeArguments="njl:JToken" Values="[tableRows]">
+          <ActivityAction x:TypeArguments="njl:JToken">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="njl:JToken" Name="row" />
+            </ActivityAction.Argument>
+            <Sequence>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineItemCode]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='Item Code')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='Item Code')].OCR_text").ToString().Trim(), "")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineDescription]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='Description')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='Description')].OCR_text").ToString().Trim(), "")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineQuantity]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='Quantity Shipped')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='Quantity Shipped')].OCR_text").ToString().Trim(), "1")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineUom]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='UOM')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='UOM')].OCR_text").ToString().Trim(), "EA")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineNumberValue]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='Line Number')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='Line Number')].OCR_text").ToString().Trim(), (normalizedLineCount + 1).ToString())]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineUnitPrice]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(row.SelectToken("$[?(@.ColumnName=='Unit Price')].OCR_text") IsNot Nothing, row.SelectToken("$[?(@.ColumnName=='Unit Price')].OCR_text").ToString().Replace("$","").Replace(",","").Trim(), "0.00")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[lineItemFragments]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[lineItemFragments + If(String.IsNullOrWhiteSpace(lineItemFragments), "", ",") + "{""lineNumber"":""" + lineNumberValue.Replace("""","") + """,""itemCode"":""" + lineItemCode.Replace("""","") + """,""description"":""" + lineDescription.Replace("""","'") + """,""quantity"":""" + lineQuantity.Replace("""","") + """,""unitOfMeasure"":""" + lineUom.Replace("""","") + """,""unitPrice"":""" + lineUnitPrice.Replace("""","") + """}"]</InArgument></Assign.Value>
+              </Assign>
+            </Sequence>
+          </ActivityAction>
+        </ForEach>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[rawLineItemsJson]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">["[" + lineItemFragments + "]"]</InArgument></Assign.Value>
+        </Assign>
+        <iaw:InvokeWorkflow ContinueOnError="False" DisplayName="Normalize Line Items" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\NormalizeLineItems.xaml&quot;]" Arguments="[New Dictionary(Of String, Object) From {{&quot;lineItemsJson&quot;,rawLineItemsJson},{&quot;logFile&quot;,logFile}}]" OutputArguments="[normalizeLineOutput]" />
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[lineNormalizationStatus]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(normalizeLineOutput IsNot Nothing AndAlso normalizeLineOutput.ContainsKey("normalizationStatus"), normalizeLineOutput("normalizationStatus").ToString(), "FAILED")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[lineNormalizationError]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(normalizeLineOutput IsNot Nothing AndAlso normalizeLineOutput.ContainsKey("normalizationErrorMessage"), normalizeLineOutput("normalizationErrorMessage").ToString(), "")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[lineItemsJson]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[If(normalizeLineOutput IsNot Nothing AndAlso normalizeLineOutput.ContainsKey("normalizedLineItemsJson"), normalizeLineOutput("normalizedLineItemsJson").ToString(), "[]")]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:Int32">[normalizedLineCount]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:Int32">[If(normalizeLineOutput IsNot Nothing AndAlso normalizeLineOutput.ContainsKey("normalizedLineCount"), CInt(normalizeLineOutput("normalizedLineCount").ToString()), 0)]</InArgument></Assign.Value>
+        </Assign>
+
+        <If Condition="[String.IsNullOrWhiteSpace(vendorName)]">
+          <If.Then>
+            <Sequence>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">["Required OCR fields missing. Vendor Name is required."]</InArgument></Assign.Value>
+              </Assign>
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <If Condition="[lineNormalizationStatus = &quot;SUCCESS&quot;]">
+              <If.Then>
+                <Sequence>
+                  <Assign>
+                    <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+                    <Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value>
+                  </Assign>
+                  <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Format Invoice Summary" Line="[System.Environment.NewLine+&quot;  FormatInvoiceData:&quot;+System.Environment.NewLine+&quot;    Vendor: &quot;+vendorName+System.Environment.NewLine+&quot;    PO: &quot;+If(String.IsNullOrWhiteSpace(purchaseOrderNumber), &quot;&lt;blank - controller generates&gt;&quot;, purchaseOrderNumber)+System.Environment.NewLine+&quot;    Tax: &quot;+salesTax+System.Environment.NewLine+&quot;    LineCount: &quot;+normalizedLineCount.ToString()+System.Environment.NewLine+&quot;    Status: &quot;+formatStatus]" Source="[logFile]" />
+                </Sequence>
+              </If.Then>
+              <If.Else>
+                <Sequence>
+                  <Assign>
+                    <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+                    <Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value>
+                  </Assign>
+                  <Assign>
+                    <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument></Assign.To>
+                    <Assign.Value><InArgument x:TypeArguments="x:String">[lineNormalizationError]</InArgument></Assign.Value>
+                  </Assign>
+                </Sequence>
+              </If.Else>
+            </If>
+          </If.Else>
+        </If>
+            </Sequence>
+          </If.Else>
+        </If>
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence>
+            <Assign>
+              <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatus]</OutArgument></Assign.To>
+              <Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value>
+            </Assign>
+            <Assign>
+              <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorMessage]</OutArgument></Assign.To>
+              <Assign.Value><InArgument x:TypeArguments="x:String">["FormatInvoiceData exception: " + exception.Message]</InArgument></Assign.Value>
+            </Assign>
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+</Activity>

@@ -1,0 +1,145 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="rawPurchaseOrderNumber" Type="InArgument(x:String)" />
+    <x:Property Name="vendorNumber" Type="InArgument(x:String)" />
+    <x:Property Name="termsCode" Type="InArgument(x:String)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="salesTax" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="resolvedStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedPurchaseOrderNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="resolutionErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Resolve Purchase Order Decision" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="normalizeOutput" />
+      <Variable x:TypeArguments="x:String" Name="normalizedPo" />
+      <Variable x:TypeArguments="x:String" Name="normalizationStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="normalizationNoteLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="searchOutput" />
+      <Variable x:TypeArguments="x:String" Name="searchStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="searchErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="searchResponseJson" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="createOutput" />
+      <Variable x:TypeArguments="x:String" Name="createStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="createErrorLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="verifyOutput" />
+      <Variable x:TypeArguments="x:String" Name="verifyStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="verifyErrorLocal" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPurchaseOrderNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;rawPurchaseOrderNumber&quot;,rawPurchaseOrderNumber},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Normalize PO Number" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[normalizeOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\NormalizePurchaseOrder.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedPo]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedPurchaseOrderNumber").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizationStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizationStatus").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizationNoteLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizationNote").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPurchaseOrderNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizedPo]</InArgument></Assign.Value></Assign>
+    <If Condition="[normalizationStatusLocal &lt;&gt; &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizationNoteLocal]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,normalizedPo},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Search Existing PO" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_2" OutputArguments="[searchOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\SearchPurchaseOrder.xaml&quot;]" />
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchStatus").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("poResponseJson").ToString()]</InArgument></Assign.Value></Assign>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log PO Resolution Branch" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  ResolvePurchaseOrderDecision:&quot;+System.Environment.NewLine+&quot;    NormalizedPo: &quot;+normalizedPo+System.Environment.NewLine+&quot;    SearchStatus: &quot;+searchStatusLocal]" Source="[logFile]" />
+          <If Condition="[searchStatusLocal &lt;&gt; &quot;SUCCESS&quot;]">
+            <If.Then>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchErrorLocal]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <If Condition="[searchResponseJson.Contains(&quot;&quot;&quot;PoNum&quot;&quot;:&quot;)]">
+                <If.Then>
+                  <Sequence>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Purchase order already exists and cannot be recreated."]</InArgument></Assign.Value></Assign>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <Sequence>
+                    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,normalizedPo},{&quot;vendorNumber&quot;,vendorNumber},{&quot;termsCode&quot;,termsCode},{&quot;warehouse&quot;,warehouse},{&quot;salesTax&quot;,salesTax},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Create PO Header" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_3" OutputArguments="[createOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\CreatePurchaseOrder.xaml&quot;]" />
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createStatus").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                    <If Condition="[createStatusLocal = &quot;SUCCESS&quot;]">
+                      <If.Then>
+                        <Sequence>
+                          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,normalizedPo},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Verify PO Header" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_4" OutputArguments="[verifyOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\VerifyPurchaseOrder.xaml&quot;]" />
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationStatus").ToString()]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                          <If Condition="[verifyStatusLocal = &quot;SUCCESS&quot;]">
+                            <If.Then>
+                              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["CREATED_AND_VERIFIED"]</InArgument></Assign.Value></Assign>
+                            </If.Then>
+                            <If.Else>
+                              <Sequence>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyErrorLocal]</InArgument></Assign.Value></Assign>
+                              </Sequence>
+                            </If.Else>
+                          </If>
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createErrorLocal]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                  </Sequence>
+                </If.Else>
+              </If>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="200,120" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1640" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1720" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

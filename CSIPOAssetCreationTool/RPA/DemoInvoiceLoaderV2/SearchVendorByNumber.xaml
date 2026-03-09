@@ -1,0 +1,65 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="vendorNumber" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="candidateResponseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="searchStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="searchErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Search Vendor By Number">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="queryProperties" Default="VendNum,Name,_ItemId" />
+      <Variable x:TypeArguments="x:String" Name="queryFilter" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadResponse" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadStatus" />
+      <Variable x:TypeArguments="x:String" Name="idoLoadError" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="idoLoadOutputDict" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[queryFilter]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["VendNum = '" + If(vendorNumber Is Nothing, "", vendorNumber.Replace("'", "''").Trim()) + "'"]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLVendors&quot;},{&quot;properties&quot;,queryProperties},{&quot;filter&quot;,queryFilter},{&quot;orderBy&quot;,&quot;VendNum ASC&quot;},{&quot;recordCap&quot;,&quot;1&quot;},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[idoLoadOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoLoad.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[idoLoadResponse]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("responseJson"), idoLoadOutputDict("responseJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[idoLoadStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("operationStatus"), idoLoadOutputDict("operationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[idoLoadError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(idoLoadOutputDict IsNot Nothing AndAlso idoLoadOutputDict.ContainsKey("errorMessage"), idoLoadOutputDict("errorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[candidateResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[idoLoadResponse]</InArgument></Assign.Value></Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Number Search Summary" Line="[System.Environment.NewLine+&quot;  SearchVendorByNumber:&quot;+System.Environment.NewLine+&quot;    Filter: &quot;+queryFilter+System.Environment.NewLine+&quot;    Status: &quot;+idoLoadStatus+If(idoLoadError.Length &gt; 0, System.Environment.NewLine+&quot;    Error: &quot;+idoLoadError, &quot;&quot;)]" Source="[logFile]" />
+    <If Condition="[idoLoadStatus = &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[idoLoadError]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+</Activity>

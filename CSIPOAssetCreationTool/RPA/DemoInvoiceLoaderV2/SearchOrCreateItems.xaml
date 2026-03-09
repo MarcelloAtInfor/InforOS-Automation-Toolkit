@@ -1,0 +1,145 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="lineItemsJson" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="resolutionStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedItemsJson" Type="OutArgument(x:String)" />
+    <x:Property Name="resolutionErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="createdItemCount" Type="OutArgument(x:Int32)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Search Or Create Items" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JArray" Name="items" />
+      <Variable x:TypeArguments="x:String" Name="resolvedFragments" Default="" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="itemOutput" />
+      <Variable x:TypeArguments="x:String" Name="lineNumberValue" />
+      <Variable x:TypeArguments="x:String" Name="itemCodeValue" />
+      <Variable x:TypeArguments="x:String" Name="descriptionValue" />
+      <Variable x:TypeArguments="x:String" Name="quantityValue" />
+      <Variable x:TypeArguments="x:String" Name="uomValue" />
+      <Variable x:TypeArguments="x:String" Name="priceValue" />
+      <Variable x:TypeArguments="x:String" Name="productCodeValue" />
+      <Variable x:TypeArguments="x:String" Name="itemStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="resolvedItemCodeLocal" />
+      <Variable x:TypeArguments="x:String" Name="resolvedDescriptionLocal" />
+      <Variable x:TypeArguments="x:String" Name="resolvedUomLocal" />
+      <Variable x:TypeArguments="x:String" Name="itemErrorLocal" />
+      <Variable x:TypeArguments="x:Boolean" Name="itemCreatedLocal" />
+      <Variable x:TypeArguments="x:String" Name="resolvedFragment" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["[]"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdItemCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="njl:JArray">[items]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(String.IsNullOrWhiteSpace(lineItemsJson), New JArray(), JArray.Parse(lineItemsJson))]</InArgument></Assign.Value></Assign>
+    <If Condition="[items.Count = 0]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["No line items were provided for item resolution."]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <ForEach x:TypeArguments="njl:JToken" Values="[items]">
+            <ActivityAction x:TypeArguments="njl:JToken">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="njl:JToken" Name="lineItem" />
+              </ActivityAction.Argument>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[lineNumberValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("lineNumber") IsNot Nothing, lineItem("lineNumber").ToString().Trim(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemCodeValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("itemCode") IsNot Nothing, lineItem("itemCode").ToString().Trim(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[descriptionValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("description") IsNot Nothing, lineItem("description").ToString().Trim(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[quantityValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("quantity") IsNot Nothing, lineItem("quantity").ToString().Trim(), "1")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[uomValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("unitOfMeasure") IsNot Nothing, lineItem("unitOfMeasure").ToString().Trim(), "EA")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[priceValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("unitPrice") IsNot Nothing, lineItem("unitPrice").ToString().Trim(), "0.00")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[productCodeValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItem("productCode") IsNot Nothing, lineItem("productCode").ToString().Trim(), "FG-100")]</InArgument></Assign.Value></Assign>
+                <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;itemCode&quot;,itemCodeValue},{&quot;description&quot;,descriptionValue},{&quot;unitOfMeasure&quot;,uomValue},{&quot;unitPrice&quot;,priceValue},{&quot;productCode&quot;,productCodeValue},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Resolve Item" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[itemOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ResolveItemDecision.xaml&quot;]" />
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemOutput("resolvedStatus").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemCodeLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemOutput("resolvedItemCode").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedDescriptionLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemOutput("resolvedItemDescription").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedUomLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemOutput("resolvedUnitOfMeasure").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemOutput("resolutionErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[itemCreatedLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[CBool(itemOutput("createdFlag").ToString())]</InArgument></Assign.Value></Assign>
+                <If Condition="[itemCreatedLocal]">
+                  <If.Then>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdItemCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[createdItemCount + 1]</InArgument></Assign.Value></Assign>
+                  </If.Then>
+                </If>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedFragment]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""lineNumber"":""" + lineNumberValue.Replace("""","") + """,""itemCode"":""" + resolvedItemCodeLocal.Replace("""","") + """,""description"":""" + resolvedDescriptionLocal.Replace("""","'") + """,""quantity"":""" + quantityValue.Replace("""","") + """,""unitOfMeasure"":""" + resolvedUomLocal.Replace("""","") + """,""unitPrice"":""" + priceValue.Replace("""","") + """,""created"":" + itemCreatedLocal.ToString().ToLower() + "}"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedFragments]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[resolvedFragments + If(resolvedFragments = "", "", ",") + resolvedFragment]</InArgument></Assign.Value></Assign>
+                <If Condition="[itemStatusLocal = &quot;FAILED&quot; AndAlso String.IsNullOrWhiteSpace(resolutionErrorMessage)]">
+                  <If.Then>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Item resolution failed for " + itemCodeValue + ": " + itemErrorLocal]</InArgument></Assign.Value></Assign>
+                  </If.Then>
+                </If>
+              </Sequence>
+            </ActivityAction>
+          </ForEach>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["[" + resolvedFragments + "]"]</InArgument></Assign.Value></Assign>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Item Batch Summary" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  SearchOrCreateItems:&quot;+System.Environment.NewLine+&quot;    InputLineCount: &quot;+items.Count.ToString()+System.Environment.NewLine+&quot;    CreatedItemCount: &quot;+createdItemCount.ToString()+If(resolutionErrorMessage.Length &gt; 0, System.Environment.NewLine+&quot;    FirstError: &quot;+resolutionErrorMessage, &quot;&quot;)]" Source="[logFile]" />
+          <If Condition="[String.IsNullOrWhiteSpace(resolutionErrorMessage)]">
+            <If.Then>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+            </If.Then>
+            <If.Else>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,140" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,248" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1800" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1880" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

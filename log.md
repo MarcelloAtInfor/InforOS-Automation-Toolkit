@@ -33,3 +33,12 @@ Use date headers for each session, e.g.:
 
 ### Next steps
 - Commit and push the synced public repo changes to `origin/master`.
+
+## Session Date: 2026-03-09 (public DemoInvoiceLoader_V4 sync)
+### What was done
+- Synced the cleaned deterministic invoice automation rewrite into `CSIPOAssetCreationTool/RPA/DemoInvoiceLoaderV2/`.
+- Updated the public CSI and RPA readmes so the new V4 workflow is discoverable.
+- Added a public HTML delivery report for the deterministic rewrite.
+
+### Next steps
+- Commit and push the public toolkit update to `origin/master`.

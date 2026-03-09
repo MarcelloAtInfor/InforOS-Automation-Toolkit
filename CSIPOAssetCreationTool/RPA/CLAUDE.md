@@ -748,3 +748,12 @@ This is the default input folder for the DemoInvoiceLoader RPA workflow.
 
 **Note**: This repository requires Infor RPA Studio to open and edit workflows. XAML files can be viewed in text editors but workflow logic is best understood visually in the Studio IDE.
 
+## Public Deterministic Invoice Loader
+
+`DemoInvoiceLoaderV2/` is the deterministic rewrite published/operator-facing as `DemoInvoiceLoader_V4`.
+
+Important public usage rules:
+- tracked source is placeholder-based and public-safe
+- generate a tenant-specific copy with `DemoInvoiceLoaderV2/scripts/prepare_deploy.py`
+- rebind live OCR in Studio for the generated `.deploy` copy before production use
+

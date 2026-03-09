@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DemoInvoiceLoader_V4 Delivery Report</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 32px; color: #1f2937; line-height: 1.45; }
+    h1, h2, h3 { color: #0f172a; }
+    h1 { margin-bottom: 8px; }
+    .meta { color: #475569; margin-bottom: 24px; }
+    .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+    .good { background: #f0fdf4; border-color: #86efac; }
+    .warn { background: #fffbeb; border-color: #fcd34d; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #e2e8f0; }
+    code { background: #f8fafc; padding: 1px 4px; border-radius: 4px; }
+    ul { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>DemoInvoiceLoader_V4 Delivery Report</h1>
+  <div class="meta">
+    Public handoff summary for the deterministic invoice automation rewrite.
+  </div>
+  <div class="card good">
+    <h2>Summary</h2>
+    <p>
+      <strong>DemoInvoiceLoader_V4</strong> replaces the prior GenAI-driven transactional path with an RPA-driven,
+      deterministic CSI API workflow. It was validated live for OCR, vendor reuse/create, item reuse/create, PO creation,
+      PO-line creation, tax persistence, notifications, and fail-closed vendor ambiguity handling.
+    </p>
+  </div>
+  <h2>Highlights</h2>
+  <ul>
+    <li>Direct deterministic CSI IDO calls for vendor, item, PO, and PO-line logic.</li>
+    <li>Vendor scoring uses exact-name gating plus structured address matching with bounded typo tolerance.</li>
+    <li>Unsafe same-name cases fail closed instead of silently reusing or duplicating master data.</li>
+    <li>Tax writes to the visible <code>SalesTaxT</code> field.</li>
+    <li>Notifications include created asset details and unhandled failures still route to notification.</li>
+  </ul>
+  <h2>Public Setup Notes</h2>
+  <ul>
+    <li>Tracked source is intentionally scrubbed of tenant-specific values.</li>
+    <li>Use <code>deploy.local.example.json</code> and <code>scripts/prepare_deploy.py</code> to build a tenant-specific copy.</li>
+    <li>Rebind live OCR in Studio for the generated <code>.deploy</code> copy before production use.</li>
+  </ul>
+  <h2>Suggested Next Steps</h2>
+  <ol>
+    <li>Generate a tenant-specific deploy copy.</li>
+    <li>Rebind live OCR for the target tenant in Studio.</li>
+    <li>Run a controlled single-document test.</li>
+    <li>Run a small batch test before scheduling or publishing broadly.</li>
+  </ol>
+</body>
+</html>

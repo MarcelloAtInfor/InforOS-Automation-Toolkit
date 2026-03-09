@@ -1,0 +1,348 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="normalizedVendorName" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddress" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorAddressLine1" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorCity" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorState" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorZip" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorHouseNumber" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorStreetCore" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorEmail" Type="InArgument(x:String)" />
+    <x:Property Name="normalizedVendorPhone" Type="InArgument(x:String)" />
+    <x:Property Name="candidateVendNum" Type="InArgument(x:String)" />
+    <x:Property Name="candidateName" Type="InArgument(x:String)" />
+    <x:Property Name="candidateAddressLine1" Type="InArgument(x:String)" />
+    <x:Property Name="candidateCity" Type="InArgument(x:String)" />
+    <x:Property Name="candidateState" Type="InArgument(x:String)" />
+    <x:Property Name="candidateZip" Type="InArgument(x:String)" />
+    <x:Property Name="candidatePhone" Type="InArgument(x:String)" />
+    <x:Property Name="candidateEmail" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="decisionJson" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Text.RegularExpressions</x:String>
+      <x:String>System.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Score Vendor Candidate" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateName" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateAddress" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateAddressLine1" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateCity" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateState" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateZip" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateHouseNumber" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateStreetCore" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidatePhone" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCandidateEmail" />
+      <Variable x:TypeArguments="x:Boolean" Name="nameExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="addressExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="line1Exact" />
+      <Variable x:TypeArguments="x:Boolean" Name="cityExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="stateExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="stateCompatible" />
+      <Variable x:TypeArguments="x:Boolean" Name="zipExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="houseNumberExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="streetCoreExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="streetCoreNear" />
+      <Variable x:TypeArguments="x:Boolean" Name="structuralAddressExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="structuralAddressNear" />
+      <Variable x:TypeArguments="x:Boolean" Name="emailExact" />
+      <Variable x:TypeArguments="x:Boolean" Name="phoneExact" />
+      <Variable x:TypeArguments="x:Int32" Name="identityCompleteness" />
+      <Variable x:TypeArguments="x:Int32" Name="scoreValue" />
+      <Variable x:TypeArguments="x:Boolean" Name="rejected" />
+      <Variable x:TypeArguments="x:String" Name="decisionText" />
+    </Sequence.Variables>
+    <Assign DisplayName="Normalize Candidate Name" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateName]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(candidateName Is Nothing, "", System.Text.RegularExpressions.Regex.Replace(candidateName.Trim().ToUpper(), "\s+", " "))]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Address Line 1" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateAddressLine1]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace((" " + System.Text.RegularExpressions.Regex.Replace(If(candidateAddressLine1 Is Nothing, "", candidateAddressLine1.Trim().ToUpper()), "[^A-Z0-9\s]", " ") + " ").Replace(" NORTH ", " N ").Replace(" SOUTH ", " S ").Replace(" EAST ", " E ").Replace(" WEST ", " W ").Replace(" STREET ", " ST ").Replace(" ROAD ", " RD ").Replace(" AVENUE ", " AVE ").Replace(" DRIVE ", " DR ").Replace(" LANE ", " LN ").Replace(" BOULEVARD ", " BLVD ").Replace(" COURT ", " CT "), "\s+", " ").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate City" sap2010:WorkflowViewState.IdRef="Assign_2A">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateCity]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(candidateCity Is Nothing, "", candidateCity.Trim().ToUpper()), "\s+", " ").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate State" sap2010:WorkflowViewState.IdRef="Assign_2B">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateState]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(candidateState Is Nothing, "", candidateState.Trim().ToUpper())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Zip" sap2010:WorkflowViewState.IdRef="Assign_2C">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateZip]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(candidateZip Is Nothing, "", candidateZip.Trim()), "[^0-9]", "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Address" sap2010:WorkflowViewState.IdRef="Assign_2D">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateAddress]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[(normalizedCandidateAddressLine1+" "+normalizedCandidateCity+" "+normalizedCandidateState+" "+normalizedCandidateZip).Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate House Number" sap2010:WorkflowViewState.IdRef="Assign_2E">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateHouseNumber]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Match(normalizedCandidateAddressLine1, "^\d+").Value]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Street Core" sap2010:WorkflowViewState.IdRef="Assign_2F">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateStreetCore]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(normalizedCandidateAddressLine1, "^\d+\s*", "").Trim()]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Phone" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidatePhone]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(candidatePhone Is Nothing, "", candidatePhone), "[^0-9]", "")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Candidate Email" sap2010:WorkflowViewState.IdRef="Assign_4">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCandidateEmail]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(candidateEmail Is Nothing, "", candidateEmail.Trim().ToLower())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Name Exact" sap2010:WorkflowViewState.IdRef="Assign_5">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[nameExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateName &lt;&gt; "" AndAlso normalizedCandidateName = normalizedVendorName]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Address Exact" sap2010:WorkflowViewState.IdRef="Assign_6">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[addressExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateAddress &lt;&gt; "" AndAlso normalizedCandidateAddress = normalizedVendorAddress]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Line1 Exact" sap2010:WorkflowViewState.IdRef="Assign_7">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[line1Exact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateAddressLine1 &lt;&gt; "" AndAlso normalizedCandidateAddressLine1 = normalizedVendorAddressLine1]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check City Exact" sap2010:WorkflowViewState.IdRef="Assign_7A">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[cityExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateCity &lt;&gt; "" AndAlso normalizedCandidateCity = normalizedVendorCity]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check State Exact" sap2010:WorkflowViewState.IdRef="Assign_7B">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[stateExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateState &lt;&gt; "" AndAlso normalizedCandidateState = normalizedVendorState]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check State Compatible" sap2010:WorkflowViewState.IdRef="Assign_7B2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[stateCompatible]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[String.IsNullOrWhiteSpace(normalizedVendorState) OrElse String.IsNullOrWhiteSpace(normalizedCandidateState) OrElse stateExact]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Zip Exact" sap2010:WorkflowViewState.IdRef="Assign_7C">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[zipExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateZip &lt;&gt; "" AndAlso normalizedCandidateZip = normalizedVendorZip]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check House Number Exact" sap2010:WorkflowViewState.IdRef="Assign_7D">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[houseNumberExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateHouseNumber &lt;&gt; "" AndAlso normalizedCandidateHouseNumber = normalizedVendorHouseNumber]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Street Core Exact" sap2010:WorkflowViewState.IdRef="Assign_7E">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[streetCoreExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateStreetCore &lt;&gt; "" AndAlso normalizedCandidateStreetCore = normalizedVendorStreetCore]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Street Core Near" sap2010:WorkflowViewState.IdRef="Assign_7F">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[streetCoreNear]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedCandidateStreetCore &lt;&gt; "" AndAlso normalizedVendorStreetCore &lt;&gt; "" AndAlso Math.Abs(normalizedCandidateStreetCore.Length-normalizedVendorStreetCore.Length) &lt;= 2 AndAlso (Enumerable.Range(0, Math.Min(normalizedCandidateStreetCore.Length, normalizedVendorStreetCore.Length)).Count(Function(i) normalizedCandidateStreetCore.Substring(i,1) &lt;&gt; normalizedVendorStreetCore.Substring(i,1)) + Math.Abs(normalizedCandidateStreetCore.Length-normalizedVendorStreetCore.Length)) &lt;= 2]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Structural Address Exact" sap2010:WorkflowViewState.IdRef="Assign_7G">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[structuralAddressExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[line1Exact AndAlso cityExact AndAlso stateCompatible AndAlso zipExact]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Structural Address Near" sap2010:WorkflowViewState.IdRef="Assign_7H">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[structuralAddressNear]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[houseNumberExact AndAlso cityExact AndAlso stateCompatible AndAlso zipExact AndAlso (streetCoreExact OrElse streetCoreNear)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Email Exact" sap2010:WorkflowViewState.IdRef="Assign_8">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[emailExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedVendorEmail &lt;&gt; "" AndAlso normalizedCandidateEmail &lt;&gt; "" AndAlso normalizedCandidateEmail = normalizedVendorEmail]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Check Phone Exact" sap2010:WorkflowViewState.IdRef="Assign_9">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[phoneExact]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedVendorPhone &lt;&gt; "" AndAlso normalizedCandidatePhone &lt;&gt; "" AndAlso normalizedCandidatePhone = normalizedVendorPhone]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Count Identity Completeness" sap2010:WorkflowViewState.IdRef="Assign_10">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[identityCompleteness]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[If(String.IsNullOrWhiteSpace(candidateState), 0, 1)+If(String.IsNullOrWhiteSpace(candidatePhone), 0, 1)+If(String.IsNullOrWhiteSpace(candidateEmail), 0, 1)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Compute Reject Flag" sap2010:WorkflowViewState.IdRef="Assign_11">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[rejected]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[Not nameExact]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Compute Score" sap2010:WorkflowViewState.IdRef="Assign_12">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[scoreValue]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[If(nameExact, 1000, 0)+If(addressExact OrElse structuralAddressExact, 500, 0)+If(structuralAddressNear AndAlso Not (addressExact OrElse structuralAddressExact), 300, 0)+If(emailExact, 100, 0)+If(phoneExact, 100, 0)+identityCompleteness]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Compute Decision Text" sap2010:WorkflowViewState.IdRef="Assign_13">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[decisionText]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(rejected, "rejected", If(addressExact OrElse structuralAddressExact, "selected_exact", If(structuralAddressNear, "selected_fuzzy", "ambiguous_existing")))]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Build Decision Json" sap2010:WorkflowViewState.IdRef="Assign_14">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[decisionJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["{""vendNum"":""" + If(candidateVendNum Is Nothing, "", candidateVendNum.Replace("""","")) + """,""nameExact"":" + nameExact.ToString().ToLower() + ",""addressExact"":" + addressExact.ToString().ToLower() + ",""line1Exact"":" + line1Exact.ToString().ToLower() + ",""cityExact"":" + cityExact.ToString().ToLower() + ",""stateExact"":" + stateExact.ToString().ToLower() + ",""stateCompatible"":" + stateCompatible.ToString().ToLower() + ",""zipExact"":" + zipExact.ToString().ToLower() + ",""houseNumberExact"":" + houseNumberExact.ToString().ToLower() + ",""streetCoreExact"":" + streetCoreExact.ToString().ToLower() + ",""streetCoreNear"":" + streetCoreNear.ToString().ToLower() + ",""structuralAddressExact"":" + structuralAddressExact.ToString().ToLower() + ",""structuralAddressNear"":" + structuralAddressNear.ToString().ToLower() + ",""emailExact"":" + emailExact.ToString().ToLower() + ",""phoneExact"":" + phoneExact.ToString().ToLower() + ",""identityCompleteness"":" + identityCompleteness.ToString() + ",""scoreValue"":" + scoreValue.ToString() + ",""rejected"":" + rejected.ToString().ToLower() + ",""decision"":""" + decisionText + """}"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Candidate Score" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  ScoreVendorCandidate:&quot;+System.Environment.NewLine+&quot;    VendNum: &quot;+If(candidateVendNum Is Nothing, &quot;&quot;, candidateVendNum)+System.Environment.NewLine+&quot;    NameExact: &quot;+nameExact.ToString()+System.Environment.NewLine+&quot;    AddressExact: &quot;+addressExact.ToString()+System.Environment.NewLine+&quot;    Line1Exact: &quot;+line1Exact.ToString()+System.Environment.NewLine+&quot;    CityExact: &quot;+cityExact.ToString()+System.Environment.NewLine+&quot;    StateExact: &quot;+stateExact.ToString()+System.Environment.NewLine+&quot;    StateCompatible: &quot;+stateCompatible.ToString()+System.Environment.NewLine+&quot;    ZipExact: &quot;+zipExact.ToString()+System.Environment.NewLine+&quot;    HouseNumberExact: &quot;+houseNumberExact.ToString()+System.Environment.NewLine+&quot;    StreetCoreExact: &quot;+streetCoreExact.ToString()+System.Environment.NewLine+&quot;    StreetCoreNear: &quot;+streetCoreNear.ToString()+System.Environment.NewLine+&quot;    StructuralAddressExact: &quot;+structuralAddressExact.ToString()+System.Environment.NewLine+&quot;    StructuralAddressNear: &quot;+structuralAddressNear.ToString()+System.Environment.NewLine+&quot;    EmailExact: &quot;+emailExact.ToString()+System.Environment.NewLine+&quot;    PhoneExact: &quot;+phoneExact.ToString()+System.Environment.NewLine+&quot;    Completeness: &quot;+identityCompleteness.ToString()+System.Environment.NewLine+&quot;    Score: &quot;+scoreValue.ToString()+System.Environment.NewLine+&quot;    Decision: &quot;+decisionText]" Source="[logFile]" />
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_9" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_11" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_12" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_13" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,196" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1292">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1372" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

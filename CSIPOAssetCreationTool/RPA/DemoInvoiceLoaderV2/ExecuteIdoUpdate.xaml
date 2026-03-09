@@ -1,0 +1,200 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:iai="clr-namespace:Infor.Activities.IONAPI;assembly=Infor.Activities.IONAPI"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iru="clr-namespace:Infor.RPA.Utilities;assembly=Infor.RPA.Utilities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="idoName" Type="InArgument(x:String)" />
+    <x:Property Name="requestJson" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="responseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="operationStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="errorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Infor.RPA.Utilities</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>Infor.RPA.Utilities</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Execute IDO Update" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="requestUrl" />
+      <Variable x:TypeArguments="iru:ResponseObject" Name="apiResponse" />
+      <Variable x:TypeArguments="x:Int32" Name="apiResponseCode" />
+      <Variable x:TypeArguments="njl:JObject" Name="parsed" />
+      <Variable x:TypeArguments="x:Boolean" Name="bodySuccessFlag" Default="True" />
+      <Variable x:TypeArguments="x:String" Name="bodyMessage" />
+    </Sequence.Variables>
+    <Assign DisplayName="Init Operation Status" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[operationStatus]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["PENDING"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Init Error Message" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Init Body Message" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[bodyMessage]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Build Request Url" sap2010:WorkflowViewState.IdRef="Assign_4">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[requestUrl]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[tenantURL.TrimEnd("/"c)+"/CSI/IDORequestService/ido/update/"+idoName+"?refresh=true"]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log IDO Update Start" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  ExecuteIdoUpdate: &quot;+idoName+&quot; - URL: &quot;+requestUrl+System.Environment.NewLine+&quot;  Payload: &quot;+requestJson]" Source="[logFile]" />
+    <iai:IONAPIRequestWizard FileAttachments="{x:Null}" QueryParameters="{x:Null}" StatusCode="{x:Null}" ContentType="application_json" ContinueOnError="True" DisplayName="POST IDO Update" HttpMethod="POST" sap2010:WorkflowViewState.IdRef="IONAPIRequestWizard_1" PostData="[requestJson]" Response="[apiResponse]" ResponseCode="[apiResponseCode]" Url="[requestUrl]">
+      <iai:IONAPIRequestWizard.Headers>
+        <scg:List x:TypeArguments="scg:List(x:String)" Capacity="4">
+          <scg:List x:TypeArguments="x:String" Capacity="1">
+            <x:String>X-Infor-MongooseConfig</x:String>
+          </scg:List>
+          <scg:List x:TypeArguments="x:String" Capacity="1">
+            <x:String>YOUR_SITE</x:String>
+          </scg:List>
+        </scg:List>
+      </iai:IONAPIRequestWizard.Headers>
+    </iai:IONAPIRequestWizard>
+    <Assign DisplayName="Set Response Json" sap2010:WorkflowViewState.IdRef="Assign_5">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[responseJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(apiResponse Is Nothing, "", apiResponse.readastext)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If Condition="[Not String.IsNullOrWhiteSpace(responseJson) AndAlso responseJson.TrimStart().StartsWith(&quot;{&quot;)]" DisplayName="Parse JSON Body" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <Sequence DisplayName="Read Body Flags" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Assign DisplayName="Parse Body JSON" sap2010:WorkflowViewState.IdRef="Assign_6">
+            <Assign.To>
+              <OutArgument x:TypeArguments="njl:JObject">[parsed]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="njl:JObject">[JObject.Parse(responseJson)]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign DisplayName="Read Body Success" sap2010:WorkflowViewState.IdRef="Assign_7">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:Boolean">[bodySuccessFlag]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:Boolean">[If(parsed("Success") IsNot Nothing, CBool(parsed("Success").ToString()), True)]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign DisplayName="Read Body Message" sap2010:WorkflowViewState.IdRef="Assign_8">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[bodyMessage]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">[If(parsed("Message") IsNot Nothing, parsed("Message").ToString(), "")]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Then>
+    </If>
+    <If Condition="[apiResponseCode &gt;= 200 AndAlso apiResponseCode &lt; 300 AndAlso (apiResponse Is Nothing OrElse Not apiResponse.readastext.StartsWith(&quot;Code:&quot;)) AndAlso bodySuccessFlag]" DisplayName="Check Update Success" sap2010:WorkflowViewState.IdRef="If_2">
+      <If.Then>
+        <Assign DisplayName="Set Success Status" sap2010:WorkflowViewState.IdRef="Assign_9">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[operationStatus]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Then>
+      <If.Else>
+        <Sequence DisplayName="Handle Update Failure" sap2010:WorkflowViewState.IdRef="Sequence_3">
+          <Assign DisplayName="Set Failed Status" sap2010:WorkflowViewState.IdRef="Assign_10">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[operationStatus]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">["FAILED"]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign DisplayName="Set Update Error Message" sap2010:WorkflowViewState.IdRef="Assign_11">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[errorMessage]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">[If(apiResponseCode &gt;= 200 AndAlso apiResponseCode &lt; 300 AndAlso Not String.IsNullOrWhiteSpace(bodyMessage), "IDO update failed: "+bodyMessage, "IDO update failed with code "+apiResponseCode.ToString()+": "+If(apiResponse Is Nothing, "No response", apiResponse.readastext))]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="432,82" />
+      <sap2010:ViewStateData Id="IONAPIRequestWizard_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="432,60" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="432,332" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1120" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1200" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

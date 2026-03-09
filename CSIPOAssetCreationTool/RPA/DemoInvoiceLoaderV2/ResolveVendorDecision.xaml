@@ -1,0 +1,209 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="vendorAddress" Type="InArgument(x:String)" />
+    <x:Property Name="vendorCity" Type="InArgument(x:String)" />
+    <x:Property Name="vendorState" Type="InArgument(x:String)" />
+    <x:Property Name="vendorZip" Type="InArgument(x:String)" />
+    <x:Property Name="vendorPhone" Type="InArgument(x:String)" />
+    <x:Property Name="vendorEmail" Type="InArgument(x:String)" />
+    <x:Property Name="termsCode" Type="InArgument(x:String)" />
+    <x:Property Name="proposedVendorNumber" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="resolvedStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="resolutionErrorMessage" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Resolve Vendor Decision" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="normalizedName" />
+      <Variable x:TypeArguments="x:String" Name="normalizedAddress" />
+      <Variable x:TypeArguments="x:String" Name="normalizedAddressLine1" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCity" />
+      <Variable x:TypeArguments="x:String" Name="normalizedState" />
+      <Variable x:TypeArguments="x:String" Name="normalizedZip" />
+      <Variable x:TypeArguments="x:String" Name="normalizedHouseNumber" />
+      <Variable x:TypeArguments="x:String" Name="normalizedStreetCore" />
+      <Variable x:TypeArguments="x:String" Name="normalizedPhone" />
+      <Variable x:TypeArguments="x:String" Name="normalizedEmail" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="normalizeOutput" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="searchOutput" />
+      <Variable x:TypeArguments="x:String" Name="candidateJson" />
+      <Variable x:TypeArguments="x:String" Name="searchStatus" />
+      <Variable x:TypeArguments="x:String" Name="searchError" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="selectOutput" />
+      <Variable x:TypeArguments="x:String" Name="selectionStatus" />
+      <Variable x:TypeArguments="x:String" Name="selectionError" />
+      <Variable x:TypeArguments="x:String" Name="selectedVend" />
+      <Variable x:TypeArguments="x:String" Name="selectedName" />
+      <Variable x:TypeArguments="x:String" Name="effectiveVendorNumber" />
+      <Variable x:TypeArguments="x:Boolean" Name="createRequiredFlag" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="createOutput" />
+      <Variable x:TypeArguments="x:String" Name="createStatus" />
+      <Variable x:TypeArguments="x:String" Name="createError" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="generateOutput" />
+      <Variable x:TypeArguments="x:String" Name="generatedVendorNumberLocal" />
+      <Variable x:TypeArguments="x:String" Name="generationStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="generationErrorLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="verifyOutput" />
+      <Variable x:TypeArguments="x:String" Name="verifyStatus" />
+      <Variable x:TypeArguments="x:String" Name="verifyError" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[effectiveVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[proposedVendorNumber]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;vendorName&quot;,vendorName},{&quot;vendorAddress&quot;,vendorAddress},{&quot;vendorCity&quot;,vendorCity},{&quot;vendorState&quot;,vendorState},{&quot;vendorZip&quot;,vendorZip},{&quot;vendorPhone&quot;,vendorPhone},{&quot;vendorEmail&quot;,vendorEmail},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[normalizeOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\NormalizeVendorFields.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorName").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedAddress]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorAddress").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedAddressLine1]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorAddressLine1").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedCity]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorCity").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedState]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorState").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedZip]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorZip").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedHouseNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorHouseNumber").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedStreetCore]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorStreetCore").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedPhone]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorPhone").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedEmail]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizeOutput("normalizedVendorEmail").ToString()]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;vendorName&quot;,vendorName},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[searchOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\SearchVendorCandidates.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[candidateJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("candidateResponseJson").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchStatus").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+    <If Condition="[searchStatus &lt;&gt; &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchError]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;candidateResponseJson&quot;,candidateJson},{&quot;normalizedVendorName&quot;,normalizedName},{&quot;normalizedVendorAddress&quot;,normalizedAddress},{&quot;normalizedVendorAddressLine1&quot;,normalizedAddressLine1},{&quot;normalizedVendorCity&quot;,normalizedCity},{&quot;normalizedVendorState&quot;,normalizedState},{&quot;normalizedVendorZip&quot;,normalizedZip},{&quot;normalizedVendorHouseNumber&quot;,normalizedHouseNumber},{&quot;normalizedVendorStreetCore&quot;,normalizedStreetCore},{&quot;normalizedVendorEmail&quot;,normalizedEmail},{&quot;normalizedVendorPhone&quot;,normalizedPhone},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[selectOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\SelectVendorCandidate.xaml&quot;]" />
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectOutput("selectionStatus").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectionError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectOutput("selectionErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectedVend]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectOutput("selectedVendorNumber").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[selectedName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectOutput("selectedVendorName").ToString()]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[createRequiredFlag]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[CBool(selectOutput("createRequired").ToString())]</InArgument></Assign.Value></Assign>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Resolution Branch" Line="[System.Environment.NewLine+&quot;  ResolveVendorDecision:&quot;+System.Environment.NewLine+&quot;    SelectionStatus: &quot;+selectionStatus+System.Environment.NewLine+&quot;    CreateRequired: &quot;+createRequiredFlag.ToString()+System.Environment.NewLine+&quot;    SelectedVend: &quot;+selectedVend]" Source="[logFile]" />
+          <If Condition="[selectionStatus = &quot;SELECTED&quot;]">
+            <If.Then>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["REUSED_EXISTING"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectedVend]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectedName]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <If Condition="[selectionStatus = &quot;NOT_FOUND&quot; AndAlso createRequiredFlag]">
+                <If.Then>
+                  <Sequence>
+                    <If Condition="[String.IsNullOrWhiteSpace(effectiveVendorNumber)]">
+                      <If.Then>
+                        <Sequence>
+                          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;vendorName&quot;,vendorName},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[generateOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\GenerateVendorNumber.xaml&quot;]" />
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(generateOutput IsNot Nothing AndAlso generateOutput.ContainsKey("generationStatus") AndAlso generateOutput("generationStatus") IsNot Nothing, generateOutput("generationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(generateOutput IsNot Nothing AndAlso generateOutput.ContainsKey("generationErrorMessage") AndAlso generateOutput("generationErrorMessage") IsNot Nothing, generateOutput("generationErrorMessage").ToString(), "Vendor number generation failed.")]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generatedVendorNumberLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(generateOutput IsNot Nothing AndAlso generateOutput.ContainsKey("generatedVendorNumber") AndAlso generateOutput("generatedVendorNumber") IsNot Nothing, generateOutput("generatedVendorNumber").ToString(), "")]</InArgument></Assign.Value></Assign>
+                          <If Condition="[generationStatusLocal = &quot;SUCCESS&quot; AndAlso Not String.IsNullOrWhiteSpace(generatedVendorNumberLocal)]">
+                            <If.Then>
+                              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[effectiveVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[generatedVendorNumberLocal]</InArgument></Assign.Value></Assign>
+                            </If.Then>
+                            <If.Else>
+                              <Sequence>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[generationErrorLocal]</InArgument></Assign.Value></Assign>
+                              </Sequence>
+                            </If.Else>
+                          </If>
+                        </Sequence>
+                      </If.Then>
+                    </If>
+                    <If Condition="[resolvedStatus = &quot;PENDING&quot; AndAlso Not String.IsNullOrWhiteSpace(effectiveVendorNumber)]">
+                      <If.Then>
+                        <Sequence>
+                          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;vendorNumber&quot;,effectiveVendorNumber},{&quot;vendorName&quot;,vendorName},{&quot;vendorAddress&quot;,vendorAddress},{&quot;vendorCity&quot;,vendorCity},{&quot;vendorState&quot;,vendorState},{&quot;vendorZip&quot;,vendorZip},{&quot;vendorPhone&quot;,vendorPhone},{&quot;vendorEmail&quot;,vendorEmail},{&quot;termsCode&quot;,termsCode},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[createOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\CreateVendor.xaml&quot;]" />
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createStatus").ToString()]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                          <If Condition="[createStatus = &quot;SUCCESS&quot;]">
+                            <If.Then>
+                              <Sequence>
+                                <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;vendorNumber&quot;,effectiveVendorNumber},{&quot;expectedVendorState&quot;,vendorState},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[verifyOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\VerifyVendor.xaml&quot;]" />
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationStatus").ToString()]</InArgument></Assign.Value></Assign>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                                <If Condition="[verifyStatus = &quot;SUCCESS&quot;]">
+                                  <If.Then>
+                                    <Sequence>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["CREATED_AND_VERIFIED"]</InArgument></Assign.Value></Assign>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[effectiveVendorNumber]</InArgument></Assign.Value></Assign>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[vendorName]</InArgument></Assign.Value></Assign>
+                                    </Sequence>
+                                  </If.Then>
+                                  <If.Else>
+                                    <Sequence>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyError]</InArgument></Assign.Value></Assign>
+                                    </Sequence>
+                                  </If.Else>
+                                </If>
+                              </Sequence>
+                            </If.Then>
+                            <If.Else>
+                              <Sequence>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createError]</InArgument></Assign.Value></Assign>
+                              </Sequence>
+                            </If.Else>
+                          </If>
+                        </Sequence>
+                      </If.Then>
+                    </If>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <Sequence>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[selectionError]</InArgument></Assign.Value></Assign>
+                  </Sequence>
+                </If.Else>
+              </If>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="600,2200" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="640,2280" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

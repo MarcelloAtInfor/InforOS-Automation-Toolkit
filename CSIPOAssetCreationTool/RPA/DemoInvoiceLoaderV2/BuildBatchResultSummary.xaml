@@ -1,0 +1,51 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="overallStatus" Type="InArgument(x:String)" />
+    <x:Property Name="worklistCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="processedCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="successCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="failureCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="failedDocumentsCsv" Type="InArgument(x:String)" />
+    <x:Property Name="errorMessage" Type="InArgument(x:String)" />
+    <x:Property Name="artifactPath" Type="InArgument(x:String)" />
+    <x:Property Name="summaryText" Type="OutArgument(x:String)" />
+    <x:Property Name="summaryJson" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence>
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[summaryText]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["OverallStatus: " + overallStatus + System.Environment.NewLine + "WorklistCount: " + worklistCount.ToString() + System.Environment.NewLine + "ProcessedCount: " + processedCount.ToString() + System.Environment.NewLine + "SuccessCount: " + successCount.ToString() + System.Environment.NewLine + "FailureCount: " + failureCount.ToString() + If(String.IsNullOrWhiteSpace(failedDocumentsCsv), "", System.Environment.NewLine + "FailedDocuments: " + failedDocumentsCsv) + If(String.IsNullOrWhiteSpace(artifactPath), "", System.Environment.NewLine + "ArtifactPath: " + artifactPath) + If(String.IsNullOrWhiteSpace(errorMessage), "", System.Environment.NewLine + "Error: " + errorMessage)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[summaryJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["{""overallStatus"":""" + If(overallStatus Is Nothing, "", overallStatus.Replace("""","")) + """,""worklistCount"":" + worklistCount.ToString() + ",""processedCount"":" + processedCount.ToString() + ",""successCount"":" + successCount.ToString() + ",""failureCount"":" + failureCount.ToString() + ",""failedDocumentsCsv"":""" + If(failedDocumentsCsv Is Nothing, "", failedDocumentsCsv.Replace("""","'")) + """,""artifactPath"":""" + If(artifactPath Is Nothing, "", artifactPath.Replace("""","'")) + """,""errorMessage"":""" + If(errorMessage Is Nothing, "", errorMessage.Replace("""","'")) + """}"]</InArgument>
+      </Assign.Value>
+    </Assign>
+  </Sequence>
+</Activity>

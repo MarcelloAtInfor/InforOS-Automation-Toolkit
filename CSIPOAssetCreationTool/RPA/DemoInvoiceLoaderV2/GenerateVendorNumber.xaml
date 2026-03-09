@@ -1,0 +1,133 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="generatedVendorNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="generationStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="generationErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="baseStem" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Sys</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Workflow</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Generate Vendor Number">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="normalizedName" />
+      <Variable x:TypeArguments="x:String" Name="cleanStem" />
+      <Variable x:TypeArguments="x:String" Name="candidateVendNum" />
+      <Variable x:TypeArguments="x:Int32" Name="suffixNumber" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="searchOutput" />
+      <Variable x:TypeArguments="x:String" Name="searchStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="candidateResponseJson" />
+      <Variable x:TypeArguments="njl:JObject" Name="parsed" />
+      <Variable x:TypeArguments="njl:JArray" Name="items" />
+      <Variable x:TypeArguments="x:Boolean" Name="foundAvailable" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generatedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[System.Text.RegularExpressions.Regex.Replace(If(vendorName, "").ToUpperInvariant(), "[^A-Z0-9]", "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[cleanStem]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(normalizedName), "", If(normalizedName.Length &gt;= 5, normalizedName.Substring(0, 5), normalizedName.PadRight(5, "X"c)))]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[baseStem]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[cleanStem]</InArgument></Assign.Value></Assign>
+    <If Condition="[String.IsNullOrWhiteSpace(cleanStem)]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Unable to derive a deterministic vendor-number stem from vendor name."]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[foundAvailable]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[False]</InArgument></Assign.Value></Assign>
+          <ForEach x:TypeArguments="x:Int32" Values="[Enumerable.Range(1, 99)]">
+            <ActivityAction x:TypeArguments="x:Int32">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="x:Int32" Name="candidateNumber" />
+              </ActivityAction.Argument>
+              <Sequence>
+                <If Condition="[Not foundAvailable]">
+                  <If.Then>
+                    <Sequence>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[suffixNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[candidateNumber]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[candidateVendNum]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[cleanStem + suffixNumber.ToString("00")]</InArgument></Assign.Value></Assign>
+                      <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;vendorNumber&quot;,candidateVendNum},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" OutputArguments="[searchOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\SearchVendorByNumber.xaml&quot;]" />
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(searchOutput IsNot Nothing AndAlso searchOutput.ContainsKey("searchStatus") AndAlso searchOutput("searchStatus") IsNot Nothing, searchOutput("searchStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[candidateResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(searchOutput IsNot Nothing AndAlso searchOutput.ContainsKey("candidateResponseJson") AndAlso searchOutput("candidateResponseJson") IsNot Nothing, searchOutput("candidateResponseJson").ToString(), "{}")]</InArgument></Assign.Value></Assign>
+                      <If Condition="[searchStatusLocal = &quot;SUCCESS&quot;]">
+                        <If.Then>
+                          <Sequence>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="njl:JObject">[parsed]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JObject">[JObject.Parse(candidateResponseJson)]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="njl:JArray">[items]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JArray">[If(parsed("Items") IsNot Nothing AndAlso TypeOf parsed("Items") Is JArray, CType(parsed("Items"), JArray), New JArray())]</InArgument></Assign.Value></Assign>
+                            <If Condition="[items.Count = 0]">
+                              <If.Then>
+                                <Sequence>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[foundAvailable]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generatedVendorNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[candidateVendNum]</InArgument></Assign.Value></Assign>
+                                </Sequence>
+                              </If.Then>
+                            </If>
+                          </Sequence>
+                        </If.Then>
+                      </If>
+                    </Sequence>
+                  </If.Then>
+                </If>
+              </Sequence>
+            </ActivityAction>
+          </ForEach>
+          <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Vendor Number Generation" Line="[System.Environment.NewLine+&quot;  GenerateVendorNumber:&quot;+System.Environment.NewLine+&quot;    VendorName: &quot;+If(vendorName, &quot;&quot;)+System.Environment.NewLine+&quot;    BaseStem: &quot;+cleanStem+System.Environment.NewLine+&quot;    Format: STEM5+NN&quot;+System.Environment.NewLine+&quot;    Generated: &quot;+generatedVendorNumber]" Source="[logFile]" />
+          <If Condition="[foundAvailable AndAlso Not String.IsNullOrWhiteSpace(generatedVendorNumber)]">
+            <If.Then>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+            </If.Then>
+            <If.Else>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[generationErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Unable to generate an available vendor number from the current deterministic rule."]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+</Activity>

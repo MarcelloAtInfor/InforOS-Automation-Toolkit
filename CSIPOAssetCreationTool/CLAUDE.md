@@ -222,3 +222,12 @@ When working with Infor CloudSuite Industrial data:
 
 GAF_CLI (GenAI Agent Factory CLI) is used for publishing tools and agents. It lives at `../GAF_CLI` (sibling directory at repo root). See the root repository `CLAUDE.md` for full GAF_CLI documentation and commands.
 
+## Public V4 Addition
+
+The public repo now also includes `RPA/DemoInvoiceLoaderV2/`, the deterministic rewrite published/operator-facing as `DemoInvoiceLoader_V4`.
+
+Public packaging rules for that folder:
+- keep tracked source placeholder-based and tenant-safe
+- use `scripts/prepare_deploy.py` to materialize tenant-specific values
+- do not commit `.deploy` outputs or `deploy.local.json`
+

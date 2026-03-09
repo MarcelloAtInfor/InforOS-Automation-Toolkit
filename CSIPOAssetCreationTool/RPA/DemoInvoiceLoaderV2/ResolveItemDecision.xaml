@@ -1,0 +1,167 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="itemCode" Type="InArgument(x:String)" />
+    <x:Property Name="description" Type="InArgument(x:String)" />
+    <x:Property Name="unitOfMeasure" Type="InArgument(x:String)" />
+    <x:Property Name="unitPrice" Type="InArgument(x:String)" />
+    <x:Property Name="productCode" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="resolvedStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedItemCode" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedItemDescription" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedUnitOfMeasure" Type="OutArgument(x:String)" />
+    <x:Property Name="resolutionErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="createdFlag" Type="OutArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Resolve Item Decision" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="searchOutput" />
+      <Variable x:TypeArguments="x:String" Name="searchStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="searchErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="searchResponseJson" />
+      <Variable x:TypeArguments="x:String" Name="searchDescriptionLocal" />
+      <Variable x:TypeArguments="x:String" Name="searchUomLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="createOutput" />
+      <Variable x:TypeArguments="x:String" Name="createStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="createErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="appliedUomLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="verifyOutput" />
+      <Variable x:TypeArguments="x:String" Name="verifyStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="verifyErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="verifyResponseJsonLocal" />
+      <Variable x:TypeArguments="x:String" Name="verifyUomLocal" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemDescription]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedUnitOfMeasure]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(unitOfMeasure Is Nothing, "", unitOfMeasure.Trim().ToUpper())]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[createdFlag]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[False]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;itemCode&quot;,itemCode},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Search Existing Item" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[searchOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\SearchItem.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchStatus").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("searchErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchOutput("itemResponseJson").ToString()]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchDescriptionLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(searchResponseJson) AndAlso JObject.Parse(searchResponseJson).SelectToken("Items[0].Description") IsNot Nothing, JObject.Parse(searchResponseJson).SelectToken("Items[0].Description").ToString().Trim(), description)]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[searchUomLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(searchResponseJson) AndAlso JObject.Parse(searchResponseJson).SelectToken("Items[0].UM") IsNot Nothing, JObject.Parse(searchResponseJson).SelectToken("Items[0].UM").ToString().Trim().ToUpper(), If(unitOfMeasure Is Nothing, "", unitOfMeasure.Trim().ToUpper()))]</InArgument></Assign.Value></Assign>
+    <If Condition="[searchStatusLocal &lt;&gt; &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchErrorLocal]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <If Condition="[searchResponseJson.Contains(&quot;&quot;&quot;Item&quot;&quot;:&quot;)]">
+            <If.Then>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["REUSED_EXISTING"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(itemCode Is Nothing, "", itemCode.Trim().ToUpper())]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemDescription]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchDescriptionLocal]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedUnitOfMeasure]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[searchUomLocal]</InArgument></Assign.Value></Assign>
+                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Item Reuse" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  ResolveItemDecision:&quot;+System.Environment.NewLine+&quot;    Status: REUSED_EXISTING&quot;+System.Environment.NewLine+&quot;    Item: &quot;+itemCode+System.Environment.NewLine+&quot;    ResolvedUOM: &quot;+searchUomLocal]" Source="[logFile]" />
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <Sequence>
+                <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;itemCode&quot;,itemCode},{&quot;description&quot;,description},{&quot;unitOfMeasure&quot;,unitOfMeasure},{&quot;unitPrice&quot;,unitPrice},{&quot;productCode&quot;,productCode},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Create Missing Item" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_2" OutputArguments="[createOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\CreateItem.xaml&quot;]" />
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createStatus").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("createErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[appliedUomLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createOutput("appliedUnitOfMeasure").ToString()]</InArgument></Assign.Value></Assign>
+                <If Condition="[createStatusLocal = &quot;SUCCESS&quot;]">
+                  <If.Then>
+                    <Sequence>
+                      <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;itemCode&quot;,itemCode},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Verify Created Item" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_3" OutputArguments="[verifyOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\VerifyItem.xaml&quot;]" />
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationStatus").ToString()]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyResponseJsonLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyOutput("verificationResponseJson").ToString()]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyUomLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(verifyResponseJsonLocal) AndAlso JObject.Parse(verifyResponseJsonLocal).SelectToken("Items[0].UM") IsNot Nothing, JObject.Parse(verifyResponseJsonLocal).SelectToken("Items[0].UM").ToString().Trim().ToUpper(), appliedUomLocal)]</InArgument></Assign.Value></Assign>
+                      <If Condition="[verifyStatusLocal = &quot;SUCCESS&quot;]">
+                        <If.Then>
+                          <Sequence>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["CREATED_AND_VERIFIED"]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(itemCode Is Nothing, "", itemCode.Trim().ToUpper())]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedItemDescription]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[description]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedUnitOfMeasure]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyUomLocal]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[createdFlag]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value></Assign>
+                            <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Item Create Branch" sap2010:WorkflowViewState.IdRef="Append_Line_2" Line="[System.Environment.NewLine+&quot;  ResolveItemDecision:&quot;+System.Environment.NewLine+&quot;    Status: CREATED_AND_VERIFIED&quot;+System.Environment.NewLine+&quot;    Item: &quot;+itemCode+System.Environment.NewLine+&quot;    AppliedUOM: &quot;+appliedUomLocal+System.Environment.NewLine+&quot;    VerifiedUOM: &quot;+verifyUomLocal]" Source="[logFile]" />
+                          </Sequence>
+                        </If.Then>
+                        <If.Else>
+                          <Sequence>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyErrorLocal]</InArgument></Assign.Value></Assign>
+                          </Sequence>
+                        </If.Else>
+                      </If>
+                    </Sequence>
+                  </If.Then>
+                  <If.Else>
+                    <Sequence>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolutionErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[createErrorLocal]</InArgument></Assign.Value></Assign>
+                    </Sequence>
+                  </If.Else>
+                </If>
+              </Sequence>
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="200,120" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Append_Line_2" sap:VirtualizedContainerService.HintSize="200,140" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1580" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1660" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

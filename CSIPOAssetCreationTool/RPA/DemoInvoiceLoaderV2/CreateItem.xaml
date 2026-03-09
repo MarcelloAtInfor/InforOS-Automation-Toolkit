@@ -1,0 +1,128 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="itemCode" Type="InArgument(x:String)" />
+    <x:Property Name="description" Type="InArgument(x:String)" />
+    <x:Property Name="unitOfMeasure" Type="InArgument(x:String)" />
+    <x:Property Name="unitPrice" Type="InArgument(x:String)" />
+    <x:Property Name="productCode" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="createStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="createResponseJson" Type="OutArgument(x:String)" />
+    <x:Property Name="createErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="appliedUnitOfMeasure" Type="OutArgument(x:String)" />
+    <x:Property Name="fallbackApplied" Type="OutArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Create Item" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="normalizeOutput" />
+      <Variable x:TypeArguments="x:String" Name="normalizedUom" />
+      <Variable x:TypeArguments="x:String" Name="effectiveUom" />
+      <Variable x:TypeArguments="x:String" Name="normalizedPrice" />
+      <Variable x:TypeArguments="x:String" Name="requestJson" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="updateOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="updateStatus" />
+      <Variable x:TypeArguments="x:String" Name="updateError" />
+      <Variable x:TypeArguments="x:String" Name="updateResponseJson" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="fallbackOutput" />
+      <Variable x:TypeArguments="x:String" Name="resolvedFallbackValue" />
+      <Variable x:TypeArguments="x:Boolean" Name="resolvedFallbackApplied" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="retryOutputDict" />
+      <Variable x:TypeArguments="x:String" Name="retryStatus" />
+      <Variable x:TypeArguments="x:String" Name="retryError" />
+      <Variable x:TypeArguments="x:String" Name="retryResponseJson" />
+    </Sequence.Variables>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[fallbackApplied]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[False]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;originalUnitOfMeasure&quot;,unitOfMeasure}}]" ContinueOnError="False" DisplayName="Normalize UOM" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_1" OutputArguments="[normalizeOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\NormalizeUnitOfMeasure.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedUom]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(normalizeOutput IsNot Nothing AndAlso normalizeOutput.ContainsKey("normalizedUnitOfMeasure"), normalizeOutput("normalizedUnitOfMeasure").ToString(), If(unitOfMeasure Is Nothing, "", unitOfMeasure.Trim().ToUpper()))]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[effectiveUom]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[normalizedUom]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[normalizedPrice]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(unitPrice), "0.00", unitPrice.Replace("$","").Replace(",","").Trim())]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[requestJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""IDOName"":""SLItems"",""RefreshAfterSave"":true,""Changes"":[{""Action"":1,""Properties"":[{""IsNull"":false,""Modified"":true,""Name"":""Item"",""Value"":""" + itemCode.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""Description"",""Value"":""" + description.Replace("""","'") + """},{""IsNull"":false,""Modified"":true,""Name"":""UM"",""Value"":""" + effectiveUom.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""MatlType"",""Value"":""M""},{""IsNull"":false,""Modified"":true,""Name"":""PMTCode"",""Value"":""M""},{""IsNull"":false,""Modified"":true,""Name"":""ProductCode"",""Value"":""" + If(String.IsNullOrWhiteSpace(productCode), "FG-100", productCode.Replace("""","")) + """},{""IsNull"":false,""Modified"":true,""Name"":""AbcCode"",""Value"":""B""},{""IsNull"":false,""Modified"":true,""Name"":""CostType"",""Value"":""A""},{""IsNull"":false,""Modified"":true,""Name"":""CostMethod"",""Value"":""S""},{""IsNull"":false,""Modified"":true,""Name"":""Stat"",""Value"":""A""},{""IsNull"":false,""Modified"":true,""Name"":""CurMatCost"",""Value"":""" + normalizedPrice + """},{""IsNull"":false,""Modified"":true,""Name"":""MatlCost"",""Value"":""" + normalizedPrice + """},{""IsNull"":false,""Modified"":true,""Name"":""UnitCost"",""Value"":""" + normalizedPrice + """}]}]}"]</InArgument></Assign.Value></Assign>
+    <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLItems&quot;},{&quot;requestJson&quot;,requestJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Execute Item Insert" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_2" OutputArguments="[updateOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoUpdate.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("responseJson"), updateOutputDict("responseJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("operationStatus"), updateOutputDict("operationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(updateOutputDict IsNot Nothing AndAlso updateOutputDict.ContainsKey("errorMessage"), updateOutputDict("errorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <If Condition="[updateStatus &lt;&gt; &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Sequence>
+          <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;operationName&quot;,&quot;ITEM_INSERT&quot;},{&quot;errorMessage&quot;,updateError},{&quot;currentValue&quot;,effectiveUom}}]" ContinueOnError="False" DisplayName="Resolve Item Fallback" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_3" OutputArguments="[fallbackOutput]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ResolveTransactionalFallback.xaml&quot;]" />
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedFallbackValue]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(fallbackOutput IsNot Nothing AndAlso fallbackOutput.ContainsKey("fallbackValue"), fallbackOutput("fallbackValue").ToString(), "")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[resolvedFallbackApplied]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[If(fallbackOutput IsNot Nothing AndAlso fallbackOutput.ContainsKey("fallbackApplied"), CBool(fallbackOutput("fallbackApplied").ToString()), False)]</InArgument></Assign.Value></Assign>
+          <If Condition="[resolvedFallbackApplied AndAlso Not String.IsNullOrWhiteSpace(resolvedFallbackValue)]">
+            <If.Then>
+              <Sequence>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Boolean">[fallbackApplied]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Boolean">[True]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[effectiveUom]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[resolvedFallbackValue]</InArgument></Assign.Value></Assign>
+                <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Item Fallback Retry" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;  CreateItem fallback retry:&quot;+System.Environment.NewLine+&quot;    Item: &quot;+itemCode+System.Environment.NewLine+&quot;    Previous UOM: &quot;+normalizedUom+System.Environment.NewLine+&quot;    Retry UOM: &quot;+effectiveUom+System.Environment.NewLine+&quot;    Error: &quot;+updateError]" Source="[logFile]" />
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[requestJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""IDOName"":""SLItems"",""RefreshAfterSave"":true,""Changes"":[{""Action"":1,""Properties"":[{""IsNull"":false,""Modified"":true,""Name"":""Item"",""Value"":""" + itemCode.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""Description"",""Value"":""" + description.Replace("""","'") + """},{""IsNull"":false,""Modified"":true,""Name"":""UM"",""Value"":""" + effectiveUom.Replace("""","") + """},{""IsNull"":false,""Modified"":true,""Name"":""MatlType"",""Value"":""M""},{""IsNull"":false,""Modified"":true,""Name"":""PMTCode"",""Value"":""M""},{""IsNull"":false,""Modified"":true,""Name"":""ProductCode"",""Value"":""" + If(String.IsNullOrWhiteSpace(productCode), "FG-100", productCode.Replace("""","")) + """},{""IsNull"":false,""Modified"":true,""Name"":""AbcCode"",""Value"":""B""},{""IsNull"":false,""Modified"":true,""Name"":""CostType"",""Value"":""A""},{""IsNull"":false,""Modified"":true,""Name"":""CostMethod"",""Value"":""S""},{""IsNull"":false,""Modified"":true,""Name"":""Stat"",""Value"":""A""},{""IsNull"":false,""Modified"":true,""Name"":""CurMatCost"",""Value"":""" + normalizedPrice + """},{""IsNull"":false,""Modified"":true,""Name"":""MatlCost"",""Value"":""" + normalizedPrice + """},{""IsNull"":false,""Modified"":true,""Name"":""UnitCost"",""Value"":""" + normalizedPrice + """}]}]}"]</InArgument></Assign.Value></Assign>
+                <iaw:InvokeWorkflow Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;idoName&quot;,&quot;SLItems&quot;},{&quot;requestJson&quot;,requestJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Execute Retry Item Insert" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_4" OutputArguments="[retryOutputDict]" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\ExecuteIdoUpdate.xaml&quot;]" />
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[retryResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retryOutputDict IsNot Nothing AndAlso retryOutputDict.ContainsKey("responseJson"), retryOutputDict("responseJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[retryStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retryOutputDict IsNot Nothing AndAlso retryOutputDict.ContainsKey("operationStatus"), retryOutputDict("operationStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[retryError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retryOutputDict IsNot Nothing AndAlso retryOutputDict.ContainsKey("errorMessage"), retryOutputDict("errorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[retryStatus]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[retryError]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[updateResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[retryResponseJson]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Then>
+          </If>
+        </Sequence>
+      </If.Then>
+    </If>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createResponseJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[updateResponseJson]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[appliedUnitOfMeasure]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[effectiveUom]</InArgument></Assign.Value></Assign>
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Item Create Summary" sap2010:WorkflowViewState.IdRef="Append_Line_2" Line="[System.Environment.NewLine+&quot;  CreateItem:&quot;+System.Environment.NewLine+&quot;    Item: &quot;+itemCode+System.Environment.NewLine+&quot;    Final UOM: &quot;+effectiveUom+System.Environment.NewLine+&quot;    FallbackApplied: &quot;+fallbackApplied.ToString()+System.Environment.NewLine+&quot;    Status: &quot;+updateStatus+If(updateError.Length &gt; 0, System.Environment.NewLine+&quot;    Error: &quot;+updateError, &quot;&quot;)]" Source="[logFile]" />
+    <If Condition="[updateStatus = &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+      </If.Then>
+      <If.Else>
+        <Sequence>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[createErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[updateError]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Else>
+    </If>
+  </Sequence>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="InvokeWorkflow_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_2" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Append_Line_1" sap:VirtualizedContainerService.HintSize="200,120" />
+      <sap2010:ViewStateData Id="InvokeWorkflow_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Append_Line_2" sap:VirtualizedContainerService.HintSize="432,140" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="432,22" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="432,248" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="454,1480" />
+      <sap2010:ViewStateData Id="RehostedWorkflowDesigner.Workflow_1" sap:VirtualizedContainerService.HintSize="494,1560" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

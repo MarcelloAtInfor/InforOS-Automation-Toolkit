@@ -1,0 +1,61 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="sourceDocumentName" Type="InArgument(x:String)" />
+    <x:Property Name="ocrStatus" Type="InArgument(x:String)" />
+    <x:Property Name="ocrMode" Type="InArgument(x:String)" />
+    <x:Property Name="intakeStatus" Type="InArgument(x:String)" />
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="overallStatus" Type="InArgument(x:String)" />
+    <x:Property Name="vendorStatus" Type="InArgument(x:String)" />
+    <x:Property Name="vendorNumber" Type="InArgument(x:String)" />
+    <x:Property Name="itemStatus" Type="InArgument(x:String)" />
+    <x:Property Name="createdItemCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="poStatus" Type="InArgument(x:String)" />
+    <x:Property Name="purchaseOrderNumber" Type="InArgument(x:String)" />
+    <x:Property Name="poLineStatus" Type="InArgument(x:String)" />
+    <x:Property Name="createdLineCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="verifyLineStatus" Type="InArgument(x:String)" />
+    <x:Property Name="actualLineCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="errorMessage" Type="InArgument(x:String)" />
+    <x:Property Name="summaryText" Type="OutArgument(x:String)" />
+    <x:Property Name="summaryJson" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[summaryText]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["OverallStatus: " + overallStatus + If(String.IsNullOrWhiteSpace(sourceDocumentName), "", System.Environment.NewLine + "SourceDocument: " + sourceDocumentName) + If(String.IsNullOrWhiteSpace(ocrStatus), "", System.Environment.NewLine + "OCRStatus: " + ocrStatus) + If(String.IsNullOrWhiteSpace(intakeStatus), "", System.Environment.NewLine + "IntakeStatus: " + intakeStatus) + System.Environment.NewLine + "VendorStatus: " + vendorStatus + If(String.IsNullOrWhiteSpace(vendorNumber), "", " (" + vendorNumber + ")") + If(String.IsNullOrWhiteSpace(vendorName), "", " | " + vendorName) + System.Environment.NewLine + "ItemStatus: " + itemStatus + " | CreatedItems: " + createdItemCount.ToString() + System.Environment.NewLine + "PoStatus: " + poStatus + If(String.IsNullOrWhiteSpace(purchaseOrderNumber), "", " (" + purchaseOrderNumber + ")") + System.Environment.NewLine + "PoLineStatus: " + poLineStatus + " | CreatedLines: " + createdLineCount.ToString() + System.Environment.NewLine + "VerifyLineStatus: " + verifyLineStatus + " | ActualLines: " + actualLineCount.ToString() + If(String.IsNullOrWhiteSpace(errorMessage), "", System.Environment.NewLine + "Error: " + errorMessage)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[summaryJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["{""overallStatus"":""" + If(overallStatus Is Nothing, "", overallStatus.Replace("""","")) + """,""sourceDocumentName"":""" + If(sourceDocumentName Is Nothing, "", sourceDocumentName.Replace("""","")) + """,""ocrStatus"":""" + If(ocrStatus Is Nothing, "", ocrStatus.Replace("""","")) + """,""ocrMode"":""" + If(ocrMode Is Nothing, "", ocrMode.Replace("""","")) + """,""intakeStatus"":""" + If(intakeStatus Is Nothing, "", intakeStatus.Replace("""","")) + """,""vendorStatus"":""" + If(vendorStatus Is Nothing, "", vendorStatus.Replace("""","")) + """,""vendorNumber"":""" + If(vendorNumber Is Nothing, "", vendorNumber.Replace("""","")) + """,""vendorName"":""" + If(vendorName Is Nothing, "", vendorName.Replace("""","'")) + """,""itemStatus"":""" + If(itemStatus Is Nothing, "", itemStatus.Replace("""","")) + """,""createdItemCount"":" + createdItemCount.ToString() + ",""poStatus"":""" + If(poStatus Is Nothing, "", poStatus.Replace("""","")) + """,""purchaseOrderNumber"":""" + If(purchaseOrderNumber Is Nothing, "", purchaseOrderNumber.Replace("""","")) + """,""poLineStatus"":""" + If(poLineStatus Is Nothing, "", poLineStatus.Replace("""","")) + """,""createdLineCount"":" + createdLineCount.ToString() + ",""verifyLineStatus"":""" + If(verifyLineStatus Is Nothing, "", verifyLineStatus.Replace("""","")) + """,""actualLineCount"":" + actualLineCount.ToString() + ",""errorMessage"":""" + If(errorMessage Is Nothing, "", errorMessage.Replace("""","'")) + """}"]</InArgument>
+      </Assign.Value>
+    </Assign>
+  </Sequence>
+</Activity>

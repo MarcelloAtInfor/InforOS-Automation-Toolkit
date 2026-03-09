@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "description": "Bounded deterministic fallback rules for V2 transactional retries.",
+  "uom_substitutions": {
+    "PR": "EA",
+    "PN": "EA",
+    "PCS": "EA",
+    "PC": "EA",
+    "EACH": "EA"
+  },
+  "retry_policies": {
+    "item_insert_invalid_uom": {
+      "max_retries": 1,
+      "use_substitution_map": "uom_substitutions",
+      "log_reason": "Unsupported UOM from CSI item insert"
+    }
+  },
+  "notes": [
+    "All automatic substitutions must come from this explicit allowlist.",
+    "Unknown values must not be silently remapped."
+  ]
+}
+

@@ -1,0 +1,64 @@
+{
+  "ExtractionData": [
+    {
+      "FieldName": "Vendor Name",
+      "FieldValue": "Atlas Conveyor Supply"
+    },
+    {
+      "FieldName": "Vendor Address",
+      "FieldValue": "8801 Transit Park Drive, Columbus, OH 43085"
+    },
+    {
+      "FieldName": "Vendor Phone Number",
+      "FieldValue": "614-555-0177"
+    },
+    {
+      "FieldName": "Vendor Email Address",
+      "FieldValue": "ap@atlasconveyor.example"
+    },
+    {
+      "FieldName": "Purchase Order Number",
+      "FieldValue": ""
+    },
+    {
+      "FieldName": "Order Date",
+      "FieldValue": "2026-03-10"
+    },
+    {
+      "FieldName": "VAT/Tax Amount",
+      "FieldValue": "18.12"
+    }
+  ],
+  "TableDetection": [
+    {
+      "TableRows": [
+        [
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "V2OCRITEM2"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "V2 OCR Sample Item 2"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "2"
+          },
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA"
+          },
+          {
+            "ColumnName": "Unit Price",
+            "OCR_text": "210.10"
+          }
+        ]
+      ]
+    }
+  ]
+}

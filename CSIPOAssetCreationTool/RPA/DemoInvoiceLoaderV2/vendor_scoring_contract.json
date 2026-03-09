@@ -1,0 +1,54 @@
+{
+  "description": "Deterministic vendor candidate scoring contract for V2.",
+  "inputs": {
+    "normalizedVendorName": "BICYCLE PARTS COMPANY",
+    "normalizedVendorAddress": "7768 E LINCOLN WAY APPLE CREEK OH 44606",
+    "normalizedVendorEmail": "william.davis@inforbc.com",
+    "normalizedVendorPhone": "3306842607"
+  },
+  "candidate": {
+    "VendNum": "1",
+    "Name": "Bicycle Parts Company",
+    "VadAddr_1": "7768 E Lincoln Way",
+    "VadCity": "Apple Creek",
+    "VadState": "OH",
+    "VadZip": "44606",
+    "Phone": "330-684-2607",
+    "ExternalEmailAddr": "william.davis@inforbc.com"
+  },
+  "rules": {
+    "rejectedWhen": "normalized candidate name does not exactly match normalized invoice vendor name",
+    "selectedExactWhen": "exact name plus exact normalized full address, or exact line1 plus exact city/state/zip",
+    "selectedFuzzyWhen": "exact name plus exact house number plus exact city/state/zip plus bounded near-match on normalized street core",
+    "tieBreakers": "after address threshold is met, use exact email, exact phone, then identity completeness",
+    "ambiguousWhen": "exact name exists but the address threshold is not met strongly enough"
+  },
+  "weights": {
+    "nameExact": 1000,
+    "addressExactOrStructuralExact": 500,
+    "structuralAddressNear": 300,
+    "emailExact": 100,
+    "phoneExact": 100,
+    "identityCompletenessPerField": 1
+  },
+  "outputShape": {
+    "vendNum": "1",
+    "nameExact": true,
+    "addressExact": true,
+    "line1Exact": true,
+    "cityExact": true,
+    "stateExact": true,
+    "zipExact": true,
+    "houseNumberExact": true,
+    "streetCoreExact": true,
+    "streetCoreNear": true,
+    "structuralAddressExact": true,
+    "structuralAddressNear": true,
+    "emailExact": true,
+    "phoneExact": true,
+    "identityCompleteness": 3,
+    "scoreValue": 1703,
+    "rejected": false,
+    "decision": "selected_exact"
+  }
+}

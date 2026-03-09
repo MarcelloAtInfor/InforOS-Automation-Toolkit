@@ -1,0 +1,17 @@
+{
+  "DocumentTypeId": "type",
+  "TemplateID": "id",
+  "Page": [
+    {
+      "PageID": "1",
+      "StartReg": "",
+      "EndReg": "",
+      "Keywords": null,
+      "Fields": [],
+      "Tables": []
+    }
+  ],
+  "Keywords": "",
+  "ExcludeKeywords": "",
+  "ConfidenceScore": 0
+}

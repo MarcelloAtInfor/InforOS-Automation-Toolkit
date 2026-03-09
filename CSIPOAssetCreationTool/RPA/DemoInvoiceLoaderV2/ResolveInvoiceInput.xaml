@@ -1,0 +1,159 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="useFormattedInvoiceInput" Type="InArgument(x:Boolean)" />
+    <x:Property Name="rawOcrJson" Type="InArgument(x:String)" />
+    <x:Property Name="rawOcrJsonPath" Type="InArgument(x:String)" />
+    <x:Property Name="vendorName" Type="InArgument(x:String)" />
+    <x:Property Name="vendorAddress" Type="InArgument(x:String)" />
+    <x:Property Name="vendorCity" Type="InArgument(x:String)" />
+    <x:Property Name="vendorState" Type="InArgument(x:String)" />
+    <x:Property Name="vendorZip" Type="InArgument(x:String)" />
+    <x:Property Name="vendorPhone" Type="InArgument(x:String)" />
+    <x:Property Name="vendorEmail" Type="InArgument(x:String)" />
+    <x:Property Name="termsCode" Type="InArgument(x:String)" />
+    <x:Property Name="purchaseOrderNumber" Type="InArgument(x:String)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="salesTax" Type="InArgument(x:String)" />
+    <x:Property Name="lineItemsJson" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="intakeStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="intakeErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorName" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorAddress" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorCity" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorState" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorZip" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorPhone" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedVendorEmail" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedTermsCode" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedPurchaseOrderNumber" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedWarehouse" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedSalesTax" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedLineItemsJson" Type="OutArgument(x:String)" />
+    <x:Property Name="resolvedNormalizedLineCount" Type="OutArgument(x:Int32)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TryCatch DisplayName="Resolve Invoice Input">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="formatOutput" />
+      <Variable x:TypeArguments="x:String" Name="formatStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="formatErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="effectiveRawOcrJson" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[intakeStatus]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value>
+        </Assign>
+        <Assign>
+          <Assign.To><OutArgument x:TypeArguments="x:String">[intakeErrorMessage]</OutArgument></Assign.To>
+          <Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value>
+        </Assign>
+        <If Condition="[useFormattedInvoiceInput]">
+          <If.Then>
+            <Sequence>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[effectiveRawOcrJson]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(rawOcrJson), rawOcrJson, If(Not String.IsNullOrWhiteSpace(rawOcrJsonPath), System.IO.File.ReadAllText(rawOcrJsonPath), ""))]</InArgument></Assign.Value>
+              </Assign>
+              <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Intake Mode Formatted" Line="[System.Environment.NewLine+&quot;  ResolveInvoiceInput:&quot;+System.Environment.NewLine+&quot;    Mode: FORMATTED_OCR_JSON&quot;]" Source="[logFile]" />
+              <iaw:InvokeWorkflow ContinueOnError="False" DisplayName="Format OCR Invoice Data" ResponseCode="{x:Null}" WorkflowFile="[projectPath+&quot;\FormatInvoiceData.xaml&quot;]" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;ocrJsonText&quot;,effectiveRawOcrJson},{&quot;defaultWarehouse&quot;,warehouse},{&quot;defaultTerms&quot;,termsCode},{&quot;logFile&quot;,logFile}}]" OutputArguments="[formatOutput]" />
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatStatusLocal]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(formatOutput IsNot Nothing AndAlso formatOutput.ContainsKey("formatStatus"), formatOutput("formatStatus").ToString(), "FAILED")]</InArgument></Assign.Value>
+              </Assign>
+              <Assign>
+                <Assign.To><OutArgument x:TypeArguments="x:String">[formatErrorLocal]</OutArgument></Assign.To>
+                <Assign.Value><InArgument x:TypeArguments="x:String">[If(formatOutput IsNot Nothing AndAlso formatOutput.ContainsKey("formatErrorMessage"), formatOutput("formatErrorMessage").ToString(), "Unknown formatting error.")]</InArgument></Assign.Value>
+              </Assign>
+              <If Condition="[formatStatusLocal = &quot;SUCCESS&quot;]">
+                <If.Then>
+                  <Sequence>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorName").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorAddress]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorAddress").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorCity]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorCity").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorState]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorState").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorZip]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorZip").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorPhone]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorPhone").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorEmail]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("vendorEmail").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedTermsCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("termsCode").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPurchaseOrderNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("purchaseOrderNumber").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedWarehouse]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("warehouse").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedSalesTax]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("salesTax").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedLineItemsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatOutput("lineItemsJson").ToString()]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[resolvedNormalizedLineCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[CInt(formatOutput("normalizedLineCount").ToString())]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+                  </Sequence>
+                </If.Then>
+                <If.Else>
+                  <Sequence>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[formatErrorLocal]</InArgument></Assign.Value></Assign>
+                  </Sequence>
+                </If.Else>
+              </If>
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <Sequence>
+              <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Intake Mode Manual" Line="[System.Environment.NewLine+&quot;  ResolveInvoiceInput:&quot;+System.Environment.NewLine+&quot;    Mode: MANUAL_SMOKE&quot;]" Source="[logFile]" />
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorName Is Nothing, "", vendorName.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorAddress]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorAddress Is Nothing, "", vendorAddress.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorCity]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorCity Is Nothing, "", vendorCity.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorState]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorState Is Nothing, "", vendorState.Trim().ToUpper())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorZip]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorZip Is Nothing, "", vendorZip.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorPhone]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorPhone Is Nothing, "", vendorPhone.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedVendorEmail]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(vendorEmail Is Nothing, "", vendorEmail.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedTermsCode]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(termsCode), "N30", termsCode.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPurchaseOrderNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(purchaseOrderNumber Is Nothing, "", purchaseOrderNumber.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedWarehouse]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(warehouse), "MAIN", warehouse.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedSalesTax]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(salesTax), "0.00", salesTax.Trim())]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedLineItemsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(lineItemsJson Is Nothing, "", lineItemsJson)]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[resolvedNormalizedLineCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Else>
+        </If>
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[intakeErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["ResolveInvoiceInput exception: " + exception.Message]</InArgument></Assign.Value></Assign>
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+</Activity>

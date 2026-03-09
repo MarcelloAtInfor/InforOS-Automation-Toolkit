@@ -1,0 +1,117 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="operationName" Type="InArgument(x:String)" />
+    <x:Property Name="errorMessage" Type="InArgument(x:String)" />
+    <x:Property Name="currentValue" Type="InArgument(x:String)" />
+    <x:Property Name="fallbackValue" Type="OutArgument(x:String)" />
+    <x:Property Name="fallbackApplied" Type="OutArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>RehostedWorkflowDesigner.Workflow_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <Sequence DisplayName="Resolve Transactional Fallback" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="normalizedOperationName" />
+      <Variable x:TypeArguments="x:String" Name="normalizedErrorMessage" />
+      <Variable x:TypeArguments="x:String" Name="normalizedCurrentValue" />
+      <Variable x:TypeArguments="x:String" Name="candidateFallbackValue" />
+      <Variable x:TypeArguments="x:Boolean" Name="shouldApplyFallback" />
+    </Sequence.Variables>
+    <Assign DisplayName="Normalize Operation Name" sap2010:WorkflowViewState.IdRef="Assign_1">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedOperationName]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(operationName Is Nothing, "", operationName.Trim().ToUpper())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Error Message" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedErrorMessage]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(errorMessage Is Nothing, "", errorMessage.Trim().ToUpper())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Normalize Current Value" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[normalizedCurrentValue]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(currentValue Is Nothing, "", currentValue.Trim().ToUpper())]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Init Fallback Value" sap2010:WorkflowViewState.IdRef="Assign_4">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[fallbackValue]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Init Fallback Applied" sap2010:WorkflowViewState.IdRef="Assign_5">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[fallbackApplied]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[False]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Resolve Candidate Fallback Value" sap2010:WorkflowViewState.IdRef="Assign_6">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[candidateFallbackValue]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(normalizedCurrentValue = "PR", "EA", If(normalizedCurrentValue = "PN", "EA", If(normalizedCurrentValue = "PCS", "EA", If(normalizedCurrentValue = "PC", "EA", If(normalizedCurrentValue = "EACH", "EA", "")))))]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="Compute Apply Fallback Flag" sap2010:WorkflowViewState.IdRef="Assign_7">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[shouldApplyFallback]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[normalizedOperationName = "ITEM_INSERT" AndAlso (normalizedErrorMessage.Contains("UNSUPPORTED") OrElse normalizedErrorMessage.Contains("INVALID")) AndAlso (normalizedErrorMessage.Contains("UOM") OrElse normalizedErrorMessage.Contains("UNIT OF MEASURE") OrElse normalizedErrorMessage.Contains(" UM")) AndAlso candidateFallbackValue &lt;&gt; "" AndAlso candidateFallbackValue &lt;&gt; normalizedCurrentValue]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If Condition="[shouldApplyFallback]" DisplayName="Apply Unsupported UOM Fallback" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <Sequence DisplayName="Set Fallback Outputs" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Assign DisplayName="Set Fallback Value" sap2010:WorkflowViewState.IdRef="Assign_8">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[fallbackValue]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">[candidateFallbackValue]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign DisplayName="Set Fallback Applied" sap2010:WorkflowViewState.IdRef="Assign_9">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:Boolean">[fallbackApplied]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:Boolean">[True]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Then>
+    </If>
+  </Sequence>
+</Activity>

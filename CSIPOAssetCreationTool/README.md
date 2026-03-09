@@ -4,6 +4,18 @@ An end-to-end **invoice automation system** for **Infor CloudSuite Industrial (S
 
 **v1.0 shipped February 2026** with price handling, item sourcing, and debug capabilities.
 
+## Deterministic Rewrite
+
+A deterministic rewrite of the RPA flow is now also available at:
+
+- `RPA/DemoInvoiceLoaderV2/`
+
+Published/operator-facing name:
+
+- `DemoInvoiceLoader_V4`
+
+This rewrite keeps OCR and notifications, but removes GenAI from the transactional path. Vendor, item, PO, and PO-line decisions are now made directly in RPA through deterministic CSI API logic.
+
 ## How It Works
 
 ```

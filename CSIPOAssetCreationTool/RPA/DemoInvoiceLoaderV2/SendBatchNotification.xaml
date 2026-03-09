@@ -1,0 +1,120 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:iai="clr-namespace:Infor.Activities.IONAPI;assembly=Infor.Activities.IONAPI"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iru="clr-namespace:Infor.RPA.Utilities;assembly=Infor.RPA.Utilities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="recipientUserId" Type="InArgument(x:String)" />
+    <x:Property Name="processingStatus" Type="InArgument(x:String)" />
+    <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
+    <x:Property Name="worklistCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="processedCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="successCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="failureCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="failedDocumentsCsv" Type="InArgument(x:String)" />
+    <x:Property Name="artifactPath" Type="InArgument(x:String)" />
+    <x:Property Name="notes" Type="InArgument(x:String)" />
+    <x:Property Name="notificationStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="notificationError" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>Infor.RPA.Utilities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Microsoft.Bcl.AsyncInterfaces</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.ValueTuple</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Infor.RPA.Utilities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="Send Batch Notification">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="x:String" Name="workflowEndpoint" />
+      <Variable x:TypeArguments="x:String" Name="requestPayload" />
+      <Variable x:TypeArguments="iru:ResponseObject" Name="apiResponse" />
+      <Variable x:TypeArguments="x:Int32" Name="apiResponseCode" />
+      <Variable x:TypeArguments="x:String" Name="instanceName" />
+      <Variable x:TypeArguments="x:String" Name="safeInputFolderPath" />
+      <Variable x:TypeArguments="x:String" Name="safeFailedDocumentsCsv" />
+      <Variable x:TypeArguments="x:String" Name="safeArtifactPath" />
+      <Variable x:TypeArguments="x:String" Name="safeNotes" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[safeInputFolderPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(inputFolderPath), "N/A", inputFolderPath.Replace("\", "\\").Replace("""", "'").Replace(System.Environment.NewLine, " "))]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[safeFailedDocumentsCsv]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(failedDocumentsCsv), "N/A", failedDocumentsCsv.Replace("\", "\\").Replace("""", "'").Replace(System.Environment.NewLine, " "))]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[safeArtifactPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(artifactPath), "N/A", artifactPath.Replace("\", "\\").Replace("""", "'").Replace(System.Environment.NewLine, " "))]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[safeNotes]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(notes), "N/A", notes.Replace("\", "\\").Replace("""", "'").Replace(System.Environment.NewLine, " "))]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[instanceName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["RPA_BATCH_"+System.DateTime.Now.ToString("yyyyMMdd_HHmmss")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[workflowEndpoint]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[tenantURL.TrimEnd("/"c)+"/IONSERVICES/process/application/v1/workflow/start?logicalId=lid://infor.rpa.claudecode"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[requestPayload]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""workflowName"": ""RPA_Invoice_Batch_Notification"", ""instanceName"": """+instanceName+""", ""inputVariables"": [{""name"": ""RecipientUserId"", ""value"": """+recipientUserId+""", ""dataType"": ""STRING""}, {""name"": ""ProcessingStatus"", ""value"": """+processingStatus+""", ""dataType"": ""STRING""}, {""name"": ""InputFolderPath"", ""value"": """+safeInputFolderPath+""", ""dataType"": ""STRING""}, {""name"": ""WorklistCount"", ""value"": """+worklistCount.ToString()+""", ""dataType"": ""STRING""}, {""name"": ""ProcessedCount"", ""value"": """+processedCount.ToString()+""", ""dataType"": ""STRING""}, {""name"": ""SuccessCount"", ""value"": """+successCount.ToString()+""", ""dataType"": ""STRING""}, {""name"": ""FailureCount"", ""value"": """+failureCount.ToString()+""", ""dataType"": ""STRING""}, {""name"": ""FailedDocuments"", ""value"": """+safeFailedDocumentsCsv+""", ""dataType"": ""STRING""}, {""name"": ""ArtifactPath"", ""value"": """+safeArtifactPath+""", ""dataType"": ""STRING""}, {""name"": ""Notes"", ""value"": """+safeNotes+""", ""dataType"": ""STRING""}]}"]</InArgument></Assign.Value></Assign>
+        <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Batch Notification Start" Line="[System.Environment.NewLine+&quot;  SendBatchNotification:&quot;+System.Environment.NewLine+&quot;    Instance: &quot;+instanceName+System.Environment.NewLine+&quot;    Endpoint: &quot;+workflowEndpoint+System.Environment.NewLine+&quot;    Folder: &quot;+safeInputFolderPath]" Source="[logFile]" />
+        <iai:IONAPIRequestWizard FileAttachments="{x:Null}" QueryParameters="{x:Null}" StatusCode="{x:Null}" ContentType="application_json" ContinueOnError="True" DisplayName="POST Batch Notification Workflow" HttpMethod="POST" PostData="[requestPayload]" Response="[apiResponse]" ResponseCode="[apiResponseCode]" Url="[workflowEndpoint]">
+          <iai:IONAPIRequestWizard.Headers>
+            <scg:List x:TypeArguments="scg:List(x:String)" Capacity="4">
+              <scg:List x:TypeArguments="x:String" Capacity="0" />
+              <scg:List x:TypeArguments="x:String" Capacity="0" />
+            </scg:List>
+          </iai:IONAPIRequestWizard.Headers>
+        </iai:IONAPIRequestWizard>
+        <If Condition="[apiResponseCode &gt;= 200 AndAlso apiResponseCode &lt; 300 AndAlso (apiResponse Is Nothing OrElse Not apiResponse.readastext.StartsWith(&quot;Code:&quot;))]">
+          <If.Then>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+          </If.Then>
+          <If.Else>
+            <Sequence>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["API call failed with code "+apiResponseCode.ToString()+": "+If(apiResponse IsNot Nothing, apiResponse.readastext, "No response")]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Else>
+        </If>
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[notificationError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Exception: "+exception.Message]</InArgument></Assign.Value></Assign>
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+</Activity>

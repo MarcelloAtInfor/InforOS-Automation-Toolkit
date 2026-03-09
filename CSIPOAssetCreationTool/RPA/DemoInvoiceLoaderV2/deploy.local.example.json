@@ -1,0 +1,20 @@
+{
+  "tenant_id": "<YOUR_TENANT>",
+  "process_id": "<YOUR_PROCESS_ID>",
+  "project_version": "0.1.0",
+  "site": "<YOUR_SITE>",
+  "tenant_url": "https://mingle-ionapi.inforcloudsuite.com/<YOUR_TENANT>/",
+  "project_path": "<YOUR_PROJECT_PATH>",
+  "configuration_folder": "C:\\InforRPA\\DemoInvoiceLoader_V4",
+  "input_folder_path": "C:\\InforRPA\\DemoInvoiceLoader_V4\\Input",
+  "warehouse": "MAIN",
+  "terms": "N30",
+  "recipient_user_id": "user@example.com",
+  "enable_notifications": false,
+  "enable_debug_mode": false,
+  "preserve_output_paths": [
+    "ExtractOCRData.xaml",
+    "Documents"
+  ],
+  "output_dir": ""
+}

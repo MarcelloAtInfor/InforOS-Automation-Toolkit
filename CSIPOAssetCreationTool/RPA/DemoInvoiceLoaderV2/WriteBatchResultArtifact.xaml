@@ -1,0 +1,71 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
+    <x:Property Name="overallStatus" Type="InArgument(x:String)" />
+    <x:Property Name="summaryJson" Type="InArgument(x:String)" />
+    <x:Property Name="resultsJson" Type="InArgument(x:String)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="artifactStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="artifactErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="artifactPath" Type="OutArgument(x:String)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TryCatch DisplayName="Write Batch Result Artifact">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="x:String" Name="runtimeRootFolder" />
+      <Variable x:TypeArguments="x:String" Name="targetFolder" />
+      <Variable x:TypeArguments="x:String" Name="todayFolder" />
+      <Variable x:TypeArguments="x:String" Name="artifactName" />
+      <Variable x:TypeArguments="x:String" Name="artifactContent" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[todayFolder]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[System.DateTime.Now.ToString("yyyy-MM-dd")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[runtimeRootFolder]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[System.IO.Directory.GetParent(inputFolderPath).FullName]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[targetFolder]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[System.IO.Path.Combine(runtimeRootFolder, If(String.Equals(overallStatus, "SUCCESS", StringComparison.OrdinalIgnoreCase), "Success", "Failure"), todayFolder)]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["BatchResult_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".json"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[System.IO.Path.Combine(targetFolder, artifactName)]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactContent]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""generatedAt"":""" + System.DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + """,""overallStatus"":""" + If(String.IsNullOrWhiteSpace(overallStatus), "", overallStatus.Replace("""","")) + """,""summary"":" + If(String.IsNullOrWhiteSpace(summaryJson), "{}" , summaryJson) + ",""results"":" + If(String.IsNullOrWhiteSpace(resultsJson), "[]", resultsJson) + "}"]</InArgument></Assign.Value></Assign>
+        <ias:File_Create ErrorCode="{x:Null}" ContinueOnError="False" DisplayName="Create Artifact File" Name="[artifactName]" OutputFile="[artifactPath]" Target="[targetFolder]" />
+        <ias:Append_Line ContinueOnError="False" ErrorCode="{x:Null}" DisplayName="Write Artifact Content" Line="[artifactContent]" Source="[artifactPath]" />
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+        <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Artifact Result" Line="[System.Environment.NewLine+&quot;  WriteBatchResultArtifact:&quot;+System.Environment.NewLine+&quot;    Status: &quot;+artifactStatus+System.Environment.NewLine+&quot;    Path: &quot;+artifactPath]" Source="[logFile]" />
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["WriteBatchResultArtifact exception: " + exception.Message]</InArgument></Assign.Value></Assign>
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+</Activity>

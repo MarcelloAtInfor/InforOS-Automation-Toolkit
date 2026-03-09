@@ -1,0 +1,90 @@
+{
+  "ExtractionData": [
+    {
+      "FieldName": "Vendor Name",
+      "FieldValue": "V2 OCR Sample Supply"
+    },
+    {
+      "FieldName": "Vendor Address",
+      "FieldValue": "1248 Foundry Parkway, Toledo, OH 43604"
+    },
+    {
+      "FieldName": "Vendor Phone Number",
+      "FieldValue": "419-555-0144"
+    },
+    {
+      "FieldName": "Vendor Email Address",
+      "FieldValue": "ap@v2ocrsample.example"
+    },
+    {
+      "FieldName": "Purchase Order Number",
+      "FieldValue": ""
+    },
+    {
+      "FieldName": "Order Date",
+      "FieldValue": "2026-03-08"
+    },
+    {
+      "FieldName": "VAT/Tax Amount",
+      "FieldValue": "24.30"
+    }
+  ],
+  "TableDetection": [
+    {
+      "TableRows": [
+        [
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "1"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "V2OCRITEM1"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "V2 OCR Sample Item 1"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "2"
+          },
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA"
+          },
+          {
+            "ColumnName": "Unit Price",
+            "OCR_text": "145.25"
+          }
+        ],
+        [
+          {
+            "ColumnName": "Line Number",
+            "OCR_text": "2"
+          },
+          {
+            "ColumnName": "Item Code",
+            "OCR_text": "V2OCRITEM2"
+          },
+          {
+            "ColumnName": "Description",
+            "OCR_text": "V2 OCR Sample Item 2"
+          },
+          {
+            "ColumnName": "Quantity Shipped",
+            "OCR_text": "1"
+          },
+          {
+            "ColumnName": "UOM",
+            "OCR_text": "EA"
+          },
+          {
+            "ColumnName": "Unit Price",
+            "OCR_text": "210.10"
+          }
+        ]
+      ]
+    }
+  ]
+}

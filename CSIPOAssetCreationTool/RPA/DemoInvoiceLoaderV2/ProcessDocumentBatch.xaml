@@ -1,0 +1,289 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:this="clr-namespace:RehostedWorkflowDesigner"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ this:Workflow.projectPath="YOUR_PROJECT_PATH"
+ this:Workflow.tenantURL="https://mingle-ionapi.inforcloudsuite.com/YOUR_TENANT/"
+ this:Workflow.site="YOUR_SITE"
+ this:Workflow.inputFolderPath="YOUR_PROJECT_PATH\samples\runtime_batch\Input"
+ this:Workflow.logFile="C:\InforRPA\DemoInvoiceLoader\Logs\DemoInvoiceLoaderV2-batch-log.txt">
+  <x:Members>
+    <x:Property Name="projectPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
+    <x:Property Name="maxDocuments" Type="InArgument(x:Int32)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="terms" Type="InArgument(x:String)" />
+    <x:Property Name="recipientUserId" Type="InArgument(x:String)" />
+    <x:Property Name="enableNotifications" Type="InArgument(x:Boolean)" />
+    <x:Property Name="logFile" Type="InArgument(x:String)" />
+    <x:Property Name="batchStatus" Type="OutArgument(x:String)" />
+    <x:Property Name="batchSummaryText" Type="OutArgument(x:String)" />
+    <x:Property Name="batchSummaryJson" Type="OutArgument(x:String)" />
+    <x:Property Name="batchResultsJson" Type="OutArgument(x:String)" />
+    <x:Property Name="worklistCount" Type="OutArgument(x:Int32)" />
+    <x:Property Name="processedCount" Type="OutArgument(x:Int32)" />
+    <x:Property Name="successCount" Type="OutArgument(x:Int32)" />
+    <x:Property Name="failureCount" Type="OutArgument(x:Int32)" />
+    <x:Property Name="failedDocumentsCsv" Type="OutArgument(x:String)" />
+    <x:Property Name="batchErrorMessage" Type="OutArgument(x:String)" />
+    <x:Property Name="batchArtifactPath" Type="OutArgument(x:String)" />
+  </x:Members>
+  <this:Workflow.maxDocuments>
+    <InArgument x:TypeArguments="x:Int32">
+      <Literal x:TypeArguments="x:Int32" Value="3" />
+    </InArgument>
+  </this:Workflow.maxDocuments>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>System.Linq</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Sys</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Workflow</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <TryCatch DisplayName="Process Document Batch">
+    <TryCatch.Variables>
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="ensureOutput" />
+      <Variable x:TypeArguments="x:String" Name="ensureStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="ensureErrorLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="worklistOutput" />
+      <Variable x:TypeArguments="x:String" Name="worklistStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="worklistErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="worklistModeLocal" />
+      <Variable x:TypeArguments="x:Int32" Name="worklistCountLocal" />
+      <Variable x:TypeArguments="x:String" Name="worklistJsonLocal" />
+      <Variable x:TypeArguments="njl:JArray" Name="documents" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="claimOutput" />
+      <Variable x:TypeArguments="x:String" Name="claimStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="claimErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="childDocumentPath" />
+      <Variable x:TypeArguments="x:String" Name="childJsonPath" />
+      <Variable x:TypeArguments="x:String" Name="childSourceName" />
+      <Variable x:TypeArguments="x:String" Name="claimedDocumentPathLocal" />
+      <Variable x:TypeArguments="x:String" Name="claimedJsonPathLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="childOutput" />
+      <Variable x:TypeArguments="x:String" Name="childStatus" />
+      <Variable x:TypeArguments="x:String" Name="childSummaryJson" />
+      <Variable x:TypeArguments="x:String" Name="childError" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="finalizeOutput" />
+      <Variable x:TypeArguments="x:String" Name="finalizeStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="finalizeErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="resultsFragments" />
+      <Variable x:TypeArguments="x:String" Name="failedDocumentsCsvLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="summaryOutput" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="artifactOutput" />
+      <Variable x:TypeArguments="x:String" Name="artifactStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="artifactErrorLocal" />
+    </TryCatch.Variables>
+    <TryCatch.Try>
+      <Sequence>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PENDING"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryText]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchResultsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["[]"]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[worklistCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[processedCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[successCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsv]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchArtifactPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resultsFragments]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+
+        <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Batch Start" Line="[System.Environment.NewLine+&quot;===============================================&quot;+System.Environment.NewLine+&quot;ProcessDocumentBatch Start: &quot;+System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;)+System.Environment.NewLine+&quot;Folder: &quot;+If(String.IsNullOrWhiteSpace(inputFolderPath), &quot;&lt;blank&gt;&quot;, inputFolderPath)+System.Environment.NewLine+&quot;MaxDocuments: &quot;+maxDocuments.ToString()+System.Environment.NewLine+&quot;===============================================&quot;]" Source="[logFile]" />
+
+        <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;inputFolderPath&quot;,inputFolderPath},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Ensure Batch Folders" OutputArguments="[ensureOutput]" WorkflowFile="[projectPath+&quot;\EnsureBatchFolders.xaml&quot;]" />
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[ensureStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(ensureOutput IsNot Nothing AndAlso ensureOutput.ContainsKey("ensureStatus") AndAlso ensureOutput("ensureStatus") IsNot Nothing, ensureOutput("ensureStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[ensureErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(ensureOutput IsNot Nothing AndAlso ensureOutput.ContainsKey("ensureErrorMessage") AndAlso ensureOutput("ensureErrorMessage") IsNot Nothing, ensureOutput("ensureErrorMessage").ToString(), "Unknown folder setup error.")]</InArgument></Assign.Value></Assign>
+
+        <If Condition="[ensureStatusLocal = &quot;SUCCESS&quot;]">
+          <If.Then>
+            <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;inputFolderPath&quot;,inputFolderPath},{&quot;maxDocuments&quot;,maxDocuments},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Build Document Worklist" OutputArguments="[worklistOutput]" WorkflowFile="[projectPath+&quot;\BuildDocumentWorklist.xaml&quot;]" />
+          </If.Then>
+          <If.Else>
+            <Sequence>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[ensureErrorLocal]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistModeLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FOLDER_SETUP_FAILED"]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[worklistCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistJsonLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["[]"]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Else>
+        </If>
+
+        <If Condition="[String.IsNullOrWhiteSpace(worklistStatusLocal)]">
+          <If.Then>
+            <Sequence>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(worklistOutput IsNot Nothing AndAlso worklistOutput.ContainsKey("worklistStatus") AndAlso worklistOutput("worklistStatus") IsNot Nothing, worklistOutput("worklistStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(worklistOutput IsNot Nothing AndAlso worklistOutput.ContainsKey("worklistErrorMessage") AndAlso worklistOutput("worklistErrorMessage") IsNot Nothing, worklistOutput("worklistErrorMessage").ToString(), "Unknown worklist error.")]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistModeLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(worklistOutput IsNot Nothing AndAlso worklistOutput.ContainsKey("worklistMode") AndAlso worklistOutput("worklistMode") IsNot Nothing, worklistOutput("worklistMode").ToString(), "UNSET")]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[worklistCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(worklistOutput IsNot Nothing AndAlso worklistOutput.ContainsKey("worklistCount") AndAlso worklistOutput("worklistCount") IsNot Nothing, CInt(worklistOutput("worklistCount").ToString()), 0)]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[worklistCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[worklistCountLocal]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[worklistJsonLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(worklistOutput IsNot Nothing AndAlso worklistOutput.ContainsKey("worklistJson") AndAlso worklistOutput("worklistJson") IsNot Nothing, worklistOutput("worklistJson").ToString(), "[]")]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Then>
+        </If>
+
+        <If Condition="[worklistStatusLocal = &quot;SUCCESS&quot; AndAlso worklistCountLocal &gt; 0]">
+          <If.Then>
+            <Sequence>
+              <Assign><Assign.To><OutArgument x:TypeArguments="njl:JArray">[documents]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="njl:JArray">[JArray.Parse(worklistJsonLocal)]</InArgument></Assign.Value></Assign>
+              <ForEach x:TypeArguments="njl:JToken" Values="[documents]">
+                <ActivityAction x:TypeArguments="njl:JToken">
+                  <ActivityAction.Argument>
+                    <DelegateInArgument x:TypeArguments="njl:JToken" Name="documentItem" />
+                  </ActivityAction.Argument>
+                  <Sequence>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childDocumentPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(documentItem("documentPath") IsNot Nothing, documentItem("documentPath").ToString(), "")]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childJsonPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(documentItem("jsonPath") IsNot Nothing, documentItem("jsonPath").ToString(), "")]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childSourceName]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(documentItem("sourceDocumentName") IsNot Nothing, documentItem("sourceDocumentName").ToString(), If(Not String.IsNullOrWhiteSpace(childDocumentPath), System.IO.Path.GetFileName(childDocumentPath), "unknown-source"))]</InArgument></Assign.Value></Assign>
+                    <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Batch Document Start" Line="[System.Environment.NewLine+&quot;  BatchDocument:&quot;+System.Environment.NewLine+&quot;    Source: &quot;+childSourceName+System.Environment.NewLine+&quot;    Path: &quot;+childDocumentPath]" Source="[logFile]" />
+
+                    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;inputFolderPath&quot;,inputFolderPath},{&quot;sourceDocumentPath&quot;,childDocumentPath},{&quot;sourceJsonPath&quot;,childJsonPath},{&quot;sourceDocumentName&quot;,childSourceName},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Claim Batch Document" OutputArguments="[claimOutput]" WorkflowFile="[projectPath+&quot;\ClaimBatchDocument.xaml&quot;]" />
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[claimStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(claimOutput IsNot Nothing AndAlso claimOutput.ContainsKey("claimStatus") AndAlso claimOutput("claimStatus") IsNot Nothing, claimOutput("claimStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[claimErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(claimOutput IsNot Nothing AndAlso claimOutput.ContainsKey("claimErrorMessage") AndAlso claimOutput("claimErrorMessage") IsNot Nothing, claimOutput("claimErrorMessage").ToString(), "Unknown claim error.")]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[claimedDocumentPathLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(claimOutput IsNot Nothing AndAlso claimOutput.ContainsKey("claimedDocumentPath") AndAlso claimOutput("claimedDocumentPath") IsNot Nothing, claimOutput("claimedDocumentPath").ToString(), childDocumentPath)]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[claimedJsonPathLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(claimOutput IsNot Nothing AndAlso claimOutput.ContainsKey("claimedJsonPath") AndAlso claimOutput("claimedJsonPath") IsNot Nothing, claimOutput("claimedJsonPath").ToString(), childJsonPath)]</InArgument></Assign.Value></Assign>
+
+                    <If Condition="[claimStatusLocal = &quot;SUCCESS&quot;]">
+                      <If.Then>
+                        <Sequence>
+                          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;documentPath&quot;,claimedDocumentPathLocal},{&quot;inputFolderPath&quot;,&quot;&quot;},{&quot;useFormattedInvoiceInput&quot;,True},{&quot;rawOcrJson&quot;,&quot;&quot;},{&quot;rawOcrJsonPath&quot;,&quot;&quot;},{&quot;sourceDocumentName&quot;,childSourceName},{&quot;proposedVendorNumber&quot;,&quot;&quot;},{&quot;purchaseOrderNumber&quot;,&quot;&quot;},{&quot;warehouse&quot;,warehouse},{&quot;termsCode&quot;,terms},{&quot;recipientUserId&quot;,recipientUserId},{&quot;enableNotifications&quot;,enableNotifications},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Process Single Document" OutputArguments="[childOutput]" WorkflowFile="[projectPath+&quot;\SingleDocumentController.xaml&quot;]" />
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(childOutput IsNot Nothing AndAlso childOutput.ContainsKey("resultOverallStatus") AndAlso childOutput("resultOverallStatus") IsNot Nothing, childOutput("resultOverallStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(childOutput IsNot Nothing AndAlso childOutput.ContainsKey("resultSummaryJson") AndAlso childOutput("resultSummaryJson") IsNot Nothing, childOutput("resultSummaryJson").ToString(), "{}")]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(childOutput IsNot Nothing AndAlso childOutput.ContainsKey("resultErrorMessage") AndAlso childOutput("resultErrorMessage") IsNot Nothing, childOutput("resultErrorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{}"]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[claimErrorLocal]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+
+                    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;inputFolderPath&quot;,inputFolderPath},{&quot;claimedDocumentPath&quot;,claimedDocumentPathLocal},{&quot;claimedJsonPath&quot;,claimedJsonPathLocal},{&quot;processingStatus&quot;,childStatus},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Finalize Batch Document" OutputArguments="[finalizeOutput]" WorkflowFile="[projectPath+&quot;\FinalizeBatchDocument.xaml&quot;]" />
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[finalizeStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(finalizeOutput IsNot Nothing AndAlso finalizeOutput.ContainsKey("finalizeStatus") AndAlso finalizeOutput("finalizeStatus") IsNot Nothing, finalizeOutput("finalizeStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[finalizeErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(finalizeOutput IsNot Nothing AndAlso finalizeOutput.ContainsKey("finalizeErrorMessage") AndAlso finalizeOutput("finalizeErrorMessage") IsNot Nothing, finalizeOutput("finalizeErrorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+                    <If Condition="[finalizeStatusLocal &lt;&gt; &quot;SUCCESS&quot;]">
+                      <If.Then>
+                        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[childError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(childError), finalizeErrorLocal, childError + " | Finalize: " + finalizeErrorLocal)]</InArgument></Assign.Value></Assign>
+                      </If.Then>
+                    </If>
+
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[processedCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[processedCount + 1]</InArgument></Assign.Value></Assign>
+                    <If Condition="[childStatus = &quot;SUCCESS&quot;]">
+                      <If.Then>
+                        <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[successCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[successCount + 1]</InArgument></Assign.Value></Assign>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[failureCount + 1]</InArgument></Assign.Value></Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal + If(String.IsNullOrWhiteSpace(failedDocumentsCsvLocal), "", ",") + childSourceName]</InArgument></Assign.Value></Assign>
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resultsFragments]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[resultsFragments + If(String.IsNullOrWhiteSpace(resultsFragments), "", ",") + "{""sourceDocumentName"":""" + childSourceName.Replace("""","'") + """,""status"":""" + childStatus.Replace("""","") + """,""errorMessage"":""" + childError.Replace("""","'") + """,""summaryJson"":" + childSummaryJson + "}"]</InArgument></Assign.Value></Assign>
+                  </Sequence>
+                </ActivityAction>
+              </ForEach>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchResultsJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["[" + resultsFragments + "]"]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Then>
+          <If.Else>
+            <Sequence>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[processedCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[successCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[failureCount]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[worklistErrorLocal]</InArgument></Assign.Value></Assign>
+              <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsv]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal]</InArgument></Assign.Value></Assign>
+            </Sequence>
+          </If.Else>
+        </If>
+
+        <If Condition="[processedCount = 0]">
+          <If.Then>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+          </If.Then>
+          <If.Else>
+            <If Condition="[failureCount = 0]">
+              <If.Then>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+              </If.Then>
+              <If.Else>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["PARTIAL_SUCCESS"]</InArgument></Assign.Value></Assign>
+              </If.Else>
+            </If>
+          </If.Else>
+        </If>
+
+        <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;overallStatus&quot;,batchStatus},{&quot;worklistCount&quot;,worklistCountLocal},{&quot;processedCount&quot;,processedCount},{&quot;successCount&quot;,successCount},{&quot;failureCount&quot;,failureCount},{&quot;failedDocumentsCsv&quot;,failedDocumentsCsvLocal},{&quot;artifactPath&quot;,&quot;&quot;},{&quot;errorMessage&quot;,batchErrorMessage}}]" ContinueOnError="False" DisplayName="Build Batch Result Summary" OutputArguments="[summaryOutput]" WorkflowFile="[projectPath+&quot;\BuildBatchResultSummary.xaml&quot;]" />
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryText]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(summaryOutput IsNot Nothing AndAlso summaryOutput.ContainsKey("summaryText") AndAlso summaryOutput("summaryText") IsNot Nothing, summaryOutput("summaryText").ToString(), "")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(summaryOutput IsNot Nothing AndAlso summaryOutput.ContainsKey("summaryJson") AndAlso summaryOutput("summaryJson") IsNot Nothing, summaryOutput("summaryJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+        <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;inputFolderPath&quot;,inputFolderPath},{&quot;overallStatus&quot;,batchStatus},{&quot;summaryJson&quot;,batchSummaryJson},{&quot;resultsJson&quot;,batchResultsJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Write Batch Result Artifact" OutputArguments="[artifactOutput]" WorkflowFile="[projectPath+&quot;\WriteBatchResultArtifact.xaml&quot;]" />
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(artifactOutput IsNot Nothing AndAlso artifactOutput.ContainsKey("artifactStatus") AndAlso artifactOutput("artifactStatus") IsNot Nothing, artifactOutput("artifactStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[artifactErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(artifactOutput IsNot Nothing AndAlso artifactOutput.ContainsKey("artifactErrorMessage") AndAlso artifactOutput("artifactErrorMessage") IsNot Nothing, artifactOutput("artifactErrorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchArtifactPath]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(artifactOutput IsNot Nothing AndAlso artifactOutput.ContainsKey("artifactPath") AndAlso artifactOutput("artifactPath") IsNot Nothing, artifactOutput("artifactPath").ToString(), "")]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsv]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal]</InArgument></Assign.Value></Assign>
+        <If Condition="[artifactStatusLocal &lt;&gt; &quot;SUCCESS&quot; AndAlso Not String.IsNullOrWhiteSpace(artifactErrorLocal)]">
+          <If.Then>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(batchErrorMessage), artifactErrorLocal, batchErrorMessage + " | Artifact: " + artifactErrorLocal)]</InArgument></Assign.Value></Assign>
+          </If.Then>
+        </If>
+        <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;overallStatus&quot;,batchStatus},{&quot;worklistCount&quot;,worklistCountLocal},{&quot;processedCount&quot;,processedCount},{&quot;successCount&quot;,successCount},{&quot;failureCount&quot;,failureCount},{&quot;failedDocumentsCsv&quot;,failedDocumentsCsvLocal},{&quot;artifactPath&quot;,batchArtifactPath},{&quot;errorMessage&quot;,batchErrorMessage}}]" ContinueOnError="False" DisplayName="Build Final Batch Result Summary" OutputArguments="[summaryOutput]" WorkflowFile="[projectPath+&quot;\BuildBatchResultSummary.xaml&quot;]" />
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryText]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(summaryOutput IsNot Nothing AndAlso summaryOutput.ContainsKey("summaryText") AndAlso summaryOutput("summaryText") IsNot Nothing, summaryOutput("summaryText").ToString(), batchSummaryText)]</InArgument></Assign.Value></Assign>
+        <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(summaryOutput IsNot Nothing AndAlso summaryOutput.ContainsKey("summaryJson") AndAlso summaryOutput("summaryJson") IsNot Nothing, summaryOutput("summaryJson").ToString(), batchSummaryJson)]</InArgument></Assign.Value></Assign>
+        <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Batch Result" Line="[System.Environment.NewLine+&quot;ProcessDocumentBatch Result:&quot;+System.Environment.NewLine+batchSummaryText]" Source="[logFile]" />
+      </Sequence>
+    </TryCatch.Try>
+    <TryCatch.Catches>
+      <Catch x:TypeArguments="s:Exception">
+        <ActivityAction x:TypeArguments="s:Exception">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+          </ActivityAction.Argument>
+          <Sequence>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["FAILED"]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchErrorMessage]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["ProcessDocumentBatch exception: " + exception.Message]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryText]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["OverallStatus: FAILED" + System.Environment.NewLine + "Error: " + batchErrorMessage]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryJson]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["{""overallStatus"":""FAILED"",""errorMessage"":""" + batchErrorMessage.Replace("""","'") + """}"]</InArgument></Assign.Value></Assign>
+            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[failedDocumentsCsv]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[failedDocumentsCsvLocal]</InArgument></Assign.Value></Assign>
+          </Sequence>
+        </ActivityAction>
+      </Catch>
+    </TryCatch.Catches>
+  </TryCatch>
+</Activity>

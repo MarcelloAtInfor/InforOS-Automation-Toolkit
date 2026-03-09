@@ -1,0 +1,130 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow" this:Workflow.configurationFolder="C:\InforRPA\DemoInvoiceLoader_V4" this:Workflow.inputFolderPath="C:\InforRPA\DemoInvoiceLoader_V4\Input" this:Workflow.tenantURL="https://mingle-ionapi.inforcloudsuite.com/YOUR_TENANT/" this:Workflow.warehouse="MAIN" this:Workflow.terms="N30" this:Workflow.site="YOUR_SITE" this:Workflow.recipientUserId="user@example.com" this:Workflow.enableNotifications="True" this:Workflow.enableDebugMode="False"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
+ xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:this="clr-namespace:RehostedWorkflowDesigner"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="configurationFolder" Type="InArgument(x:String)" />
+    <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
+    <x:Property Name="tenantURL" Type="InArgument(x:String)" />
+    <x:Property Name="warehouse" Type="InArgument(x:String)" />
+    <x:Property Name="terms" Type="InArgument(x:String)" />
+    <x:Property Name="site" Type="InArgument(x:String)" />
+    <x:Property Name="recipientUserId" Type="InArgument(x:String)" />
+    <x:Property Name="enableNotifications" Type="InArgument(x:Boolean)" />
+    <x:Property Name="enableDebugMode" Type="InArgument(x:Boolean)" />
+  </x:Members>
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Sys</AssemblyReference>
+      <AssemblyReference>Infor.Activities.Workflow</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="DemoInvoiceLoader_V4 - Main">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Default="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+&quot;\AppData\Local\InforRPA\DemoInvoiceLoader_V4&quot;]" Name="projectPathCache" />
+      <Variable x:TypeArguments="x:String" Default="YOUR_PROJECT_PATH" Name="projectPathSource" />
+      <Variable x:TypeArguments="x:String" Name="projectPath" />
+      <Variable x:TypeArguments="x:String" Name="logFolderPath" />
+      <Variable x:TypeArguments="x:String" Name="logFile" />
+      <Variable x:TypeArguments="x:Object" Name="debugProcess" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="batchOutput" />
+      <Variable x:TypeArguments="x:String" Name="batchStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="batchSummaryTextLocal" />
+      <Variable x:TypeArguments="x:String" Name="batchSummaryJsonLocal" />
+      <Variable x:TypeArguments="x:String" Name="batchErrorLocal" />
+      <Variable x:TypeArguments="x:Int32" Name="batchWorklistCountLocal" />
+      <Variable x:TypeArguments="x:Int32" Name="batchProcessedCountLocal" />
+      <Variable x:TypeArguments="x:Int32" Name="batchSuccessCountLocal" />
+      <Variable x:TypeArguments="x:Int32" Name="batchFailureCountLocal" />
+      <Variable x:TypeArguments="x:String" Name="batchFailedDocumentsLocal" />
+      <Variable x:TypeArguments="x:String" Name="batchArtifactPathLocal" />
+    </Sequence.Variables>
+
+    <Assign DisplayName="Detect Project Path">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[projectPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(System.IO.File.Exists(projectPathCache + "\ProcessDocumentBatch.xaml"), projectPathCache, projectPathSource)]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <Assign DisplayName="Set Log Folder Path">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[logFolderPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[configurationFolder + "\Logs"]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <ias:Directory_Create ContinueOnError="True" ErrorCode="{x:Null}" OutputPath="{x:Null}" DisplayName="Ensure Configuration Folder" Name="[System.IO.Path.GetFileName(configurationFolder)]" Target="[System.IO.Directory.GetParent(configurationFolder).FullName]" />
+    <ias:Directory_Create ContinueOnError="True" ErrorCode="{x:Null}" OutputPath="{x:Null}" DisplayName="Ensure Logs Folder" Name="Logs" Target="[configurationFolder]" />
+
+    <Assign DisplayName="Set Log File Path">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[logFile]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[logFolderPath + "\JobsResults" + System.DateTime.Now.ToString("ddMMyyyy") + ".txt"]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <If Condition="[enableDebugMode]" DisplayName="If Debug Mode - Open Log Tail">
+      <If.Then>
+        <Assign DisplayName="Start PowerShell Log Tail">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:Object">[debugProcess]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:Object">[System.Diagnostics.Process.Start("powershell.exe", "-NoExit -Command ""while (!(Test-Path '" + logFile + "')) { Start-Sleep -Seconds 1 }; Get-Content '" + logFile + "' -Wait""")]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Then>
+    </If>
+
+    <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Start Time" Line="[System.Environment.NewLine + &quot;===============================================&quot; + System.Environment.NewLine + &quot;DemoInvoiceLoader_V4 - Start Time: &quot; + System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;) + System.Environment.NewLine + &quot;Input Folder: &quot; + inputFolderPath + System.Environment.NewLine + &quot;Scan Mode: Root folder only, PDF files only&quot; + System.Environment.NewLine + &quot;Tenant: &quot; + tenantURL + System.Environment.NewLine + &quot;Site: &quot; + site + System.Environment.NewLine + &quot;Warehouse: &quot; + warehouse + System.Environment.NewLine + &quot;Terms: &quot; + terms + System.Environment.NewLine + &quot;Notifications: &quot; + enableNotifications.ToString() + System.Environment.NewLine + &quot;DebugMode: &quot; + enableDebugMode.ToString() + System.Environment.NewLine + &quot;===============================================&quot;]" Source="[logFile]" />
+
+    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;, projectPath}, {&quot;tenantURL&quot;, tenantURL}, {&quot;site&quot;, site}, {&quot;inputFolderPath&quot;, inputFolderPath}, {&quot;maxDocuments&quot;, 0}, {&quot;warehouse&quot;, warehouse}, {&quot;terms&quot;, terms}, {&quot;recipientUserId&quot;, recipientUserId}, {&quot;enableNotifications&quot;, enableNotifications}, {&quot;logFile&quot;, logFile}}]" ContinueOnError="False" DisplayName="Process Document Batch" OutputArguments="[batchOutput]" WorkflowFile="[projectPath + &quot;\ProcessDocumentBatch.xaml&quot;]" />
+
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("batchStatus") AndAlso batchOutput("batchStatus") IsNot Nothing, batchOutput("batchStatus").ToString(), "FAILED")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryTextLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("batchSummaryText") AndAlso batchOutput("batchSummaryText") IsNot Nothing, batchOutput("batchSummaryText").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchSummaryJsonLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("batchSummaryJson") AndAlso batchOutput("batchSummaryJson") IsNot Nothing, batchOutput("batchSummaryJson").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("batchErrorMessage") AndAlso batchOutput("batchErrorMessage") IsNot Nothing, batchOutput("batchErrorMessage").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[batchWorklistCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("worklistCount") AndAlso batchOutput("worklistCount") IsNot Nothing, CInt(batchOutput("worklistCount").ToString()), 0)]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[batchProcessedCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("processedCount") AndAlso batchOutput("processedCount") IsNot Nothing, CInt(batchOutput("processedCount").ToString()), 0)]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[batchSuccessCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("successCount") AndAlso batchOutput("successCount") IsNot Nothing, CInt(batchOutput("successCount").ToString()), 0)]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[batchFailureCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("failureCount") AndAlso batchOutput("failureCount") IsNot Nothing, CInt(batchOutput("failureCount").ToString()), 0)]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchFailedDocumentsLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("failedDocumentsCsv") AndAlso batchOutput("failedDocumentsCsv") IsNot Nothing, batchOutput("failedDocumentsCsv").ToString(), "")]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[batchArtifactPathLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(batchOutput IsNot Nothing AndAlso batchOutput.ContainsKey("batchArtifactPath") AndAlso batchOutput("batchArtifactPath") IsNot Nothing, batchOutput("batchArtifactPath").ToString(), "")]</InArgument></Assign.Value></Assign>
+
+    <ias:Append_Line ContinueOnError="True" ErrorCode="{x:Null}" DisplayName="Log Final Summary" Line="[System.Environment.NewLine + &quot;DemoInvoiceLoader_V4 Result:&quot; + System.Environment.NewLine + &quot;BatchStatus: &quot; + batchStatusLocal + System.Environment.NewLine + &quot;WorklistCount: &quot; + batchWorklistCountLocal.ToString() + System.Environment.NewLine + &quot;ProcessedCount: &quot; + batchProcessedCountLocal.ToString() + System.Environment.NewLine + &quot;SuccessCount: &quot; + batchSuccessCountLocal.ToString() + System.Environment.NewLine + &quot;FailureCount: &quot; + batchFailureCountLocal.ToString() + If(String.IsNullOrWhiteSpace(batchFailedDocumentsLocal), &quot;&quot;, System.Environment.NewLine + &quot;FailedDocuments: &quot; + batchFailedDocumentsLocal) + If(String.IsNullOrWhiteSpace(batchArtifactPathLocal), &quot;&quot;, System.Environment.NewLine + &quot;ArtifactPath: &quot; + batchArtifactPathLocal) + If(String.IsNullOrWhiteSpace(batchErrorLocal), &quot;&quot;, System.Environment.NewLine + &quot;Error: &quot; + batchErrorLocal)]" Source="[logFile]" />
+  </Sequence>
+</Activity>
