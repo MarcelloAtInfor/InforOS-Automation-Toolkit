@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow" this:Workflow.projectPath="YOUR_PROJECT_PATH" this:Workflow.tenantURL="https://mingle-ionapi.inforcloudsuite.com/YOUR_TENANT/" this:Workflow.site="YOUR_SITE" this:Workflow.vendorName="Sample Vendor" this:Workflow.vendorAddress="100 Sample Drive" this:Workflow.vendorCity="Sample City" this:Workflow.vendorState="ST" this:Workflow.vendorZip="00000" this:Workflow.vendorPhone="555-555-0100" this:Workflow.vendorEmail="ap@example.com" this:Workflow.termsCode="N30" this:Workflow.purchaseOrderNumber="" this:Workflow.warehouse="MAIN" this:Workflow.salesTax="0.00" this:Workflow.logFile="C:\InforRPA\DemoInvoiceLoader_V4\Logs\DemoInvoiceLoader_V4-transaction-smoke-log.txt" this:Workflow.useFormattedInvoiceInput="True" this:Workflow.documentPath=""
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="RehostedWorkflowDesigner.Workflow" this:Workflow.projectPath="YOUR_PROJECT_PATH" this:Workflow.tenantURL="https://mingle-ionapi.inforcloudsuite.com/YOUR_TENANT/" this:Workflow.site="YOUR_SITE" this:Workflow.vendorName="Sample Vendor" this:Workflow.vendorAddress="100 Sample Drive" this:Workflow.vendorCity="Sample City" this:Workflow.vendorState="ST" this:Workflow.vendorZip="00000" this:Workflow.vendorPhone="555-555-0100" this:Workflow.vendorEmail="ap@example.com" this:Workflow.termsCode="N30" this:Workflow.purchaseOrderNumber="" this:Workflow.warehouse="MAIN" this:Workflow.salesTax="0.00" this:Workflow.documentMode="PO" this:Workflow.logFile="C:\InforRPA\DemoInvoiceLoader_V4\Logs\DemoInvoiceLoader_V4-transaction-smoke-log.txt" this:Workflow.useFormattedInvoiceInput="True" this:Workflow.documentPath=""
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:ias="clr-namespace:Infor.Activities.Sys;assembly=Infor.Activities.Sys"
  xmlns:iaw="clr-namespace:Infor.Activities.Workflow;assembly=Infor.Activities.Workflow"
@@ -28,6 +28,7 @@
     <x:Property Name="purchaseOrderNumber" Type="InArgument(x:String)" />
     <x:Property Name="warehouse" Type="InArgument(x:String)" />
     <x:Property Name="salesTax" Type="InArgument(x:String)" />
+    <x:Property Name="documentMode" Type="InArgument(x:String)" />
     <x:Property Name="dueDate" Type="InArgument(x:String)" />
     <x:Property Name="lineItemsJson" Type="InArgument(x:String)" />
     <x:Property Name="inputFolderPath" Type="InArgument(x:String)" />
@@ -134,6 +135,7 @@
       <Variable x:TypeArguments="x:String" Name="effectiveTermsCode" />
       <Variable x:TypeArguments="x:String" Name="effectiveWarehouse" />
       <Variable x:TypeArguments="x:String" Name="effectiveSalesTax" />
+      <Variable x:TypeArguments="x:String" Name="effectiveDocumentMode" />
       <Variable x:TypeArguments="x:String" Name="effectiveLineItemsJson" />
       <Variable x:TypeArguments="x:String" Name="effectivePurchaseOrderNumber" />
       <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="vendorOutput" />
@@ -157,6 +159,11 @@
       <Variable x:TypeArguments="x:String" Name="verifyLineStatus" />
       <Variable x:TypeArguments="x:String" Name="verifyLineError" />
       <Variable x:TypeArguments="x:Int32" Name="actualLineCountLocal" />
+      <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="retrainingOutput" />
+      <Variable x:TypeArguments="x:String" Name="vendorRetrainingStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="vendorRetrainingErrorLocal" />
+      <Variable x:TypeArguments="x:String" Name="itemRetrainingStatusLocal" />
+      <Variable x:TypeArguments="x:String" Name="itemRetrainingErrorLocal" />
       <Variable x:TypeArguments="x:String" Name="overallStatus" />
       <Variable x:TypeArguments="x:String" Name="overallError" />
       <Variable x:TypeArguments="scg:IDictionary(x:String, x:Object)" Name="summaryOutput" />
@@ -180,7 +187,7 @@
         <OutArgument x:TypeArguments="x:String">[effectivePurchaseOrderNumber]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(purchaseOrderNumber), "PO" + System.DateTime.Now.ToString("ddHHmmss"), purchaseOrderNumber.Trim())]</InArgument>
+        <InArgument x:TypeArguments="x:String">[If(String.Equals(If(documentMode, "PO").Trim().ToUpperInvariant(), "NON_PO"), "", If(String.IsNullOrWhiteSpace(purchaseOrderNumber), "PO" + System.DateTime.Now.ToString("ddHHmmss"), purchaseOrderNumber.Trim()))]</InArgument>
       </Assign.Value>
     </Assign>
     <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
@@ -189,6 +196,14 @@
       </Assign.To>
       <Assign.Value>
         <InArgument x:TypeArguments="x:String">[""]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[effectiveDocumentMode]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(documentMode), "PO", documentMode.Trim().ToUpperInvariant())]</InArgument>
       </Assign.Value>
     </Assign>
     <TryCatch DisplayName="Run Single Document Controller">
@@ -307,10 +322,10 @@
         <OutArgument x:TypeArguments="x:String">[effectivePurchaseOrderNumber]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[If(intakeOutput IsNot Nothing AndAlso intakeOutput.ContainsKey("resolvedPurchaseOrderNumber") AndAlso intakeOutput("resolvedPurchaseOrderNumber") IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(intakeOutput("resolvedPurchaseOrderNumber").ToString()), intakeOutput("resolvedPurchaseOrderNumber").ToString().Trim(), "PO" + System.DateTime.Now.ToString("ddHHmmss"))]</InArgument>
+        <InArgument x:TypeArguments="x:String">[If(effectiveDocumentMode = "NON_PO", "", If(intakeOutput IsNot Nothing AndAlso intakeOutput.ContainsKey("resolvedPurchaseOrderNumber") AndAlso intakeOutput("resolvedPurchaseOrderNumber") IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(intakeOutput("resolvedPurchaseOrderNumber").ToString()), intakeOutput("resolvedPurchaseOrderNumber").ToString().Trim(), "PO" + System.DateTime.Now.ToString("ddHHmmss")))]</InArgument>
       </Assign.Value>
     </Assign>
-    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Controller Start" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;===============================================&quot;+System.Environment.NewLine+&quot;DemoInvoiceLoader_V4 Single Document Start: &quot;+System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;)+System.Environment.NewLine+&quot;SourceDocument: &quot;+effectiveSourceDocumentName+If(useFormattedInvoiceInput, System.Environment.NewLine+&quot;WorklistStatus: &quot;+discoveryStatusLocal+&quot; | Count: &quot;+worklistCountLocal.ToString()+If(String.IsNullOrWhiteSpace(discoveryErrorLocal), &quot;&quot;, System.Environment.NewLine+&quot;WorklistError: &quot;+discoveryErrorLocal), &quot;&quot;)+System.Environment.NewLine+&quot;OCRStatus: &quot;+ocrStatusLocal+System.Environment.NewLine+&quot;PO: &quot;+effectivePurchaseOrderNumber+System.Environment.NewLine+&quot;Vendor: &quot;+effectiveVendorName+System.Environment.NewLine+&quot;IntakeStatus: &quot;+intakeStatusLocal+System.Environment.NewLine+&quot;===============================================&quot;]" Source="[logFile]" />
+    <ias:Append_Line ErrorCode="{x:Null}" ContinueOnError="True" DisplayName="Log Controller Start" sap2010:WorkflowViewState.IdRef="Append_Line_1" Line="[System.Environment.NewLine+&quot;===============================================&quot;+System.Environment.NewLine+&quot;DemoInvoiceLoader_V4 Single Document Start: &quot;+System.DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;)+System.Environment.NewLine+&quot;SourceDocument: &quot;+effectiveSourceDocumentName+System.Environment.NewLine+&quot;DocumentMode: &quot;+effectiveDocumentMode+If(useFormattedInvoiceInput, System.Environment.NewLine+&quot;WorklistStatus: &quot;+discoveryStatusLocal+&quot; | Count: &quot;+worklistCountLocal.ToString()+If(String.IsNullOrWhiteSpace(discoveryErrorLocal), &quot;&quot;, System.Environment.NewLine+&quot;WorklistError: &quot;+discoveryErrorLocal), &quot;&quot;)+System.Environment.NewLine+&quot;OCRStatus: &quot;+ocrStatusLocal+System.Environment.NewLine+&quot;PO: &quot;+If(String.IsNullOrWhiteSpace(effectivePurchaseOrderNumber), &quot;SKIPPED_NON_PO&quot;, effectivePurchaseOrderNumber)+System.Environment.NewLine+&quot;Vendor: &quot;+effectiveVendorName+System.Environment.NewLine+&quot;IntakeStatus: &quot;+intakeStatusLocal+System.Environment.NewLine+&quot;===============================================&quot;]" Source="[logFile]" />
     <If Condition="[intakeStatusLocal = &quot;SUCCESS&quot;]">
       <If.Then>
         <Sequence>
@@ -352,182 +367,130 @@
     <If Condition="[vendorStatus = &quot;REUSED_EXISTING&quot; OrElse vendorStatus = &quot;CREATED_AND_VERIFIED&quot;]" sap2010:WorkflowViewState.IdRef="If_1">
       <If.Then>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
-          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;lineItemsJson&quot;,effectiveLineItemsJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Resolve Items" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_2" OutputArguments="[itemOutput]" WorkflowFile="[projectPath+&quot;\SearchOrCreateItems.xaml&quot;]" />
-          <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
-            <Assign.To>
-              <OutArgument x:TypeArguments="x:String">[itemStatus]</OutArgument>
-            </Assign.To>
-            <Assign.Value>
-              <InArgument x:TypeArguments="x:String">[itemOutput("resolutionStatus").ToString()]</InArgument>
-            </Assign.Value>
-          </Assign>
-          <Assign>
-            <Assign.To>
-              <OutArgument x:TypeArguments="x:String">[resolvedItemsJsonLocal]</OutArgument>
-            </Assign.To>
-            <Assign.Value>
-              <InArgument x:TypeArguments="x:String">[itemOutput("resolvedItemsJson").ToString()]</InArgument>
-            </Assign.Value>
-          </Assign>
-          <Assign>
-            <Assign.To>
-              <OutArgument x:TypeArguments="x:String">[itemError]</OutArgument>
-            </Assign.To>
-            <Assign.Value>
-              <InArgument x:TypeArguments="x:String">[itemOutput("resolutionErrorMessage").ToString()]</InArgument>
-            </Assign.Value>
-          </Assign>
-          <Assign>
-            <Assign.To>
-              <OutArgument x:TypeArguments="x:Int32">[createdItemCountLocal]</OutArgument>
-            </Assign.To>
-            <Assign.Value>
-              <InArgument x:TypeArguments="x:Int32">[CInt(itemOutput("createdItemCount").ToString())]</InArgument>
-            </Assign.Value>
-          </Assign>
-          <If Condition="[itemStatus = &quot;SUCCESS&quot;]">
+          <If Condition="[effectiveDocumentMode = &quot;NON_PO&quot;]">
             <If.Then>
               <Sequence>
-                <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;rawPurchaseOrderNumber&quot;,effectivePurchaseOrderNumber},{&quot;vendorNumber&quot;,vendorNumber},{&quot;termsCode&quot;,effectiveTermsCode},{&quot;warehouse&quot;,effectiveWarehouse},{&quot;salesTax&quot;,effectiveSalesTax},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Resolve PO Header" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_3" OutputArguments="[poOutput]" WorkflowFile="[projectPath+&quot;\ResolvePurchaseOrderDecision.xaml&quot;]" />
                 <Assign>
                   <Assign.To>
-                    <OutArgument x:TypeArguments="x:String">[poStatus]</OutArgument>
+                    <OutArgument x:TypeArguments="x:String">[itemStatus]</OutArgument>
                   </Assign.To>
                   <Assign.Value>
-                    <InArgument x:TypeArguments="x:String">[poOutput("resolvedStatus").ToString()]</InArgument>
+                    <InArgument x:TypeArguments="x:String">["SKIPPED_NON_PO"]</InArgument>
                   </Assign.Value>
                 </Assign>
                 <Assign>
                   <Assign.To>
-                    <OutArgument x:TypeArguments="x:String">[resolvedPoNumber]</OutArgument>
+                    <OutArgument x:TypeArguments="x:String">[resolvedItemsJsonLocal]</OutArgument>
                   </Assign.To>
                   <Assign.Value>
-                    <InArgument x:TypeArguments="x:String">[poOutput("resolvedPurchaseOrderNumber").ToString()]</InArgument>
+                    <InArgument x:TypeArguments="x:String">["[]"]</InArgument>
                   </Assign.Value>
                 </Assign>
                 <Assign>
                   <Assign.To>
-                    <OutArgument x:TypeArguments="x:String">[poError]</OutArgument>
+                    <OutArgument x:TypeArguments="x:String">[itemError]</OutArgument>
                   </Assign.To>
                   <Assign.Value>
-                    <InArgument x:TypeArguments="x:String">[poOutput("resolutionErrorMessage").ToString()]</InArgument>
+                    <InArgument x:TypeArguments="x:String">[""]</InArgument>
                   </Assign.Value>
                 </Assign>
-                <If Condition="[poStatus = &quot;CREATED_AND_VERIFIED&quot;]">
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdItemCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SKIPPED_NON_PO"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPoNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poLineStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SKIPPED_NON_PO"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdLineCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poLineError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyLineStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SKIPPED_NON_PO"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyLineError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[actualLineCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[0]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <Sequence>
+                <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;lineItemsJson&quot;,effectiveLineItemsJson},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Resolve Items" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_2" OutputArguments="[itemOutput]" WorkflowFile="[projectPath+&quot;\SearchOrCreateItems.xaml&quot;]" />
+                <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[itemStatus]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[itemOutput("resolutionStatus").ToString()]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign>
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[resolvedItemsJsonLocal]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[itemOutput("resolvedItemsJson").ToString()]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign>
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[itemError]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[itemOutput("resolutionErrorMessage").ToString()]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <Assign>
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[createdItemCountLocal]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">[CInt(itemOutput("createdItemCount").ToString())]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <If Condition="[itemStatus = &quot;SUCCESS&quot;]">
                   <If.Then>
                     <Sequence>
-                      <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,resolvedPoNumber},{&quot;warehouse&quot;,effectiveWarehouse},{&quot;dueDate&quot;,dueDate},{&quot;lineItemsJson&quot;,resolvedItemsJsonLocal},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Create PO Lines" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_4" OutputArguments="[poLineOutput]" WorkflowFile="[projectPath+&quot;\CreatePurchaseOrderLines.xaml&quot;]" />
-                      <Assign>
-                        <Assign.To>
-                          <OutArgument x:TypeArguments="x:String">[poLineStatus]</OutArgument>
-                        </Assign.To>
-                        <Assign.Value>
-                          <InArgument x:TypeArguments="x:String">[poLineOutput("createStatus").ToString()]</InArgument>
-                        </Assign.Value>
-                      </Assign>
-                      <Assign>
-                        <Assign.To>
-                          <OutArgument x:TypeArguments="x:Int32">[createdLineCountLocal]</OutArgument>
-                        </Assign.To>
-                        <Assign.Value>
-                          <InArgument x:TypeArguments="x:Int32">[CInt(poLineOutput("createdLineCount").ToString())]</InArgument>
-                        </Assign.Value>
-                      </Assign>
-                      <Assign>
-                        <Assign.To>
-                          <OutArgument x:TypeArguments="x:String">[poLineError]</OutArgument>
-                        </Assign.To>
-                        <Assign.Value>
-                          <InArgument x:TypeArguments="x:String">[poLineOutput("createErrorMessage").ToString()]</InArgument>
-                        </Assign.Value>
-                      </Assign>
-                      <If Condition="[poLineStatus = &quot;SUCCESS&quot;]">
+                      <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;rawPurchaseOrderNumber&quot;,effectivePurchaseOrderNumber},{&quot;vendorNumber&quot;,vendorNumber},{&quot;termsCode&quot;,effectiveTermsCode},{&quot;warehouse&quot;,effectiveWarehouse},{&quot;salesTax&quot;,effectiveSalesTax},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Resolve PO Header" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_3" OutputArguments="[poOutput]" WorkflowFile="[projectPath+&quot;\ResolvePurchaseOrderDecision.xaml&quot;]" />
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poOutput("resolvedStatus").ToString()]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[resolvedPoNumber]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poOutput("resolvedPurchaseOrderNumber").ToString()]</InArgument></Assign.Value></Assign>
+                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poOutput("resolutionErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                      <If Condition="[poStatus = &quot;CREATED_AND_VERIFIED&quot;]">
                         <If.Then>
                           <Sequence>
-                            <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,resolvedPoNumber},{&quot;expectedLineCount&quot;,createdLineCountLocal},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Verify PO Lines" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_5" OutputArguments="[verifyLineOutput]" WorkflowFile="[projectPath+&quot;\VerifyPurchaseOrderLines.xaml&quot;]" />
-                            <Assign>
-                              <Assign.To>
-                                <OutArgument x:TypeArguments="x:String">[verifyLineStatus]</OutArgument>
-                              </Assign.To>
-                              <Assign.Value>
-                                <InArgument x:TypeArguments="x:String">[verifyLineOutput("verificationStatus").ToString()]</InArgument>
-                              </Assign.Value>
-                            </Assign>
-                            <Assign>
-                              <Assign.To>
-                                <OutArgument x:TypeArguments="x:String">[verifyLineError]</OutArgument>
-                              </Assign.To>
-                              <Assign.Value>
-                                <InArgument x:TypeArguments="x:String">[verifyLineOutput("verificationErrorMessage").ToString()]</InArgument>
-                              </Assign.Value>
-                            </Assign>
-                            <Assign>
-                              <Assign.To>
-                                <OutArgument x:TypeArguments="x:Int32">[actualLineCountLocal]</OutArgument>
-                              </Assign.To>
-                              <Assign.Value>
-                                <InArgument x:TypeArguments="x:Int32">[CInt(verifyLineOutput("actualLineCount").ToString())]</InArgument>
-                              </Assign.Value>
-                            </Assign>
-                            <If Condition="[verifyLineStatus = &quot;SUCCESS&quot;]">
+                            <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,resolvedPoNumber},{&quot;warehouse&quot;,effectiveWarehouse},{&quot;dueDate&quot;,dueDate},{&quot;lineItemsJson&quot;,resolvedItemsJsonLocal},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Create PO Lines" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_4" OutputArguments="[poLineOutput]" WorkflowFile="[projectPath+&quot;\CreatePurchaseOrderLines.xaml&quot;]" />
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poLineStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poLineOutput("createStatus").ToString()]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[createdLineCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[CInt(poLineOutput("createdLineCount").ToString())]</InArgument></Assign.Value></Assign>
+                            <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[poLineError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poLineOutput("createErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                            <If Condition="[poLineStatus = &quot;SUCCESS&quot;]">
                               <If.Then>
-                                <Assign>
-                                  <Assign.To>
-                                    <OutArgument x:TypeArguments="x:String">[overallStatus]</OutArgument>
-                                  </Assign.To>
-                                  <Assign.Value>
-                                    <InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument>
-                                  </Assign.Value>
-                                </Assign>
+                                <Sequence>
+                                  <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;projectPath&quot;,projectPath},{&quot;tenantURL&quot;,tenantURL},{&quot;site&quot;,site},{&quot;purchaseOrderNumber&quot;,resolvedPoNumber},{&quot;expectedLineCount&quot;,createdLineCountLocal},{&quot;logFile&quot;,logFile}}]" ContinueOnError="False" DisplayName="Verify PO Lines" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_5" OutputArguments="[verifyLineOutput]" WorkflowFile="[projectPath+&quot;\VerifyPurchaseOrderLines.xaml&quot;]" />
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyLineStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyLineOutput("verificationStatus").ToString()]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[verifyLineError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyLineOutput("verificationErrorMessage").ToString()]</InArgument></Assign.Value></Assign>
+                                  <Assign><Assign.To><OutArgument x:TypeArguments="x:Int32">[actualLineCountLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:Int32">[CInt(verifyLineOutput("actualLineCount").ToString())]</InArgument></Assign.Value></Assign>
+                                  <If Condition="[verifyLineStatus = &quot;SUCCESS&quot;]">
+                                    <If.Then>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallStatus]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["SUCCESS"]</InArgument></Assign.Value></Assign>
+                                    </If.Then>
+                                    <If.Else>
+                                      <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[verifyLineError]</InArgument></Assign.Value></Assign>
+                                    </If.Else>
+                                  </If>
+                                </Sequence>
                               </If.Then>
                               <If.Else>
-                                <Assign>
-                                  <Assign.To>
-                                    <OutArgument x:TypeArguments="x:String">[overallError]</OutArgument>
-                                  </Assign.To>
-                                  <Assign.Value>
-                                    <InArgument x:TypeArguments="x:String">[verifyLineError]</InArgument>
-                                  </Assign.Value>
-                                </Assign>
+                                <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poLineError]</InArgument></Assign.Value></Assign>
                               </If.Else>
                             </If>
                           </Sequence>
                         </If.Then>
                         <If.Else>
-                          <Assign>
-                            <Assign.To>
-                              <OutArgument x:TypeArguments="x:String">[overallError]</OutArgument>
-                            </Assign.To>
-                            <Assign.Value>
-                              <InArgument x:TypeArguments="x:String">[poLineError]</InArgument>
-                            </Assign.Value>
-                          </Assign>
+                          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[poError]</InArgument></Assign.Value></Assign>
                         </If.Else>
                       </If>
                     </Sequence>
                   </If.Then>
                   <If.Else>
-                    <Assign>
-                      <Assign.To>
-                        <OutArgument x:TypeArguments="x:String">[overallError]</OutArgument>
-                      </Assign.To>
-                      <Assign.Value>
-                        <InArgument x:TypeArguments="x:String">[poError]</InArgument>
-                      </Assign.Value>
-                    </Assign>
+                    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[overallError]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[itemError]</InArgument></Assign.Value></Assign>
                   </If.Else>
                 </If>
               </Sequence>
-            </If.Then>
-            <If.Else>
-              <Assign>
-                <Assign.To>
-                  <OutArgument x:TypeArguments="x:String">[overallError]</OutArgument>
-                </Assign.To>
-                <Assign.Value>
-                  <InArgument x:TypeArguments="x:String">[itemError]</InArgument>
-                </Assign.Value>
-              </Assign>
             </If.Else>
           </If>
         </Sequence>
@@ -555,7 +518,22 @@
         </Assign>
       </If.Then>
     </If>
-    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;sourceDocumentName&quot;,effectiveSourceDocumentName},{&quot;ocrStatus&quot;,ocrStatusLocal},{&quot;ocrMode&quot;,ocrModeLocal},{&quot;intakeStatus&quot;,intakeStatusLocal},{&quot;vendorName&quot;,effectiveVendorName},{&quot;overallStatus&quot;,overallStatus},{&quot;vendorStatus&quot;,vendorStatus},{&quot;vendorNumber&quot;,vendorNumber},{&quot;itemStatus&quot;,If(itemStatus Is Nothing, &quot;&quot;, itemStatus)},{&quot;createdItemCount&quot;,createdItemCountLocal},{&quot;poStatus&quot;,If(poStatus Is Nothing, &quot;&quot;, poStatus)},{&quot;purchaseOrderNumber&quot;,If(resolvedPoNumber Is Nothing, &quot;&quot;, resolvedPoNumber)},{&quot;poLineStatus&quot;,If(poLineStatus Is Nothing, &quot;&quot;, poLineStatus)},{&quot;createdLineCount&quot;,createdLineCountLocal},{&quot;verifyLineStatus&quot;,If(verifyLineStatus Is Nothing, &quot;&quot;, verifyLineStatus)},{&quot;actualLineCount&quot;,actualLineCountLocal},{&quot;errorMessage&quot;,overallError}}]" ContinueOnError="False" DisplayName="Build Result Summary" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_6" OutputArguments="[summaryOutput]" WorkflowFile="[projectPath+&quot;\BuildResultSummary.xaml&quot;]" />
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[vendorRetrainingStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Not needed"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[vendorRetrainingErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemRetrainingStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">["Not needed"]</InArgument></Assign.Value></Assign>
+    <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemRetrainingErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[""]</InArgument></Assign.Value></Assign>
+    <If Condition="[overallStatus = &quot;SUCCESS&quot;]">
+      <If.Then>
+        <Sequence>
+          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;newVendorCreated&quot;,vendorStatus = &quot;CREATED_AND_VERIFIED&quot;},{&quot;createdItemCount&quot;,createdItemCountLocal}}]" ContinueOnError="False" DisplayName="Start Retraining Workflows" OutputArguments="[retrainingOutput]" WorkflowFile="[projectPath+&quot;\StartRetrainingWorkflows.xaml&quot;]" />
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[vendorRetrainingStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retrainingOutput IsNot Nothing AndAlso retrainingOutput.ContainsKey("vendorRetrainingStatus") AndAlso retrainingOutput("vendorRetrainingStatus") IsNot Nothing, retrainingOutput("vendorRetrainingStatus").ToString(), "Not needed")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[vendorRetrainingErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retrainingOutput IsNot Nothing AndAlso retrainingOutput.ContainsKey("vendorRetrainingError") AndAlso retrainingOutput("vendorRetrainingError") IsNot Nothing, retrainingOutput("vendorRetrainingError").ToString(), "")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemRetrainingStatusLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retrainingOutput IsNot Nothing AndAlso retrainingOutput.ContainsKey("itemRetrainingStatus") AndAlso retrainingOutput("itemRetrainingStatus") IsNot Nothing, retrainingOutput("itemRetrainingStatus").ToString(), "Not needed")]</InArgument></Assign.Value></Assign>
+          <Assign><Assign.To><OutArgument x:TypeArguments="x:String">[itemRetrainingErrorLocal]</OutArgument></Assign.To><Assign.Value><InArgument x:TypeArguments="x:String">[If(retrainingOutput IsNot Nothing AndAlso retrainingOutput.ContainsKey("itemRetrainingError") AndAlso retrainingOutput("itemRetrainingError") IsNot Nothing, retrainingOutput("itemRetrainingError").ToString(), "")]</InArgument></Assign.Value></Assign>
+        </Sequence>
+      </If.Then>
+    </If>
+    <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;sourceDocumentName&quot;,effectiveSourceDocumentName},{&quot;documentMode&quot;,effectiveDocumentMode},{&quot;ocrStatus&quot;,ocrStatusLocal},{&quot;ocrMode&quot;,ocrModeLocal},{&quot;intakeStatus&quot;,intakeStatusLocal},{&quot;vendorName&quot;,effectiveVendorName},{&quot;overallStatus&quot;,overallStatus},{&quot;vendorStatus&quot;,vendorStatus},{&quot;vendorNumber&quot;,vendorNumber},{&quot;itemStatus&quot;,If(itemStatus Is Nothing, &quot;&quot;, itemStatus)},{&quot;createdItemCount&quot;,createdItemCountLocal},{&quot;poStatus&quot;,If(poStatus Is Nothing, &quot;&quot;, poStatus)},{&quot;purchaseOrderNumber&quot;,If(resolvedPoNumber Is Nothing, &quot;&quot;, resolvedPoNumber)},{&quot;poLineStatus&quot;,If(poLineStatus Is Nothing, &quot;&quot;, poLineStatus)},{&quot;createdLineCount&quot;,createdLineCountLocal},{&quot;verifyLineStatus&quot;,If(verifyLineStatus Is Nothing, &quot;&quot;, verifyLineStatus)},{&quot;actualLineCount&quot;,actualLineCountLocal},{&quot;vendorRetrainingStatus&quot;,vendorRetrainingStatusLocal},{&quot;itemRetrainingStatus&quot;,itemRetrainingStatusLocal},{&quot;errorMessage&quot;,overallError}}]" ContinueOnError="False" DisplayName="Build Result Summary" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_6" OutputArguments="[summaryOutput]" WorkflowFile="[projectPath+&quot;\BuildResultSummary.xaml&quot;]" />
     <Assign>
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[summaryTextLocal]</OutArgument>
@@ -613,7 +591,7 @@
     <If Condition="[enableNotifications AndAlso Not String.IsNullOrWhiteSpace(recipientUserId)]">
       <If.Then>
         <Sequence>
-          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;processingStatus&quot;,overallStatus},{&quot;errorMessage&quot;,overallError},{&quot;fileName&quot;,effectiveSourceDocumentName},{&quot;vendorNumber&quot;,vendorNumber},{&quot;vendorName&quot;,effectiveVendorName},{&quot;poNumber&quot;,If(String.IsNullOrWhiteSpace(resolvedPoNumber), effectivePurchaseOrderNumber, resolvedPoNumber)},{&quot;itemsCreated&quot;,createdItemCountLocal.ToString()},{&quot;itemCount&quot;,createdLineCountLocal.ToString()},{&quot;resolvedItemsJson&quot;,If(resolvedItemsJsonLocal Is Nothing, &quot;&quot;, resolvedItemsJsonLocal)},{&quot;notes&quot;,notificationNotesLocal}}]" ContinueOnError="False" DisplayName="Send Notification" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_7" OutputArguments="[notificationOutput]" WorkflowFile="[projectPath+&quot;\SendNotification.xaml&quot;]" />
+          <iaw:InvokeWorkflow ResponseCode="{x:Null}" Arguments="[New Dictionary(Of String, Object) From {{&quot;tenantURL&quot;,tenantURL},{&quot;logFile&quot;,logFile},{&quot;recipientUserId&quot;,recipientUserId},{&quot;processingStatus&quot;,overallStatus},{&quot;errorMessage&quot;,overallError},{&quot;fileName&quot;,effectiveSourceDocumentName},{&quot;vendorNumber&quot;,vendorNumber},{&quot;vendorName&quot;,effectiveVendorName},{&quot;poNumber&quot;,If(effectiveDocumentMode = &quot;NON_PO&quot;, &quot;&quot;, If(String.IsNullOrWhiteSpace(resolvedPoNumber), effectivePurchaseOrderNumber, resolvedPoNumber))},{&quot;itemsCreated&quot;,createdItemCountLocal.ToString()},{&quot;itemCount&quot;,createdLineCountLocal.ToString()},{&quot;resolvedItemsJson&quot;,If(resolvedItemsJsonLocal Is Nothing, &quot;&quot;, resolvedItemsJsonLocal)},{&quot;notes&quot;,notificationNotesLocal}}]" ContinueOnError="False" DisplayName="Send Notification" sap2010:WorkflowViewState.IdRef="InvokeWorkflow_7" OutputArguments="[notificationOutput]" WorkflowFile="[projectPath+&quot;\SendNotification.xaml&quot;]" />
           <Assign>
             <Assign.To>
               <OutArgument x:TypeArguments="x:String">[notificationStatusLocal]</OutArgument>
@@ -671,7 +649,7 @@
         <OutArgument x:TypeArguments="x:String">[resultPurchaseOrderNumber]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(resolvedPoNumber), effectivePurchaseOrderNumber, resolvedPoNumber)]</InArgument>
+        <InArgument x:TypeArguments="x:String">[If(effectiveDocumentMode = "NON_PO", "", If(String.IsNullOrWhiteSpace(resolvedPoNumber), effectivePurchaseOrderNumber, resolvedPoNumber))]</InArgument>
       </Assign.Value>
     </Assign>
     <Assign>

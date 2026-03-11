@@ -62,163 +62,167 @@
   "sourceFiles": [
     {
       "fileName": "BuildBatchResultSummary.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "BuildDocumentWorklist.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "BuildResultSummary.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ClaimBatchDocument.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "CreateItem.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "CreatePurchaseOrder.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "CreatePurchaseOrderLines.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "CreateVendor.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "EnsureBatchFolders.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ExecuteIdoLoad.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ExecuteIdoUpdate.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ExtractOCRData.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "FinalizeBatchDocument.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "FormatInvoiceData.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "GenerateVendorNumber.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "MainPage.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "NormalizeLineItems.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "NormalizePurchaseOrder.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "NormalizeUnitOfMeasure.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "NormalizeVendorFields.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ProcessDocumentBatch.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ResolveInvoiceInput.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ResolveItemDecision.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ResolvePurchaseOrderDecision.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ResolveTransactionalFallback.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ResolveVendorDecision.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "ScoreVendorCandidates.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SearchItem.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SearchOrCreateItems.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SearchPurchaseOrder.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SearchVendorByNumber.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SearchVendorCandidates.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SelectVendorCandidate.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
+    },
+    {
+      "fileName": "StartRetrainingWorkflows.xaml",
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SendNotification.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SendBatchNotification.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "SingleDocumentController.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "VerifyItem.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "VerifyPurchaseOrder.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "VerifyPurchaseOrderLines.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     },
     {
       "fileName": "VerifyVendor.xaml",
-      "filePath": "<YOUR_PROJECT_PATH>"
+      "filePath": "C:\\Users\\mmartins1\\OneDrive - Infor\\00_ACTIVE\\Dev\\CC_OS_Project\\CSIPOAssetCreationToolV2\\RPA\\DemoInvoiceLoaderV2"
     }
   ],
   "resources": [],
@@ -230,7 +234,7 @@
   "tenantMetadata": [
     {
       "tenantId": "<YOUR_TENANT>",
-      "processId": "EDF52954-233A-4DD5-ADED-CE35BA1A2D28",
+      "processId": "2F5ADC5D-A95A-4CBC-B475-51F90F7C5903",
       "projectVersion": "0.1.0",
       "globalPackageNamespace": null,
       "iprRegistered": false
@@ -238,5 +242,4 @@
   ],
   "IdpFlowDependencies": null
 }
-
 

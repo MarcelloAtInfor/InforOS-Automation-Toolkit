@@ -18,13 +18,33 @@ CONFIG_PATH = PROJECT_DIR / "deploy.local.json"
 PUBLISHED_PROJECT_NAME = "DemoInvoiceLoader_V4"
 
 
+def get_tracked_process_id() -> str:
+    project_json_path = PROJECT_DIR / "project.json"
+    project_data = json.loads(project_json_path.read_text(encoding="utf-8"))
+    tenant_metadata = project_data.get("tenantMetadata", [])
+    if not tenant_metadata or not tenant_metadata[0].get("processId"):
+        raise ValueError("Tracked project.json has no processId in tenantMetadata")
+    return tenant_metadata[0]["processId"]
+
+
 def load_config() -> dict:
     if not CONFIG_PATH.exists():
         raise FileNotFoundError(
             f"Missing local config: {CONFIG_PATH}\n"
             f"Create it from {PROJECT_DIR / 'deploy.local.example.json'} first."
         )
-    return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    tracked_process_id = get_tracked_process_id()
+    configured_process_id = config.get("process_id")
+    if configured_process_id and configured_process_id != tracked_process_id:
+        raise ValueError(
+            "deploy.local.json process_id does not match tracked project.json processId.\n"
+            f"  tracked:   {tracked_process_id}\n"
+            f"  configured:{configured_process_id}\n"
+            "Update deploy.local.json before regenerating so V4 does not publish over an older process."
+        )
+    config["process_id"] = tracked_process_id
+    return config
 
 
 def build_output_dir(config: dict) -> Path:

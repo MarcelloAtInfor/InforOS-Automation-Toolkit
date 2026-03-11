@@ -21,36 +21,137 @@
 <body>
   <h1>DemoInvoiceLoader_V4 Delivery Report</h1>
   <div class="meta">
-    Public handoff summary for the deterministic invoice automation rewrite.
+    Prepared on 2026-03-08 for the deterministic rewrite of the invoice automation flow.
   </div>
+
   <div class="card good">
-    <h2>Summary</h2>
+    <h2>Executive Summary</h2>
     <p>
       <strong>DemoInvoiceLoader_V4</strong> replaces the prior GenAI-driven transactional path with an RPA-driven,
-      deterministic CSI API workflow. It was validated live for OCR, vendor reuse/create, item reuse/create, PO creation,
-      PO-line creation, tax persistence, notifications, and fail-closed vendor ambiguity handling.
+      deterministic CSI API workflow. Live validation in tenant <code>SLSGDENA052_DEM</code> showed that V4 can:
     </p>
+    <ul>
+      <li>extract invoice data through live OCR,</li>
+      <li>reuse or create vendors deterministically,</li>
+      <li>reuse or create items deterministically,</li>
+      <li>create purchase orders and PO lines,</li>
+      <li>persist tax correctly to the visible PO tax field,</li>
+      <li>send end-user ION notifications, and</li>
+      <li>fail closed when vendor identity is unsafe.</li>
+    </ul>
   </div>
-  <h2>Highlights</h2>
+
+  <h2>What Changed</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Area</th>
+        <th>Old Project</th>
+        <th>V4</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Transaction logic</td>
+        <td>GenAI chat/tool orchestration</td>
+        <td>Direct deterministic CSI IDO calls from RPA</td>
+      </tr>
+      <tr>
+        <td>Vendor matching</td>
+        <td>Underdetermined, sometimes reused the wrong vendor</td>
+        <td>Exact-name gate with structured address scoring, bounded typo tolerance, fail-closed ambiguity handling</td>
+      </tr>
+      <tr>
+        <td>Item handling</td>
+        <td>GenAI-driven search/create path</td>
+        <td>Deterministic search/create/verify path with persisted UOM reuse</td>
+      </tr>
+      <tr>
+        <td>Tax</td>
+        <td>Initially missing or misdirected</td>
+        <td>Mapped to visible <code>SalesTaxT</code> and validated live</td>
+      </tr>
+      <tr>
+        <td>Error behavior</td>
+        <td>Could drift or partially succeed opaquely</td>
+        <td>Explicit status, verification, notifications, and fail-closed decisions</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Final Workflow Shape</h2>
   <ul>
-    <li>Direct deterministic CSI IDO calls for vendor, item, PO, and PO-line logic.</li>
-    <li>Vendor scoring uses exact-name gating plus structured address matching with bounded typo tolerance.</li>
-    <li>Unsafe same-name cases fail closed instead of silently reusing or duplicating master data.</li>
-    <li>Tax writes to the visible <code>SalesTaxT</code> field.</li>
-    <li>Notifications include created asset details and unhandled failures still route to notification.</li>
+    <li><code>MainPage.xaml</code> is the public batch root.</li>
+    <li><code>ProcessDocumentBatch.xaml</code> builds the worklist, claims files, loops them, and writes batch artifacts.</li>
+    <li><code>SingleDocumentController.xaml</code> performs OCR, intake formatting, vendor resolution, item resolution, PO creation, verification, and per-document notification.</li>
+    <li>Deploy-time tenant-specific values are materialized into <code>.deploy\DemoInvoiceLoader_V4_&lt;TENANT&gt;</code>.</li>
   </ul>
-  <h2>Public Setup Notes</h2>
+
+  <h2>Validation Performed</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Validation</th>
+        <th>Outcome</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Single-document create path</td>
+        <td>Passed with new vendor, new items, new PO, tax, and notification.</td>
+      </tr>
+      <tr>
+        <td>20-document rebatch</td>
+        <td>Passed after data fixture correction; remaining issues were real master-data or selector-tuning issues, then fixed.</td>
+      </tr>
+      <tr>
+        <td>50-document mass test</td>
+        <td>Exposed the last vendor selector weakness; fix implemented and verified.</td>
+      </tr>
+      <tr>
+        <td>Wrong-identity retry set</td>
+        <td>All four failed closed as intended after selector tuning.</td>
+      </tr>
+      <tr>
+        <td>Post-deploy 5-file V4 validation batch</td>
+        <td>3 success / 2 expected failures. Behavior matched design exactly.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Key Fixes Landed</h2>
   <ul>
-    <li>Tracked source is intentionally scrubbed of tenant-specific values.</li>
-    <li>Use <code>deploy.local.example.json</code> and <code>scripts/prepare_deploy.py</code> to build a tenant-specific copy.</li>
-    <li>Rebind live OCR in Studio for the generated <code>.deploy</code> copy before production use.</li>
+    <li>Vendor matching now uses exact-name gating, normalized street/city/state/zip scoring, safe abbreviation normalization, bounded street typo tolerance, and ambiguity fail-closed behavior.</li>
+    <li>Vendor state is explicitly persisted and verified on creation.</li>
+    <li>Reused items now propagate the persisted CSI UOM into PO lines rather than trusting OCR UOM.</li>
+    <li>PO tax is written to the visible UI field <code>SalesTaxT</code>.</li>
+    <li>Notification payload now includes item codes and unhandled controller exceptions still route to notification.</li>
+    <li>The published project identity is now <code>DemoInvoiceLoader_V4</code> with a unique RPA <code>processId</code>, so it will not overwrite the old V3 process.</li>
   </ul>
+
+  <div class="card warn">
+    <h2>Operational Notes</h2>
+    <ul>
+      <li>Tracked source remains repo-safe. Tenant-specific values are expected to be applied through <code>prepare_deploy.py</code>.</li>
+      <li>Live OCR still requires Studio rebind/verification in a newly generated <code>.deploy</code> copy because OCR activity metadata is partly Studio-managed.</li>
+      <li>The attended PowerShell runner is useful, but it is still focus-based desktop automation and not a true background API.</li>
+    </ul>
+  </div>
+
   <h2>Suggested Next Steps</h2>
   <ol>
-    <li>Generate a tenant-specific deploy copy.</li>
-    <li>Rebind live OCR for the target tenant in Studio.</li>
-    <li>Run a controlled single-document test.</li>
-    <li>Run a small batch test before scheduling or publishing broadly.</li>
+    <li>Publish and validate one final tenant-side run from the newly published V4 process.</li>
+    <li>Document the operator runbook: input folder usage, expected notifications, and ambiguity failure handling.</li>
+    <li>Add a lightweight reconciliation/report export that summarizes created vendors/items/POs after each batch.</li>
+    <li>If desired, add a controlled human-review queue for fail-closed vendor ambiguity cases rather than stopping at notification only.</li>
+    <li>Optionally replace the focus-based Studio helper with a stronger Windows automation bridge if attended iteration remains common.</li>
   </ol>
+
+  <h2>Recommendation</h2>
+  <p>
+    V4 is in a materially better state than the prior GenAI transactional flow for real use. The rewrite removed the
+    largest source of nondeterminism without losing OCR, notifications, or end-to-end automation. The remaining work
+    is operational polish, not core architecture repair.
+  </p>
 </body>
 </html>
